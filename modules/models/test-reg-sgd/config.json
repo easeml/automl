@@ -1,0 +1,6 @@
+{
+    "loss" : "squared_loss",
+    "penalty" : "l2",
+    "learning_rate_schedule" : "optimal",
+    "learning_rate" : 0.01
+}

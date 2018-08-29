@@ -1,0 +1,134 @@
+/* =============
+   Calendar
+============= */
+
+.calendar {
+  float: left;
+  margin-bottom: 0;
+}
+
+.fc-view {
+  margin-top: 30px;
+}
+.none-border {
+  .modal-footer {
+    border-top: none;
+  }
+}
+
+.fc-toolbar {
+  margin-bottom: 5px;
+  margin-top: 15px;
+  h2 {
+    font-size: 20px;
+    font-family: $font-secondary;
+    line-height: 30px;
+    text-transform: uppercase;
+  }
+}
+.fc-day-grid-event .fc-time {
+  font-family: $font-secondary;
+}
+
+.fc-day {
+  background: $white;
+}
+
+.fc-toolbar .fc-state-active, .fc-toolbar .ui-state-active,
+.fc-toolbar button:focus, .fc-toolbar button:hover,
+.fc-toolbar .ui-state-hover {
+  z-index: 0;
+}
+
+
+.fc {
+  th.fc-widget-header {
+    background: $light;
+    font-size: 13px;
+    line-height: 20px;
+    padding: 10px 0;
+    text-transform: uppercase;
+  }
+}
+.fc-unthemed th, .fc-unthemed td, .fc-unthemed thead, .fc-unthemed tbody, .fc-unthemed .fc-divider, .fc-unthemed .fc-row, .fc-unthemed .fc-popover {
+  border-color: $light;
+}
+
+.fc-button {
+  background: $light;
+  border: none;
+  color: $light7;
+  text-transform: capitalize;
+  box-shadow: none;
+  border-radius: 3px;
+  margin: 0 3px;
+  padding: 6px 12px;
+  height: auto;
+}
+
+.fc-text-arrow {
+  font-family: inherit;
+  font-size: 16px;
+}
+
+.fc-state-hover {
+  background: $light3;
+}
+
+.fc-state-highlight {
+  background: #f0f0f0;
+}
+
+.fc-state-down, .fc-state-active,.fc-state-disabled {
+  background-color: $custom;
+  color: $white;
+  text-shadow: none;
+}
+
+.fc-cell-overlay {
+  background: #f0f0f0;
+}
+
+.fc-unthemed {
+  .fc-today {
+    background: $white;
+  }
+}
+
+.fc-event {
+  border-radius: 2px;
+  border: none;
+  cursor: move;
+  font-size: 13px;
+  margin: 5px 7px;
+  padding: 5px 5px;
+  text-align: center;
+}
+
+.external-event {
+  cursor: move;
+  margin: 10px 0;
+  padding: 8px 10px;
+  color: $white;
+}
+
+
+.fc-basic-view {
+  td.fc-week-number {
+    span {
+      padding-right: 8px;
+      font-family: $font-secondary;
+    }
+  }
+  td.fc-day-number {
+    padding-right: 8px;
+    font-family: $font-secondary;
+  }
+  .fc-content {
+    color: $white;
+  }
+}
+
+.fc-time-grid-event .fc-content {
+  color: $white;
+}

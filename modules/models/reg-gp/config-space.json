@@ -1,0 +1,8 @@
+{
+    "n_restarts_optimizer" : {
+        ".choice" : [0, 1, 5]
+    },
+    "alpha" : {
+        ".choice" : [1e-8, 1e-10, 1e-12]
+    }
+}

@@ -1,0 +1,52 @@
+/* ===========
+File Manager
+============== */
+
+.file-man-box {
+  padding: 20px;
+  border: 1px solid $light;
+  border-radius: 5px;
+  position: relative;
+  margin-bottom: 20px;
+
+  .file-close {
+    color: $danger;
+    position: absolute;
+    line-height: 24px;
+    font-size: 24px;
+    right: 10px;
+    top: 10px;
+    visibility: hidden;
+  }
+
+  .file-img-box {
+    line-height: 120px;
+    text-align: center;
+
+    img {
+      height: 64px;
+    }
+  }
+
+  .file-download {
+    font-size: 32px;
+    color: $muted;
+    position: absolute;
+    right: 10px;
+
+    &:hover {
+      color: $dark;
+    }
+  }
+  .file-man-title {
+    padding-right: 25px;
+  }
+
+  &:hover {
+    box-shadow: $shadow;
+
+    .file-close {
+      visibility: visible;
+    }
+  }
+}

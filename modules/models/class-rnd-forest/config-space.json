@@ -1,0 +1,11 @@
+{
+    "n_estimators" : {
+        ".choice" : [4, 8, 16, 32]
+    },
+    "max_features" : {
+        ".choice" : ["sqrt", "log2", null]
+    },
+    "max_depth" : {
+        ".choice" : [null, 10, 50, 100]
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "n_neighbors" : {
+        ".choice" : [2, 4, 8, 16]
+    },
+    "weights" : {
+        ".choice" : ["uniform", "distance"]
+    }
+}

@@ -1,0 +1,112 @@
+/* =============
+   Gallery
+============= */
+.port {
+  margin-bottom: 30px;
+}
+
+.portfolioFilter {
+  a {
+    transition: all 0.3s ease-out;
+    color: $dark;
+    border-radius: 3px;
+    padding: 5px 10px;
+    display: inline-block;
+    margin-bottom: 5px;
+    font-family: $font-secondary;
+
+    &:hover {
+      background-color: $custom;
+      color: $white;
+    }
+  }
+  a.current {
+    background-color: $custom;
+    color: $white;
+    box-shadow: $shadow;
+  }
+}
+
+.portfolio-masonry-box {
+  overflow: hidden;
+  position: relative;
+  padding: 0;
+  margin-top: 30px;
+
+  .portfolio-masonry-img {
+    position: relative;
+    overflow: hidden;
+    border-radius: 5px;
+
+    &:after {
+      content: " ";
+      display: block;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: rgba($dark, 0);
+      -webkit-transition: all 0.27s cubic-bezier(0.300, 0.100, 0.580, 1.000);
+      -moz-transition: all 0.27s cubic-bezier(0.300, 0.100, 0.580, 1.000);
+      -o-transition: all 0.27s cubic-bezier(0.300, 0.100, 0.580, 1.000);
+      transition: all 0.27s cubic-bezier(0.300, 0.100, 0.580, 1.000);
+    }
+  }
+
+  .portfolio-masonry-img > img {
+    -webkit-transition: all 0.3s cubic-bezier(0.300, 0.100, 0.580, 1.000);
+    -moz-transition: all 0.3s cubic-bezier(0.300, 0.100, 0.580, 1.000);
+    -o-transition: all 0.3s cubic-bezier(0.300, 0.100, 0.580, 1.000);
+    transition: all 0.3s cubic-bezier(0.300, 0.100, 0.580, 1.000);
+    border-radius: 0;
+  }
+
+  .portfolio-masonry-detail {
+    opacity: 0;
+    width: 100%;
+    padding: 20px 20px 0 20px;
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    text-align: center;
+    overflow: hidden;
+    -webkit-transition: all 0.27s cubic-bezier(0.300, 0.100, 0.580, 1.000);
+    -moz-transition: all 0.27s cubic-bezier(0.300, 0.100, 0.580, 1.000);
+    -o-transition: all 0.27s cubic-bezier(0.300, 0.100, 0.580, 1.000);
+    transition: all 0.27s cubic-bezier(0.300, 0.100, 0.580, 1.000);
+
+    h4{
+      margin-bottom: 3px;
+      color: $white !important;
+    }
+    p{
+      color: $white !important;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+  }
+}
+
+.portfolio-masonry-box:hover {
+  .portfolio-masonry-detail {
+    -webkit-transform: translateY(-100%);
+    -moz-transform: translateY(-100%);
+    transform: translateY(-100%);
+    z-index: 3;
+    opacity: 1;
+  }
+
+  .portfolio-masonry-img:after {
+    background: rgba($dark,0.8);
+  }
+
+  .portfolio-masonry-img > img {
+    -webkit-transform: scale(1.05);
+    -moz-transform: scale(1.05);
+    -o-transform: scale(1.05);
+    -ms-transform: scale(1.05);
+    transform: scale(1.05);
+  }
+}
+

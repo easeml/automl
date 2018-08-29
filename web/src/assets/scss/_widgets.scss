@@ -1,0 +1,158 @@
+/* =============
+   Widgets
+============= */
+
+
+.widget-flat {
+  border: 2px solid $dark;
+  position: relative;
+
+  i{
+    position: absolute;
+    bottom: -20px;
+    font-size: 78px;
+    opacity: 0.25;
+    left: 0;
+    transition: bottom 0.5s ease 0s;
+  }
+
+  &:hover {
+    i {
+      bottom: 0;
+    }
+  }
+}
+
+.widget-chart-one {
+  min-height: 120px;
+
+  .widget-chart-one-content {
+    margin-left: 100px;
+  }
+}
+
+.widget-chart-two {
+  min-height: 120px;
+
+  .widget-chart-one-content {
+    margin-right: 100px;
+  }
+}
+
+
+.tilebox-one {
+  i {
+    font-size: 30px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+/* Inbox-widget */
+
+.inbox-widget {
+  .inbox-item {
+    border-bottom: 1px solid lighten($light,5%);
+    overflow: hidden;
+    padding: 10px 0;
+    position: relative;
+    .inbox-item-img {
+      display: block;
+      float: left;
+      margin-right: 15px;
+      width: 40px;
+    }
+    img {
+      width: 40px;
+    }
+    .inbox-item-author {
+      color: $dark;
+      display: block;
+      margin: 0;
+    }
+    .inbox-item-text {
+      color: $muted;
+      display: block;
+      font-size: 14px;
+      margin: 0;
+    }
+    .inbox-item-date {
+      color: $muted;
+      font-size: 11px;
+      position: absolute;
+      right: 7px;
+      top: 2px;
+    }
+  }
+}
+
+
+/* Comment List */
+.comment-list {
+  .comment-box-item {
+    position: relative;
+
+    .commnet-item-date {
+      color: $muted;
+      font-size: 11px;
+      position: absolute;
+      right: 7px;
+      top: 2px;
+    }
+    .commnet-item-msg {
+      color: $dark;
+      display: block;
+      margin: 10px 0;
+      font-weight: normal;
+      font-size: 15px;
+      line-height: 24px;
+    }
+    .commnet-item-user {
+      color: $muted;
+      display: block;
+      font-size: 14px;
+      margin: 0;
+    }
+  }
+  a + a {
+    margin-top: 15px;
+    display: block;
+  }
+}
+
+
+/* Transaction */
+
+.transaction-list {
+  li{
+    padding: 7px 0;
+    border-bottom: 1px solid lighten($light,5%);
+    clear: both;
+    position: relative;
+  }
+  i{
+    width: 20px;
+    position: absolute;
+    top: 10px;
+    font-size: 12px;
+  }
+  .tran-text {
+    padding-left: 25px;
+    white-space: nowrap;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 150px;
+  }
+  .tran-price {
+    margin-left: 30px;
+  }
+}

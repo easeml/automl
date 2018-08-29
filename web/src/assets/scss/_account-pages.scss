@@ -1,0 +1,143 @@
+/* ==============
+  Account Pages
+===================*/
+.accountbg {
+  position: absolute;
+  background-size: cover;
+  height: 100%;
+  width: 100%;
+  top: 0;
+}
+
+.account-page-full {
+  right: 0;
+  position: absolute;
+  height: 100%;
+  margin: 0;
+  width: 540px;
+  background-color: $white;
+
+  .card {
+    border: none;
+  }
+}
+
+.account-copyright {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+
+.checkmark {
+  width: 100px;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 0;
+  animation: dash 2s ease-in-out;
+  -webkit-animation: dash 2s ease-in-out;
+}
+
+.spin {
+  animation: spin 2s;
+  -webkit-animation: spin 2s;
+  transform-origin: 50% 50%;
+  -webkit-transform-origin: 50% 50%;
+}
+
+@-webkit-keyframes dash {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes text {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes text {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1;
+  }
+}
+
+
+.text-error {
+  color: $custom;
+  text-shadow: rgba($custom,0.3) 5px 1px, rgba($custom,0.2) 10px 3px;
+  font-size: 84px;
+  line-height: 90px;
+}
+
+
+@media (max-width: 768px) {
+  .account-pages.enlarged {
+    min-height: 100%;
+  }
+
+  .account-pages {
+    .account-page-full {
+      width: 100%;
+    }
+  }
+}
+
+
+// Maintenance
+
+.svg-computer {
+  stroke-dasharray: 1134;
+  stroke-dashoffset: -1134;
+  animation: draw-me 5s infinite;
+  animation-direction: normal;
+  height: 200px;
+}
+@keyframes draw-me {
+  from {
+    stroke-dashoffset: -1134;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}

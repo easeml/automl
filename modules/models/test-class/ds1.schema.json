@@ -1,0 +1,19 @@
+{
+    "nodes" : {
+        "s2" : {
+            "singleton" : true,
+            "type" : "category",
+            "class" : "cls"
+        },
+        "s1" : {
+            "singleton" : true,
+            "type" : "tensor",
+            "dim" : [10]
+        }
+    },
+    "classes" : {
+        "cls" : {
+            "dim" : 5
+        }
+    }
+}

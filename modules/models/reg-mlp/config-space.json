@@ -1,0 +1,18 @@
+{
+    "hidden_layer_sizes" : {
+        ".choice" : [
+            [128],
+            [128, 128],
+            [128, 128, 128],
+            [256],
+            [256, 256],
+            [256, 256, 256]
+        ]
+    },
+    "activation" : {
+        ".choice" : ["identity", "logistic", "tanh", "relu"]
+    },
+    "solver" : {
+        ".choice" : ["lbfgs", "sgd", "adam"]
+    }
+}

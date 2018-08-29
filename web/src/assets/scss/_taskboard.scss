@@ -1,0 +1,83 @@
+/* =============
+   Task board
+============= */
+
+.taskList {
+  min-height: 40px;
+  margin-bottom: 0;
+
+  li {
+    background-color: $white;
+    border: 1px solid rgba($light7,0.2);
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 3px;
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+  a {
+    font-size: 13px;
+  }
+  .checkbox {
+    margin-left: 20px;
+    margin-top: 5px;
+  }
+}
+
+.task-placeholder {
+  border: 1px dashed rgba($light,0.9) !important;
+  background-color: rgba($light,0.2) !important;
+  padding: 20px;
+}
+
+
+/* Task Detail */
+.task-detail .task-dates li {
+  width: 50%;
+  float: left;
+}
+.task-detail .task-tags .bootstrap-tagsinput {
+  padding: 0px;
+  border: none;
+}
+.task-detail .assign-team a {
+  display: inline-block;
+  margin: 5px 5px 5px 0px;
+}
+.task-detail .files-list .file-box {
+  display: inline-block;
+  vertical-align: middle;
+  width: 80px;
+  padding: 2px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  background-clip: padding-box;
+}
+.task-detail .files-list .file-box img {
+  line-height: 70px;
+}
+.task-detail .files-list .file-box p {
+  width: 100%;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+// Task detail
+.add-new-plus {
+  height: 32px;
+  text-align: center;
+  width: 32px;
+  display: block;
+  line-height: 32px;
+  color: $muted;
+  font-weight: 700;
+  background-color: $light;
+  border-radius: 50%;
+
+}

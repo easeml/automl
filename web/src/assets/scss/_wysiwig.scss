@@ -1,0 +1,62 @@
+/* =============
+   Wysiwig
+============= */
+.mce-panel {
+  border: 1px solid lighten($light, 3%) !important;
+  background-color: lighten($light, 3%) !important;
+}
+
+.mce-menu {
+  background-color: $white !important;
+  box-shadow: 0 0 24px 0 rgba(0, 0, 0, 0.06), 0 1px 0 0 rgba(0, 0, 0, 0.02);
+}
+
+.mce-menubar .mce-menubtn:hover, .mce-menubar .mce-menubtn.mce-active, .mce-menubar .mce-menubtn:focus {
+  border-color: lighten($light, 3%) !important;
+}
+
+.mce-menu-item:hover, .mce-menu-item.mce-selected, .mce-menu-item:focus, .mce-menu-item-normal.mce-active,
+.mce-primary {
+  background-color: $custom !important;
+}
+
+.mce-window-head .mce-title {
+  font-family: $font-secondary;
+}
+
+.mce-window {
+  padding: 20px !important;
+}
+
+.mce-window-head {
+  padding-bottom: 20px !important;
+  border-bottom: 0 !important;
+}
+
+.mce-grid-border a:hover, .mce-grid-border a.mce-active {
+  border-color: $custom !important;
+  background: $custom !important;
+}
+
+.mce-btn {
+  background-color: $custom !important;
+  border: none !important;
+  border-radius: 3px;
+  color: $white !important;
+}
+
+.mce-menubtn button,.mce-btn button {
+  color: $white !important;
+
+  span,i {
+    color: $white !important;
+  }
+}
+
+.mce-menubar .mce-caret,.mce-btn .mce-caret {
+  border-top-color: $white !important;
+}
+
+.mce-flow-layout {
+  padding: 5px !important;
+}

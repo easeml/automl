@@ -1,0 +1,82 @@
+#!/usr/bin/python
+
+import argparse
+import os
+import random
+import json
+
+def rand_expand(config):
+    if isinstance(config, dict):
+        if ".choice" in config:
+            assert(isinstance(config[".choice"], list))
+            # Random element.
+            idx = random.choice(range(len(config[".choice"])))
+            return rand_expand(config[".choice"][idx])
+
+        elif ".int" in config:
+            assert(isinstance(config[".int"], list) and len(config[".int"]) == 2)
+            # Random integer.
+            return random.randint(config[".int"][0], config[".int"][1])
+
+        elif ".float" in config:
+            assert(isinstance(config[".float"], list))
+            # Random float.
+            return random.random() * (config[".float"][1] - config[".float"][0]) + config[".float"][0]
+
+        else:
+            result = {}
+            for key in config:
+                result[key] = rand_expand(config[key])
+            return result
+
+    elif isinstance(config, list):
+        result = []
+        for elem in config:
+            result.append(rand_expand(elem))
+        
+    else:
+        result = config
+    
+    return result
+
+
+if __name__ == "__main__":
+
+    description = "Random search optimizer."
+    parser = argparse.ArgumentParser(description=description)
+
+    parser.add_argument("--space", required=True, help="directory containing search space")
+    parser.add_argument("--history", required=True, help="directory containing history")
+    #parser.add_argument("--output", required=True, help="output directory")
+    parser.add_argument("--num-tasks", type=int, default=1, help="number of configurations to generate", metavar="N")
+
+    args = parser.parse_args()
+
+    #print("Hello World.")
+
+    #print("Space:     " + args.space)
+    #print("History:   " + args.history)
+    #print("Output:    " + args.output)
+    #print("Num Tasks: " + str(args.num_tasks))
+
+    space = []
+    for name in os.listdir(args.space):
+        with open(os.path.join(args.space, name)) as f:
+            #space.append({"job" : name, "config" : json.load(f)})
+            space.append(json.load(f))
+    space = {".choice" : space}
+
+    for i in range(args.num_tasks):
+        # Random choose model.
+        #name = random.choice(list(space.keys()))
+
+        # Random expand.
+        config = rand_expand(space)
+
+        # Generate the output.
+        #fname = str(i) + ".json"
+        #with open(os.path.join(args.output, fname), "w") as f:
+        #    json.dump({"model" : name, "config" : config}, f)
+
+        print(json.dumps(config))
+        

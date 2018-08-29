@@ -1,0 +1,72 @@
+#!/usr/bin/python
+
+import argparse
+import json
+import os
+import math
+
+def warn(*args, **kwargs):
+    pass
+import warnings
+warnings.warn = warn
+
+from sklearn.metrics import r2_score
+
+import easemlschema.schema as sch
+import easemlschema.dataset as ds
+
+with open("schema-in.json") as f:
+    schema = json.load(f)
+
+schIn = sch.Schema.load(schema)
+className = "cls"
+
+if __name__ == "__main__":
+
+    description = "Mean absolute error."
+    parser = argparse.ArgumentParser(description=description)
+
+    parser.add_argument("--actual", required=True, help="directory containing actual values")
+    parser.add_argument("--predicted", required=True, help="directory containing predicted values")
+
+    args = parser.parse_args()
+
+    actualDataset = ds.Dataset.load(os.path.join(args.actual, "output"))
+    predictedDataset = ds.Dataset.load(os.path.join(args.predicted, "output"))
+
+    # Infer schemas.
+    actualSchema = actualDataset.infer_schema()
+    predictedSchema = predictedDataset.infer_schema()
+
+    actualSchemaMatching = schIn.match(actualSchema, build_matching=True)
+    predictedSchemaMatching = schIn.match(predictedSchema, build_matching=True)
+
+    actName = actualSchemaMatching.nodes["s1"].src_name
+    predName = predictedSchemaMatching.nodes["s1"].src_name
+
+    actValues = []
+    predValues = []
+
+    avgErr = 0
+    count = 0
+    for name in actualDataset.children:
+        if isinstance(actualDataset.children[name], ds.Directory):
+            if name in predictedDataset.children:
+
+                actValue = actualDataset.children[name].children[actName].data[0]
+                predValue = predictedDataset.children[name].children[predName].data[0]
+
+                actValues.append(actValue)
+                predValues.append(predValue)
+                
+                err = (actValue - predValue) ** 2
+                print(name, "|", err)
+
+    
+    score = r2_score(actValues, predValues)
+
+    # Cap the score for correctness.
+    score = max(min(score, 1.0), 0.0)
+
+    print(score)
+    

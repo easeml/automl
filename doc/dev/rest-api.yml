@@ -1,0 +1,2312 @@
+openapi: 3.0.0
+servers:
+  - url: /api/v1
+    description: Default Local Server
+info:
+  title: Ease.ml API
+  description: This is the REST API for interacting with the ease.ml service.
+  version: "1.0.0"
+  contact:
+    name: DS3Lab
+    email: bojan.karlas@inf.ethz.ch
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: users
+    description: |
+      Operations with users and authentication.
+  - name: processes
+    description: |
+      Operations with processes. All controller, scheduler and worker processes
+      are included here. This sub-path is visible only to administrators.
+  - name: datasets
+    description: |
+      Operations with datasets. Datasets can be uploaded/downloaded as tarball archives.
+      They consist of input and output data samples and their structure must conform
+      to a defined schema.
+  - name: modules
+    description: |
+      Operations with modules (i.e. models, objectives and optimizers). They are
+      stored as stateless Docker images.
+  - name: jobs
+    description: |
+      Operations with jobs. Jobs take a dataset and an objective function and perform
+      optimization to find the best model and hyperparameter configuration.
+  - name: tasks
+    description: |
+      Operations with tasks. Tasks are spawned from jobs. Each task has a specific
+      target model and specific hyperparameter configuration to train and evaluate.
+paths:
+  /users:
+    get:
+      parameters:
+        - name: id
+          in: query
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+          description: |
+            Comma separated list of user identifiers. If we want
+            to fetch specific users by their identifiers.
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, archived]
+          description: Filter users by their status.
+        - $ref: '#/components/parameters/cursorParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/orderByParam'
+        - $ref: '#/components/parameters/orderParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  metadata:
+                    $ref: '#/components/schemas/CollectionMetadata'
+                  links:
+                    type: object
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '403':
+          $ref: '#/components/responses/403UnauthorizedAccess'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - users
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: list users
+      description: Returns all users that satisfy a given search criteria.
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: Resource created.
+          headers:
+            Location:
+              description: Location of the created resource.
+              schema:
+                type: string
+                format: uri
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '403':
+          $ref: '#/components/responses/403UnauthorizedAccess'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - users
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: create user
+      description: Creates a new user.
+  /users/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/User'
+                  links:
+                    type: object
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - users
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: get specific user
+      description: Returns a specific user given the user identifier.
+    patch:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '403':
+          $ref: '#/components/responses/403UnauthorizedAccess'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - users
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: update user
+      description: Updates the information about a user.
+  /users/login:
+    get:
+      parameters:
+        - name: id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: User identifier.
+        - name: password
+          in: header
+          required: true
+          schema:
+            type: string
+          description: SHA1 hash of the user's password.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/401BadLogin'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - users
+      summary: login as specific user
+      description: Logs a user in and if successful returns an API token.
+  /users/logout:
+    get:
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - users
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: log the user out
+      description: Logs out the user with the given API key.
+  /processes:
+    get:
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, archived]
+          description: Filter processes by their status.
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [controller, worker, scheduler]
+          description: Filter processes by their type.
+        - $ref: '#/components/parameters/cursorParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/orderByParam'
+        - $ref: '#/components/parameters/orderParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Process'
+                  metadata:
+                    type: object
+                    properties:
+                      total-collection-size:
+                        type: integer
+                      total-result-size:
+                        type: integer
+                      returned-result-size:
+                        type: integer
+                  links:
+                    type: object
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '403':
+          $ref: '#/components/responses/403UnauthorizedAccess'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - processes
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: list processes
+      description: Returns all processes that satisfy a given search criteria.
+  /processes/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Process'
+                  links:
+                    type: object
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - processes
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: get specific process
+      description: Returns a specific process given the process identifier.
+  /processes/{id}/log:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: string
+                  links:
+                    type: object
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - processes
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: get log of specific process
+      description: Returns the log of the specific process.
+  /datasets:
+    get:
+      parameters:
+        - name: id
+          in: query
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+          description: |
+            Comma separated list of dataset identifiers. If we want
+            to fetch specific datasets by their identifiers. Dataset identifiers are
+            specified as `user-id/dataset-id`. In the query string we need to
+            replace `/` with `%2f`.
+        - name: user
+          in: query
+          schema:
+            type: string
+          description: Filter datasets by the user who owns them.
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [created, transferred, validated, archived]
+          description: Filter datasets by their status.
+        - name: source
+          in: query
+          schema:
+            type: string
+            enum: [local, remote, upload]
+          description: Filter datasets by the source from which they were obtained.
+        - name: schema-in
+          in: query
+          schema:
+            type: string
+          description: |
+            Enables to filter datasets by the input schema. The content must be a
+            JSON object serialized as a string and encoded with the URL percent
+            encoding (see JavaScript function encodeURIComponent). It is advised to 
+            remove all whitespaces from the serialized JSON representation before
+            performing URL encoding to reduce the query size.
+        - name: schema-out
+          in: query
+          schema:
+            type: string
+          description: |
+            Enables to filter datasets by the output schema. The content must be a
+            JSON object serialized as a string and encoded with the URL percent
+            encoding (see JavaScript function encodeURIComponent). It is advised to 
+            remove all whitespaces from the serialized JSON representation before
+            performing URL encoding to reduce the query size.
+        - $ref: '#/components/parameters/cursorParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/orderByParam'
+        - $ref: '#/components/parameters/orderParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Dataset'
+                  metadata:
+                    $ref: '#/components/schemas/CollectionMetadata'
+                  links:
+                    type: object
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '403':
+          $ref: '#/components/responses/403UnauthorizedAccess'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - datasets
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: list datasets
+      description: Returns all datasets that satisfy a given search criteria.
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Dataset'
+      responses:
+        '201':
+          description: Resource created.
+          headers:
+            Location:
+              description: Location of the created resource.
+              schema:
+                type: string
+                format: uri
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '403':
+          $ref: '#/components/responses/403UnauthorizedAccess'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - datasets
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: create dataset
+      description: Creates a new dataset.
+  /datasets/{user-id}/{dataset-id}:
+    get:
+      parameters:
+        - name: user-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the user.
+        - name: dataset-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the dataset.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Dataset'
+                  links:
+                    type: object
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - datasets
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: get specific dataset
+      description: Returns a specific dataset given the dataset identifier.
+    patch:
+      parameters:
+        - name: user-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the user.
+        - name: dataset-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the dataset.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Dataset'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '403':
+          $ref: '#/components/responses/403UnauthorizedAccess'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - datasets
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: update dataset
+      description: Updates the information about a dataset.
+  /datasets/{user-id}/{dataset-id}/upload:
+    head:
+      parameters:
+        - name: user-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the user.
+        - name: dataset-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the dataset.
+        - name: Tus-Resumable
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          headers:
+            Upload-Offset:
+              schema:
+                type: integer
+              description: Indicates a byte offset within a resource.
+            Tus-Resumable:
+              schema:
+                type: string
+              description: Version of the TUS resumeable upload protocol.
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - datasets
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: get headers of uploadable resource
+      description: Gets status information about the ongoing upload.
+    patch:
+      parameters:
+        - name: user-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the user.
+        - name: dataset-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the dataset.
+        - name: Tus-Resumable
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Version of the TUS resumeable upload protocol.
+        - name: Upload-Offset
+          in: header
+          required: true
+          schema:
+            type: integer
+          description: Byte offset within a resource.
+        - name: Content-Length
+          in: header
+          required: true
+          schema:
+            type: integer
+          description: The length of the request body in octets (8-bit bytes).
+      requestBody:
+        content:
+          application/offset+octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '204':
+          description: Successful upload.
+          headers:
+            Upload-Offset:
+              schema:
+                type: integer
+              description: Indicates a byte offset within a resource.
+            Tus-Resumable:
+              schema:
+                type: string
+              description: Version of the TUS resumeable upload protocol.
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '403':
+          $ref: '#/components/responses/403UnauthorizedAccess'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '409':
+          description: Conflict. Provided Upload-Offset doesn't match.
+        '412':
+          description: Precondition Failed.
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - datasets
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: upload dataset
+      description: |
+        Uploads a portion of a dataset based on the TUS resumeable upload protocol.
+  /datasets/{user-id}/{dataset-id}/download:
+    head:
+      parameters:
+        - name: user-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the user.
+        - name: dataset-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the dataset.
+      responses:
+        '200':
+          description: OK
+          headers:
+            Accept-Ranges:
+              schema:
+                type: string
+                example: bytes
+              description: Indicate the type of range request that is available.
+            Content-Type:
+              schema:
+                type: string
+                example: application/octet-stream
+              description: Content data type.
+            Content-Length:
+              schema:
+                type: integer
+                example: 20428
+              description: Total size of the downloadable resource.
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - datasets
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: get headers of downloadable resource
+      description: |
+        Returns the headers of the downloadable file to determine its size and ranges.
+    get:
+      parameters:
+        - name: user-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the user.
+        - name: dataset-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the dataset.
+        - name: Range
+          in: header
+          schema:
+            type: string
+            example: bytes=0-2499
+          description: |
+            If specified, the GET request will be a range request and will return
+            the specified portion of the file. The response for a successfull range
+            request is 206 instead of 200.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '206':
+          $ref: '#/components/responses/206PartialContent'
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - datasets
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: download dataset
+      description: |
+        Downloads the dataset.
+  /modules:
+    get:
+      parameters:
+        - name: id
+          in: query
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+          description: |
+            Comma separated list of module identifiers. If we want
+            to fetch specific modules by their identifiers. Module identifiers are
+            specified as `user-id/module-id`. In the query string we need to
+            replace `/` with `%2f`.
+        - name: user
+          in: query
+          schema:
+            type: string
+          description: Filter modules by the user who owns them.
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [created, active, archived]
+          description: Filter modules by their status.
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [model, objective, optimizer]
+          description: Filter modules by their type.
+        - name: source
+          in: query
+          schema:
+            type: string
+            enum: [hub, local, remote, upload]
+          description: Filter modules by the source from which they were obtained.
+        - name: schema-in
+          in: query
+          schema:
+            type: string
+          description: |
+            Enables to filter datasets by the input schema. The content must be a
+            JSON object serialized as a string and encoded with the URL percent
+            encoding (see JavaScript function encodeURIComponent). It is advised to 
+            remove all whitespaces from the serialized JSON representation before
+            performing URL encoding to reduce the query size.
+        - name: schema-out
+          in: query
+          schema:
+            type: string
+          description: |
+            Enables to filter datasets by the output schema. The content must be a
+            JSON object serialized as a string and encoded with the URL percent
+            encoding (see JavaScript function encodeURIComponent). It is advised to 
+            remove all whitespaces from the serialized JSON representation before
+            performing URL encoding to reduce the query size.
+        - $ref: '#/components/parameters/cursorParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/orderByParam'
+        - $ref: '#/components/parameters/orderParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Module'
+                  metadata:
+                    $ref: '#/components/schemas/CollectionMetadata'
+                  links:
+                    type: object
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '403':
+          $ref: '#/components/responses/403UnauthorizedAccess'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - modules
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: list modules
+      description: Returns all modules that satisfy a given search criteria.
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Module'
+      responses:
+        '201':
+          description: Resource created.
+          headers:
+            Location:
+              description: Location of the created resource.
+              schema:
+                type: string
+                format: uri
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '403':
+          $ref: '#/components/responses/403UnauthorizedAccess'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - modules
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: create module
+      description: Creates a new module.
+  /modules/{user-id}/{module-id}:
+    get:
+      parameters:
+        - name: user-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the user.
+        - name: module-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the module.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Module'
+                  links:
+                    type: object
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - modules
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: get specific module
+      description: Returns a specific module given the module identifier.
+    patch:
+      parameters:
+        - name: user-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the user.
+        - name: module-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the module.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Module'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '403':
+          $ref: '#/components/responses/403UnauthorizedAccess'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - modules
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: update module
+      description: Updates the information about a module.
+  /modules/{user-id}/{module-id}/upload:
+    head:
+      parameters:
+        - name: user-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the user.
+        - name: module-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the module.
+        - name: Tus-Resumable
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          headers:
+            Upload-Offset:
+              schema:
+                type: integer
+              description: Indicates a byte offset within a resource.
+            Tus-Resumable:
+              schema:
+                type: string
+              description: Version of the TUS resumeable upload protocol.
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - modules
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: get headers of uploadable resource
+      description: Gets status information about the ongoing upload.
+    patch:
+      parameters:
+        - name: user-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the user.
+        - name: module-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the module.
+        - name: Tus-Resumable
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Version of the TUS resumeable upload protocol.
+        - name: Upload-Offset
+          in: header
+          required: true
+          schema:
+            type: integer
+          description: Byte offset within a resource.
+        - name: Content-Length
+          in: header
+          required: true
+          schema:
+            type: integer
+          description: The length of the request body in octets (8-bit bytes).
+      requestBody:
+        content:
+          application/offset+octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '204':
+          description: Successful upload.
+          headers:
+            Upload-Offset:
+              schema:
+                type: integer
+              description: Indicates a byte offset within a resource.
+            Tus-Resumable:
+              schema:
+                type: string
+              description: Version of the TUS resumeable upload protocol.
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '403':
+          $ref: '#/components/responses/403UnauthorizedAccess'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '409':
+          description: Conflict. Provided Upload-Offset doesn't match.
+        '412':
+          description: Precondition Failed.
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - modules
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: upload dataset
+      description: |
+        Uploads a portion of a module based on the TUS resumeable upload protocol.
+  /modules/{user-id}/{module-id}/download:
+    head:
+      parameters:
+        - name: user-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the user.
+        - name: module-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the dataset.
+      responses:
+        '200':
+          description: OK
+          headers:
+            Accept-Ranges:
+              schema:
+                type: string
+                example: bytes
+              description: Indicate the type of range request that is available.
+            Content-Type:
+              schema:
+                type: string
+                example: application/octet-stream
+              description: Content data type.
+            Content-Length:
+              schema:
+                type: integer
+                example: 20428
+              description: Total size of the downloadable resource.
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - modules
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: get headers of downloadable resource
+      description: |
+        Returns the headers of the downloadable file to determine its size and ranges.
+    get:
+      parameters:
+        - name: user-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the user.
+        - name: module-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the module.
+        - name: Range
+          in: header
+          schema:
+            type: string
+            example: bytes=0-2499
+          description: |
+            If specified, the GET request will be a range request and will return
+            the specified portion of the file. The response for a successfull range
+            request is 206 instead of 200.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '206':
+          $ref: '#/components/responses/206PartialContent'
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - modules
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: download module
+      description: |
+        Downloads the module.
+  /jobs:
+    get:
+      parameters:
+        - name: id
+          in: query
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+          description: |
+            Comma separated list of job identifiers. If we want
+            to fetch specific jobs by their identifiers.
+        - name: user
+          in: query
+          schema:
+            type: string
+          description: Filter jobs by the user who owns them.
+        - name: dataset
+          in: query
+          schema:
+            type: string
+          description: |
+            Filter jobs by their dataset. Dataset identifiers are specified as
+            `user-id/dataset-id`. In the query string we need to replace `/` with `%2f`.
+        - name: model
+          in: query
+          schema:
+            type: string
+          description: |
+            Filter jobs by model. A job is returned if the specified
+            model appears in their list of models. Module identifiers are specified as
+            `user-id/module-id`. In the query string we need to replace `/` with `%2f`.
+        - name: objective
+          in: query
+          schema:
+            type: string
+          description: |
+            Filter jobs by their model. Module identifiers are specified as
+            `user-id/module-id`. In the query string we need to replace `/` with `%2f`.
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [scheduled, running, paused, completed, terminating, terminated]
+          description: Filter jobs by their status.
+        - name: schema
+          in: query
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  input:
+                    type: object
+                    nullable: true
+                  output:
+                    type: object
+                    nullable: true
+                description: Schema definition with input and output data types.
+          description: |
+            Enables to filter jobs by the schema. The content must be a
+            JSON object serialized as a string and encoded with the URL percent
+            encoding (see JavaScript function encodeURIComponent). It is advised to 
+            remove all whitespaces from the serialized JSON representation before
+            performing URL encoding to reduce the query size.
+        - $ref: '#/components/parameters/cursorParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/orderByParam'
+        - $ref: '#/components/parameters/orderParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Job'
+                  metadata:
+                    $ref: '#/components/schemas/CollectionMetadata'
+                  links:
+                    type: object
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '403':
+          $ref: '#/components/responses/403UnauthorizedAccess'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - jobs
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: list jobs
+      description: Returns all jobs that satisfy a given search criteria.
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Job'
+      responses:
+        '201':
+          description: Resource created.
+          headers:
+            Location:
+              description: Location of the created resource.
+              schema:
+                type: string
+                format: uri
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '403':
+          $ref: '#/components/responses/403UnauthorizedAccess'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - jobs
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: create job
+      description: Creates a new job.
+  /jobs/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Job'
+                  links:
+                    type: object
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - jobs
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: get specific job
+      description: Returns a specific job given the job identifier.
+    patch:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Job'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '403':
+          $ref: '#/components/responses/403UnauthorizedAccess'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '409':
+          $ref: '#/components/responses/409Conflict'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - jobs
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: update job
+      description: Updates the information about a job.
+  /tasks:
+    get:
+      parameters:
+        - name: id
+          in: query
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+          description: |
+            Comma separated list of task identifiers. If we want
+            to fetch specific tasks by their identifiers. Task identifiers are
+            specified as `job-id/task-id`. In the query string we need to
+            replace `/` with `%2f`.
+        - name: job
+          in: query
+          schema:
+            type: string
+          description: Filter tasks by the job that they belong to.
+        - name: user
+          in: query
+          schema:
+            type: string
+          description: Filter tasks by the user who owns them.
+        - name: process
+          in: query
+          schema:
+            type: string
+          description: Filter tasks by the process on which they are running.
+        - name: dataset
+          in: query
+          schema:
+            type: string
+          description: |
+            Filter tasks by their dataset. Dataset identifiers are specified as
+            `user-id/dataset-id`. In the query string we need to replace `/` with `%2f`.
+        - name: model
+          in: query
+          schema:
+            type: string
+          description: |
+            Filter tasks by their model. Module identifiers are specified as
+            `user-id/dataset-id`. In the query string we need to replace `/` with `%2f`.
+        - name: objective
+          in: query
+          schema:
+            type: string
+          description: |
+            Filter tasks by their model. Module identifiers are specified as
+            `user-id/module-id`. In the query string we need to replace `/` with `%2f`.
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [scheduled, running, paused, completed, terminated]
+          description: Filter tasks by their status.
+        - name: schema
+          in: query
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  input:
+                    type: object
+                    nullable: true
+                  output:
+                    type: object
+                    nullable: true
+                description: Schema definition with input and output data types.
+          description: |
+            Enables to filter tasks by the schema. The content must be a
+            JSON object serialized as a string and encoded with the URL percent
+            encoding (see JavaScript function encodeURIComponent). It is advised to 
+            remove all whitespaces from the serialized JSON representation before
+            performing URL encoding to reduce the query size.
+        - $ref: '#/components/parameters/cursorParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/orderByParam'
+        - $ref: '#/components/parameters/orderParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+                  metadata:
+                    $ref: '#/components/schemas/CollectionMetadata'
+                  links:
+                    type: object
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '403':
+          $ref: '#/components/responses/403UnauthorizedAccess'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - tasks
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: list tasks
+      description: Returns all tasks that satisfy a given search criteria.
+  /tasks/{job-id}/{task-id}:
+    get:
+      parameters:
+        - name: job-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the job.
+        - name: task-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the task.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Task'
+                  links:
+                    type: object
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - tasks
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: get specific task
+      description: Returns a specific task given the task identifier.
+  /tasks/{job-id}/{task-id}/log:
+    get:
+      parameters:
+        - name: job-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the job.
+        - name: task-id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: string
+                  links:
+                    type: object
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - tasks
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: get log of specific task
+      description: Returns the log of the specific task.
+  /tasks/{job-id}/{task-id}/image/download:
+    head:
+      parameters:
+        - name: job-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the job.
+        - name: task-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the task.
+      responses:
+        '200':
+          description: OK
+          headers:
+            Accept-Ranges:
+              schema:
+                type: string
+                example: bytes
+              description: Indicate the type of range request that is available.
+            Content-Type:
+              schema:
+                type: string
+                example: application/octet-stream
+              description: Content data type.
+            Content-Length:
+              schema:
+                type: integer
+                example: 20428
+              description: Total size of the downloadable resource.
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - tasks
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: get headers of downloadable resource
+      description: |
+        Returns the headers of the downloadable file to determine its size and ranges.
+    get:
+      parameters:
+        - name: job-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the job.
+        - name: task-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the task.
+        - name: Range
+          in: header
+          schema:
+            type: string
+            example: bytes=0-2499
+          description: |
+            If specified, the GET request will be a range request and will return
+            the specified portion of the file. The response for a successfull range
+            request is 206 instead of 200.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '206':
+          $ref: '#/components/responses/206PartialContent'
+        '400':
+          $ref: '#/components/responses/400BadInput'
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - tasks
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: download Docker image trained by this task
+      description: |
+        Downloads the Docker image trained by this task.
+components:
+  securitySchemes:
+    ApiKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+    ApiKeyQuery:
+      type: apiKey
+      in: query
+      name: api-key
+  parameters:
+    cursorParam:
+      name: cursor
+      in: query
+      required: false
+      schema:
+        type: string
+        default: ""
+      description: |
+        String representing the cursor which is used to retrieve a specific page
+        in the results. Empty string defaults to first page.
+    limitParam:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        default: 20
+      description: Maximum number of items to return.
+    orderByParam:
+      name: order-by
+      in: query
+      required: false
+      schema:
+        type: string
+        default: ''
+      description: Field to use for sorting. Empty string means no ordering.
+    orderParam:
+      name: order
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: asc
+      description: Ordering to apply to sorted results (if applicable).
+    fieldsParam:
+      name: fields
+      in: query
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        nullable: true
+        items:
+          type: string
+        default: null
+      description: |
+        Fields to be selected from the response object. Used to minimize data transfer.
+  responses:
+    206PartialContent:
+      description: Partial Content
+      headers:
+        Accept-Ranges:
+          schema:
+            type: string
+            example: bytes
+          description: Indicate the type of range request that is available.
+        Content-Type:
+          schema:
+            type: string
+            example: application/octet-stream
+          description: Content data type.
+        Content-Length:
+          schema:
+            type: integer
+            example: 20428
+          description: Total size of the downloadable resource.
+        Content-Range:
+          schema:
+            type: string
+            example: bytes 0-2499/20428
+          description: Indicates which part of the resource is returned.
+      content:
+        application/octet-stream:
+          schema:
+            type: string
+            format: binary
+    400BadInput:
+      description: Bad input parameter.
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: The operation resulted with an error.
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+    401BadLogin:
+      description: The provided login credentials are invalid.
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: The operation resulted with an error.
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+    401BadAccessToken:
+      description: Access token is missing or is invalid.
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: The operation resulted with an error.
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+    403UnauthorizedAccess:
+      description: Unauthorized access. User has read rights but not write rights.
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: The operation resulted with an error.
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+    404NotFound:
+      description: The specified resource was not found or the user doesn't have read rights.
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: The operation resulted with an error.
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+    409Conflict:
+      description: The provided ID is already taken.
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: The operation resulted with an error.
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+    500ServerError:
+      description: Internal server error.
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: The operation resulted with an error.
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: "^[a-z0-9_]+$"
+          description: Unique human-readable identifier of the user.
+          example: alex
+        name:
+          type: string
+          description: Full name of the user.
+          example: Alex Newton
+        status:
+          type: string
+          enum: [active, archived]
+          description: Status of the user signifying if the user is archived or not.
+          example: active
+      required:
+        - id
+    Process:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the process object.
+          example: 6f483e258e62
+        process-id:
+          type: integer
+          format: int64
+          description: Process identifier (PID) on the host machine.
+          example: 231
+        host-id:
+          type: string
+          format: uuid
+          description: Unique identifier of the host machine. Taken from "/etc/machine-id".
+          example: 6b110be1615546d2b785072f6c30f139
+        host-address:
+          type: string
+          format: ipv4
+          description: Hostname IP address.
+          example: 123.456.78.90
+        start-time:
+          type: string
+          format: date-time
+          description: Time when the process was sterted.
+          example: "2017-07-21T17:32:28Z"
+        type:
+          type: string
+          enum: [controller, worker, scheduler]
+          description: Type of the process.
+          example: controller
+        resource:
+          type: string
+          enum: [cpu, gpu]
+          description: Type of resource available to the process. Useful for workers and schedulers.
+          example: cpu
+        status:
+          type: string
+          enum: [idle, working, terminated]
+          description: Status of the process.
+          example: working
+      required:
+        - id
+    Dataset:
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: "^[a-z0-9]+$"
+          description: Identifier of the dataset. Must be unique for a given user.
+          example: cifar10
+        user:
+          type: string
+          pattern: "^[a-z0-9_]+$"
+          description: Identifier of the user to which the dataset belongs.
+          example: alex
+        name:
+          type: string
+          description: Longer (descriptive) name of the dataset.
+          example: CIFAR-10
+        description:
+          type: string
+          description: Description of the dataset written in Markdown.
+          example: |
+            The CIFAR-10 dataset ([Canadian Institute For Advanced Research](http://www.cifar.ca/))
+            is a collection of images that are commonly used to train machine learning
+            and computer vision algorithms.
+        schema-in:
+          type: string
+          description: JSON string representing the input schema definition.
+        schema-out:
+          type: string
+          description: JSON string representing the output schema definition.
+        source:
+          type: string
+          enum: [upload, local, download]
+          description: |
+            Source of the module image. The dataset can be:
+            (1) `upload` - Uploaded through an upload link.
+            (2) `local` - Accessible through a mounted file system.
+            (3) `download` - Downloaded from a remote location.
+        source-address:
+          type: string
+          description: |
+            URI of the dataset source. If `null` then the dataset is uploaded through an
+            upload link. Otherwise it must begin with either "file://" (designating
+            an absolute path on a locally mounted file system) or "http://" or "ftp://"
+            (designating an address and a transport protocol). The address must be
+            accessible without authentication.
+          example: https://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz
+        creation-time:
+          type: string
+          format: date-time
+          description: Time when the dataset resource was created. Read only.
+          example: "2017-07-21T17:32:28Z"
+        status:
+          type: string
+          enum: [created, transferred, validated, archived]
+          description: >
+            Status of the dataset. Read only. Can be:
+            (1) `created` - Dataset registered with schema description.
+            (2) `transferred` - Dataset transfer completed. Schema may not match the dataset.
+            (3) `validated` - After we check that the schema matches the content.
+            (4) `archived` - We cannot use it in future jobs.
+          example: validated
+      required:
+        - id
+        - user
+    Module:
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: "^[a-z0-9]+$"
+          description: Identifier of the module. Must be unique for a given user.
+          example: resnet
+        user:
+          type: string
+          pattern: "^[a-z0-9_]+$"
+          description: Identifier of the user to which the module belongs.
+          example: alex
+        type:
+          type: string
+          enum: [model, objective, optimizer]
+          description: Type of the module.
+          example: model
+        name:
+          type: string
+          description: Longer (descriptive) name of the module.
+          example: ResNet
+        description:
+          type: string
+          description: Description of the dataset written in Markdown.
+          example: |
+            The Deep Residual Network is a neural network acthitecture that enables
+            training very deep networks of hudreds or even thousands of layers. It achieves
+            this by using so called residual blocks. Each block has several stacked layers
+            and an ADD unit between the output of the top layer of the stack and the input
+            of the bottom layer. The original paper is [He et al. - Deep Residual Learning
+            for Image Recognition](https://arxiv.org/abs/1512.03385).
+        schema-in:
+          type: string
+          description: JSON string representing the input schema definition.
+        schema-out:
+          type: string
+          description: JSON string representing the output schema definition.
+        source:
+          type: string
+          enum: [upload, local, download, registry]
+          description: |
+            Source of the module image. The image can be:
+            (1) `upload` - Uploaded through an upload link.
+            (2) `local` - Accessible through a mounted file system.
+            (3) `download` - Downloaded from a remote location.
+            (4) `registry` - Pulled from a Docker registry (such as Docker hub).
+        source-address:
+          type: string
+          description: |
+            URI of the module source. If the dataset is uploaded through an upload
+            link then it is `null`. Otherwise it begins with either "file://" (designating
+            an absolute path on a locally mounted file system), "http://" or "ftp://"
+            (designating an address and a transport protocol) or "hub://" (designating
+            the Docker hub registry). The address must be accessible without authentication.
+          example: hub://easeml/resnet
+        creation-time:
+          type: string
+          format: date-time
+          description: Time when the module resource was created. Read only.
+          example: "2017-07-21T17:32:28Z"
+        status:
+          type: string
+          enum: [created, active, archived]
+          description: >
+            Status of the module. Can be:
+            (1) `created` - Module resource created but image not yet transferred.
+            (2) `active` - Module image transfer completed. Ready for usage.
+            (3) `archived` - We cannot use it in future jobs. Read only.
+          example: active
+      required:
+        - id
+        - user
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identifier of a job.
+          example: 054b89056d0c
+        user:
+          type: string
+          pattern: "^[a-z0-9_]+$"
+          description: Identifier of the user that owns the job.
+          example: alex
+        dataset:
+          type: string
+          pattern: "^[a-z0-9_]+\/[a-z0-9_]+"
+          description: Identifier of the dataset on which the job is running.
+          example: alex/cifar10
+        models:
+          type: array
+          items:
+            type: string
+            pattern: "^[a-z0-9_]+\/[a-z0-9_]+"
+            example: alex/resnet
+          description: List of identifiers of all applicable models.
+        accept-new-models:
+          type: boolean
+          description: |
+            If set to `true` (default) then whenever a new model is added, if it is
+            applicable to the dataset it will be automatically added to
+            the `models` list.
+        objective:
+          type: string
+          pattern: "^[a-z0-9_]+\/[a-z0-9_]+"
+          example: master/categorical-crossentopy
+          description: |
+            Identifier of the objective used to evaluate models in this job.
+        alt-objectives:
+          type: array
+          items:
+            type: string
+            pattern: "^[a-z0-9_]+\/[a-z0-9_]+"
+            example: master/categorical-crossentopy
+          description: |
+            Additional objectives to evaluate on the predictions. These don't impact
+            the optimization. Can be empty.
+        creation-time:
+          type: string
+          format: date-time
+          description: Time when the job resource was created. Read only.
+          example: "2017-07-21T17:32:28Z"
+        running-time:
+          type: object
+          properties:
+            start:
+              type: string
+              nullable: true
+              format: date-time
+              example: "2017-07-21T17:32:28Z"
+            end:
+              type: string
+              nullable: true
+              format: date-time
+              example: "2017-07-21T17:32:28Z"
+          description: |
+            Moment when the job entered and finished the `running` state. Read only.
+        running-duration:
+          type: integer
+          description: |
+            Time that the job spent in the `running` state (in milliseconds).
+            This is a computed field. The time spent in the `paused` state is deduced.
+            This can cause errors as the tasks can enter a `paused` state with a delay
+            because their current process cannot be interrupted. Therefore,
+            this field's value is not exact.
+          example: 212343
+        status:
+          type: string
+          enum: [scheduled, running, paused, completed, terminating, terminated]
+          description: Status of the job. Read only.
+      required:
+        - id
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifier of a task.
+          example: 1
+        job:
+          type: string
+          format: uuid
+          description: Identifier of a job that this task was spawned from.
+          example: 054b89056d0c
+        process:
+          type: string
+          format: uuid
+          description: Identifier of the process that is handling the task.
+          example: 6f483e258e62
+        model:
+          type: string
+          pattern: "^[a-z0-9_]+\/[a-z0-9_]+"
+          example: master/resnet
+          description: |
+            Identifier of the model used that is targeted by this task.
+        objective:
+          type: string
+          pattern: "^[a-z0-9_]+\/[a-z0-9_]+"
+          example: master/categorical-crossentopy
+          description: |
+            Identifier of the objective used to evaluate the model in this task.
+        dataset:
+          type: string
+          pattern: "^[a-z0-9_]+\/[a-z0-9_]+"
+          description: Identifier of the dataset on which the task is running.
+          example: alex/cifar10
+        user:
+          type: string
+          pattern: "^[a-z0-9_]+$"
+          description: Identifier of the user that owns the job that this task was spawned from.
+          example: alex
+        config:
+          type: object
+          description: JSON configuration that is used to initialize the model.
+        quality:
+          type: number
+          format: float
+          nullable: true
+          description: |
+            Value of the quality metric of the trained model obtained though the objective
+            function. Available after the `evaluating` stage is finished. Otherwise it
+            is `null`.
+        quality-alt:
+          type: array
+          items:
+            type: number
+            format: float
+          description: Quality metric of additional objective (if defined in the job).
+        status:
+          type: string
+          enum: [scheduled, running, paused, completed, terminated]
+          description: Status of the task.
+        stage:
+          type: string
+          enum: [training, predicting, evaluating]
+          description: Stage of the task. Invalid if the status is not `running` or `paused`.
+        stage-times:
+          type: object
+          properties:
+            training:
+              type: object
+              properties:
+                start:
+                  type: string
+                  nullable: true
+                  format: date-time
+                  example: "2017-07-21T17:32:28Z"
+                end:
+                  type: string
+                  nullable: true
+                  format: date-time
+                  example: "2017-07-21T17:32:28Z"
+            predicting:
+              type: object
+              properties:
+                start:
+                  type: string
+                  nullable: true
+                  format: date-time
+                  example: "2017-07-21T17:32:28Z"
+                end:
+                  type: string
+                  nullable: true
+                  format: date-time
+                  example: "2017-07-21T17:32:28Z"
+            evaluating:
+              type: object
+              properties:
+                start:
+                  type: string
+                  nullable: true
+                  format: date-time
+                  example: "2017-07-21T17:32:28Z"
+                end:
+                  type: string
+                  nullable: true
+                  format: date-time
+                  example: "2017-07-21T17:32:28Z"
+          description: Start and end times of all the stages.
+        stage-durations:
+          type: object
+          properties:
+            training:
+              type: integer
+              nullable: true
+              example: 212343
+            predicting:
+              type: integer
+              nullable: true
+              example: 46848
+            evaluating:
+              type: integer
+              nullable: true
+              example: 45465
+          description: |
+            Durations of all the stages (in milliseconds). This is a computed field.
+        running-duration:
+          type: integer
+          description: |
+            Time that the job spent in the `running` state (in milliseconds).
+            This is a computed field.
+        creation-time:
+          type: string
+          format: date-time
+          description: Time when the task was created (scheduled).
+          example: "2017-07-21T17:32:28Z"
+      required:
+        - id
+        - job
+    ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          example: The operation resulted with an error.
+    CollectionMetadata:
+      type: object
+      properties:
+        total-collection-size:
+          type: integer
+          description: Number of items in the collection that is being accessed.
+        total-result-size:
+          type: integer
+          description: Number of items in the total query result.
+        returned-result-size:
+          type: integer
+          description: Number of items in the returned paginated result.

@@ -1,0 +1,17 @@
+/* =============
+   Search result
+============= */
+
+.search-result-box {
+  .tab-content {
+    padding: 30px 30px 10px 30px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -moz-box-shadow: none;
+  }
+  .search-item {
+    padding-bottom: 20px;
+    border-bottom: 1px solid $light;
+    margin-bottom: 20px;
+  }
+}

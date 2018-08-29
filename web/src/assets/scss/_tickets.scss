@@ -1,0 +1,19 @@
+/* ===========
+Tickets
+============== */
+
+.tickets-list {
+  a {
+    color: $muted;
+    white-space: nowrap;
+  }
+
+  img {
+    height: 32px;
+    width: 32px;
+  }
+
+  td {
+    vertical-align: middle;
+  }
+}

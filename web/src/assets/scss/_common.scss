@@ -1,0 +1,121 @@
+/* =============
+   Common
+============= */
+
+body {
+  margin: 0;
+  padding-bottom: 60px;
+  overflow-x: hidden;
+  //color: $light7;
+  font-size: $font-size-base;
+  background-color: $bg-body;
+  font-family: $font-primary;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6{
+  font-family: $font-secondary;
+  margin: 10px 0;
+}
+
+
+h1 {
+  line-height: 43px;
+  font-size: 36px;
+}
+
+h2 {
+  line-height: 35px;
+  font-size: 30px;
+}
+
+h3 {
+  line-height: 30px;
+  font-size: 24px;
+}
+
+h4 {
+  line-height: 22px;
+  font-size: 18px;
+}
+
+h5 {
+  font-size: 15px;
+}
+
+h6 {
+  font-size: 12px;
+}
+
+p {
+  line-height: 1.6;
+}
+
+* {
+  outline: none !important;
+}
+
+a {
+  &:hover {
+    outline: 0;
+    text-decoration: none;
+  }
+  &:active {
+    outline: 0;
+    text-decoration: none;
+  }
+  &:focus {
+    outline: 0;
+    text-decoration: none;
+  }
+}
+
+.container {
+  width: auto;
+}
+
+.container-alt {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+
+
+#wrapper {
+  height: $height;
+  overflow: hidden;
+  width: $width;
+}
+
+
+/* Page titles */
+.page-title {
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+
+.header-title {
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 0;
+}
+
+.page-title-box {
+  font-size: 13px;
+
+  .breadcrumb {
+    margin-bottom: 0;
+    padding: 0;
+    background-color: transparent;
+  }
+}

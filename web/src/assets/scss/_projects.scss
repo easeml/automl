@@ -1,0 +1,47 @@
+/* =============
+   Projects
+============= */
+
+.project-sort-item {
+  .form-group {
+    margin-right: 30px;
+
+    &:last-of-type {
+      margin-right: 0;
+    }
+  }
+}
+.project-box {
+  position: relative;
+  .badge {
+    position: absolute;
+    right: 20px;
+  }
+  h4{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  ul {
+    li{
+      padding-right: 30px;
+    }
+  }
+
+  .project-members {
+    a{
+      margin: 0 0 10px -12px;
+      display: inline-block;
+      border: 3px solid $white;
+      border-radius: 50%;
+      box-shadow: $shadow;
+
+      &:first-of-type {
+        margin-left: 0;
+      }
+    }
+  }
+}

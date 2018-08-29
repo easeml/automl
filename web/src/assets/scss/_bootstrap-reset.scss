@@ -1,0 +1,348 @@
+/* =============
+   Bootstrap-custom
+============= */
+
+.breadcrumb {
+  background-color: transparent;
+  margin-bottom: 15px;
+  padding-top: 10px;
+  padding-left: 0;
+
+  a{
+    color: $muted;
+  }
+}
+
+.breadcrumb>li+li:before {
+  padding: 0 5px;
+  color: $muted;
+  content: "\f105" !important;
+  font-family: FontAwesome;
+}
+
+
+code {
+  color: $custom;
+}
+
+
+/* Blockquote */
+.blockquote {
+  font-size: 1.1rem;
+}
+
+.media {
+  margin-top: 25px;
+}
+
+/* Dropdown */
+
+.dropdown-menu {
+  padding: 4px 0;
+  font-size: $font-size-base;
+  box-shadow: 0 3px 12px rgba(0,0,0,.05);
+  border-color: $light;
+}
+
+.dropdown-menu-animated {
+  display: block;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 300ms ease;
+  -moz-transition: all 300ms ease;
+  -webkit-transition: all 300ms ease;
+  -o-transition: all 300ms ease;
+  -ms-transition: all 300ms ease;
+  margin-top: 20px!important;
+}
+
+.show>.dropdown-menu {
+  visibility: visible;
+  opacity: 1;
+  margin-top: 0 !important;
+}
+
+.dropdown-item.active, .dropdown-item:active{
+  color: $dark;
+  text-decoration: none;
+  background-color: darken($white,3%);
+}
+
+.dropdown-item {
+  padding: 6px 1.5rem;
+}
+
+.dropdown-lg {
+  width: 320px;
+}
+
+.arrow-none {
+  &:after {
+    border: none;
+    margin: 0;
+    display: none;
+  }
+}
+
+
+
+
+/* Background colors */
+.bg-custom {
+  background-color: $custom !important;
+}
+
+.bg-primary {
+  background-color: $primary !important;
+}
+
+.bg-success {
+  background-color: $success !important;
+}
+
+.bg-info {
+  background-color: $info !important;
+}
+
+.bg-warning {
+  background-color: $warning !important;
+}
+
+.bg-danger {
+  background-color: $danger !important;
+}
+
+.bg-muted {
+  background-color: $light7 !important;
+}
+
+.bg-purple {
+  background-color: $purple !important;
+}
+
+.bg-pink {
+  background-color: $pink !important;
+}
+
+.bg-white {
+  background-color: $white !important;
+}
+
+.bg-dark {
+  background-color: $dark !important;
+}
+.bg-light {
+  background-color: $light !important;
+}
+
+
+
+/* Text colors */
+.text-custom {
+  color: $custom !important;
+}
+
+.text-white {
+  color: $white !important;
+}
+
+.text-danger {
+  color: $danger !important;
+}
+
+.text-muted {
+  color: $muted !important;
+}
+
+.text-primary {
+  color: $primary !important;
+}
+
+.text-warning {
+  color: $warning !important;
+}
+
+.text-success {
+  color: $success !important;
+}
+
+.text-info {
+  color: $info !important;
+}
+
+.text-pink {
+  color: $pink !important;
+}
+
+.text-purple {
+  color: $purple !important;
+}
+
+.text-dark {
+  color: $dark !important;
+}
+
+/* Border colors */
+.border-primary {
+  border-color: $primary !important;
+}
+
+.border-success {
+  border-color: $success !important;
+}
+
+.border-info {
+  border-color: $info !important;
+}
+
+.border-warning {
+  border-color: $warning !important;
+}
+
+.border-danger {
+  border-color: $danger !important;
+}
+
+.border-dark {
+  border-color: $dark !important;
+}
+
+.border-pink {
+  border-color: $pink !important;
+}
+
+.border-purple {
+  border-color: $purple !important;
+}
+
+.border-custom {
+  border-color: $custom !important;
+}
+
+
+
+/* Badge */
+.badge {
+  font-family: $font-secondary;
+  box-shadow: $shadow;
+  padding: .35em .5em;
+  font-weight: 500;
+}
+
+.badge-custom {
+  background: $custom;
+  color: $white;
+}
+
+.badge-primary {
+  background-color: $primary;
+}
+
+.badge-secondary {
+  background-color: $secondary;
+}
+
+.badge-success {
+  background-color: $success;
+}
+
+.badge-info {
+  background-color: $info;
+}
+
+.badge-warning {
+  background-color: $warning;
+  color: $white;
+}
+
+.badge-danger {
+  background-color: $danger;
+}
+
+.badge-purple {
+  background-color: $purple;
+  color: $white;
+}
+
+.badge-pink {
+  background-color: $pink;
+  color: $white;
+}
+
+.badge-dark {
+  background-color: $dark;
+}
+
+
+/* Pagination/ Pager */
+
+.pagination > li:first-child > a,
+.pagination > li:first-child > span {
+  border-bottom-left-radius: 3px;
+  border-top-left-radius: 3px;
+}
+
+.pagination > li:last-child > a,
+.pagination > li:last-child > span {
+  border-bottom-right-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.pagination > li > a,
+.pagination > li > span {
+  color: $dark;
+}
+
+.pagination > li > a:hover,
+.pagination > li > span:hover,
+.pagination > li > a:focus,
+.pagination > li > span:focus {
+  background-color: $light;
+}
+
+.pagination-split li {
+  margin-left: 5px;
+  display: inline-block;
+  float: left;
+}
+
+.pagination-split li:first-child {
+  margin-left: 0;
+}
+
+.pagination-split li a {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus,
+.page-item.active .page-link {
+  background: $custom;
+  border-color: $custom;
+}
+
+.pager li > a, .pager li > span {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  color: $dark;
+}
+
+
+.list-group-item.active, .list-group-item.active:focus,
+.list-group-item.active:hover {
+  background-color: $custom;
+  border-color: $custom;
+}
+.list-group-item.active .list-group-item-text,
+.list-group-item.active:focus .list-group-item-text,
+.list-group-item.active:hover .list-group-item-text {
+  color: fade($white,70%);
+}
+

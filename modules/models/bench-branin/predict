@@ -1,0 +1,77 @@
+#!/usr/bin/python
+
+import argparse
+import json
+import os
+import numpy as np
+import math
+
+import easemlschema.schema as sch
+import easemlschema.dataset as ds
+
+with open("schema-in.json") as f:
+    schemaIn = json.load(f)
+
+# This is wrong. They just happen to be the same schemas here. This is just for show.
+with open("schema-in.json") as f:
+    schemaOut = json.load(f)
+
+schIn = sch.Schema.load(schemaIn)
+schOut = sch.Schema.load(schemaOut)
+
+#schIn = sch.Schema.load(schema["input"])
+#schOut = sch.Schema.load(schema["output"])
+
+def branin(x1, x2):
+    PI = 3.14159265359
+    a = 1
+    b = 5.1/(4*pow(PI,2))
+    c = 5/PI
+    r = 6
+    s = 10
+    t = 1/(8*PI)
+    return a*(x2 - b*x1**2 + c*x1 -r)**2 + s*(1-t)*math.cos(x1) + s
+
+
+if __name__ == "__main__":
+
+    description = "Mean absolute error."
+    parser = argparse.ArgumentParser(description=description)
+
+    parser.add_argument("--data", required=True, help="directory containing input data")
+    parser.add_argument("--memory", required=True, help="directory containing the memory")
+    parser.add_argument("--output", required=True, help="directory where the predictions will be dumped")
+
+    args = parser.parse_args()
+
+    datasetIn = ds.Dataset.load(os.path.join(args.data, "input"))
+
+    # Infer schemas.
+    srcSchemaIn = datasetIn.infer_schema()
+
+    matchSchemaIn = schIn.match(srcSchemaIn, build_matching=True)
+
+    inName = matchSchemaIn.nodes["s1"].src_name
+
+    # Load the memory file.
+    with open(os.path.join(args.memory, "mem.json")) as f:
+        memory = json.load(f)
+
+    x1 = memory["x1"]
+    x2 = memory["x2"]
+    noise = memory["noise"]
+
+    samples = {}
+    for name in datasetIn.children:
+        if isinstance(datasetIn.children[name], ds.Directory):
+            inValue = datasetIn.children[name].children[inName].data[0] * 0.05
+
+            b = branin(x1, x2) + noise + inValue
+
+            outValue = np.array([b])
+            outChildren = {"s1" : ds.Tensor("s1", [1], outValue)}
+            samples[name] = ds.Directory(name, outChildren)
+
+    root = os.path.join(args.output, "output")
+    datasetOut = ds.Dataset(root, samples)
+    datasetOut.dump(root)

@@ -1,0 +1,25 @@
+/* =============
+   Form Validation
+============= */
+
+.parsley-errors-list {
+  margin: 0;
+  padding: 0;
+}
+
+.parsley-errors-list > li {
+  list-style: none;
+  color: $danger;
+  margin-top: 5px;
+  padding-left: 20px;
+  position: relative;
+
+  &:before {
+    content: "\F159";
+    font-family: "Material Design Icons";
+    position: absolute;
+    left: 2px;
+    top: -1px;
+  }
+}
+

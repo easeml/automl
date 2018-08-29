@@ -1,0 +1,53 @@
+
+/* =============
+   Responsive
+============= */
+
+
+@media (max-width: 768px) {
+
+  .dataTables_wrapper {
+    .col-xs-6 {
+      width: 100%;
+      text-align: left;
+    }
+  }
+
+  div#datatable-buttons_info {
+    float: none;
+  }
+  .ms-container {
+    width: 100%;
+  }
+  .m-t-sm-50 {
+    margin-top: 50px !important;
+  }
+}
+
+@media (max-width: 767px) {
+
+  .dropdown-lg {
+    width: 200px !important;
+  }
+
+  .dataTables_length {
+    float: none;
+    margin-bottom: 10px;
+  }
+}
+
+
+@media (max-width: 420px) {
+  .hide-phone {
+    display: none !important;
+  }
+}
+
+
+@media (max-width: 419px) {
+  .hidden-xxs {
+    display: none;
+  }
+
+}
+

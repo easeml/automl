@@ -1,0 +1,71 @@
+/* =================
+   Popover / Tooltips
+==================== */
+/* Popover */
+.popover {
+  font-family: inherit;
+  border-color: $light;
+  box-shadow: $shadow;
+
+  .popover-header {
+    margin-top: 0;
+    font-size: $font-size-base;
+    background-color: $light;
+    padding: 2px 15px;
+    border: none;
+  }
+}
+
+
+/* Tooltips */
+.tooltip {
+  font-family: $font-secondary;
+
+  .tooltip-inner {
+    padding: 4px 10px;
+    border-radius: 2px;
+    background-color: $dark;
+  }
+}
+
+.tooltip.left .tooltip-arrow {
+  border-left-color: $dark;
+}
+
+.tooltip.top .tooltip-arrow {
+  border-top-color: $dark;
+}
+
+.tooltip.bottom .tooltip-arrow {
+  border-bottom-color: $dark;
+}
+
+.tooltip.right .tooltip-arrow {
+  border-right-color: $dark;
+}
+
+/* Tooltpster */
+.tooltipster-sidetip .tooltipster-box {
+  background-color: $custom;
+  border: 2px solid $custom;
+}
+
+.tooltipster-sidetip.tooltipster-top .tooltipster-arrow-border,
+.tooltipster-sidetip.tooltipster-top .tooltipster-arrow-background{
+  border-top-color: $custom;
+}
+
+.tooltipster-sidetip.tooltipster-bottom .tooltipster-arrow-border,
+.tooltipster-sidetip.tooltipster-bottom .tooltipster-arrow-background{
+  border-bottom-color: $custom;
+}
+
+.tooltipster-sidetip.tooltipster-left .tooltipster-arrow-border,
+.tooltipster-sidetip.tooltipster-left .tooltipster-arrow-background{
+  border-left-color: $custom;
+}
+
+.tooltipster-sidetip.tooltipster-right .tooltipster-arrow-border,
+.tooltipster-sidetip.tooltipster-right .tooltipster-arrow-background{
+  border-right-color: $custom;
+}

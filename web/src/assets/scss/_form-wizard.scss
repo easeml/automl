@@ -1,0 +1,104 @@
+/* =============
+   Form Wizard
+============= */
+
+.wizard > .content {
+  background: $white;
+  min-height: 240px;
+  padding: 20px;
+  margin-top: 0;
+}
+
+.wizard > .content > .body {
+  padding: 0;
+  position: relative;
+
+  ul > li {
+    display: block;
+    line-height: 30px;
+  }
+  label.error {
+    color: $danger;
+    margin-left: 0;
+
+  }
+  label {
+    display: inline-block;
+    margin-top: 10px;
+  }
+  input {
+    border-color: darken($light,3%);
+  }
+}
+
+.wizard > .steps {
+  background-color: lighten($light,5%);
+
+  .number {
+    border-radius: 50%;
+    background-color: rgba($white,0.3);
+    display: inline-block;
+    line-height: 30px;
+    margin-right: 10px;
+    width: 30px;
+    text-align: center;
+  }
+  .disabled {
+    a ,a:hover,a:active{
+      background: transparent;
+      color: $dark;
+      cursor: default;
+      border: none;
+    }
+  }
+  .current {
+    a {
+      background: $custom;
+
+      &:hover,&:active {
+        background: $custom;
+        .number {
+          color: $white;
+        }
+      }
+      .number {
+        color: $white;
+      }
+    }
+  }
+  .done {
+    a {
+      background: $light;
+      color: $dark;
+
+      &:hover,&:active {
+        background: $light;
+        color: $dark;
+      }
+    }
+  }
+}
+
+.wizard > .steps a, .wizard > .steps a:hover, .wizard > .steps a:active{
+  border-radius: 2px;
+  margin: 0;
+}
+
+.wizard > .actions {
+  padding: 0 20px;
+  margin: 0 !important;
+
+  a,a:hover,a:active {
+    background: $custom;
+    border-radius: 2px;
+    color: $white;
+  }
+  .disabled {
+    a,a:hover,a:active  {
+      background: darken($white,5%);
+      color: $dark;
+      cursor: default;
+      border: none;
+    }
+  }
+}

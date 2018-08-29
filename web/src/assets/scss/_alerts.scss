@@ -1,0 +1,128 @@
+/* =============
+   Alerts
+============= */
+.alert-custom {
+  color: $custom;
+  background-color: lighten($custom,55%);
+  border-color: lighten($custom,20%);
+}
+.alert-primary {
+  color: $primary;
+  background-color: lighten($primary,38%);
+  border-color: lighten($primary,20%);
+}
+
+.alert-secondary {
+  color: $secondary;
+  background-color: lighten($secondary,35%);
+  border-color: lighten($secondary,20%);
+}
+
+.alert-success {
+  color: $success;
+  background-color: lighten($success,55%);
+  border-color: lighten($success,20%);
+}
+
+.alert-danger {
+  color: $danger;
+  background-color: lighten($danger,33%);
+  border-color: lighten($danger,20%);
+}
+
+.alert-warning {
+  color: $warning;
+  background-color: lighten($warning,45%);
+  border-color: lighten($warning,20%);
+}
+
+.alert-info {
+  color: $info;
+  background-color: lighten($info,35%);
+  border-color: lighten($info,20%);
+}
+
+.alert-light {
+  background-color: lighten($light,5%);
+  border-color: $light;
+}
+
+.alert-dark {
+  color: $dark;
+  background-color: lighten($dark,65%);
+  border-color: lighten($dark,40%);
+}
+
+
+// Toastr Notification
+
+.jq-toast-single {
+  padding: 15px;
+  font-family: $font-primary;
+  background-color: $custom;
+  font-size: 13px;
+  line-height: 22px;
+
+  h2 {
+    font-family: $font-secondary;
+  }
+
+  a{
+    font-size: 14px;
+    &:hover {
+      color: $white;
+    }
+  }
+}
+
+.jq-has-icon {
+  padding: 10px 10px 10px 50px;
+}
+
+.jq-icon-info {
+  background-color: $info;
+  color: $white;
+  border-color: $info;
+}
+
+.jq-icon-success {
+  background-color: $success;
+  color: $white;
+  border-color: $success;
+}
+
+.jq-icon-warning {
+  background-color: $warning;
+  color: $white;
+  border-color: $warning;
+}
+
+.jq-icon-error {
+  background-color: $danger;
+  color: $white;
+  border-color: $danger;
+}
+
+.close-jq-toast-single {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  font-size: 20px;
+  cursor: pointer;
+  height: 32px;
+  width: 32px;
+  background-color: $dark;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 32px;
+}
+
+.jq-toast-loader {
+  height: 3px;
+  top: 0;
+  border-radius: 0;
+}
+
+
+
+

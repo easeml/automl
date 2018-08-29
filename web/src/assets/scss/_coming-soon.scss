@@ -1,0 +1,54 @@
+/* =============
+   Count Down - Coming Soon
+============= */
+.svg-rocket {
+  height: 80px;
+}
+.rocket-clouds__bubble,
+.rocket-clouds__cloud,
+.rocket-rocket,
+.rocket-inner__rocket-and-lines {
+  fill: $custom;
+}
+
+#count-down {
+  margin-top: 30px;
+}
+#count-down .clock-presenter {
+  height: 100px;
+  line-height: 30px;
+  text-align: center;
+}
+#count-down .clock-presenter .digit {
+  margin-top: 20px;
+  font-size: 26px;
+  line-height: 42px;
+  font-family: $font-secondary;
+  font-weight: 500;
+  height: 42px;
+  display: inline-block;
+  overflow: hidden;
+  text-align: center;
+  position: relative;
+  cursor: default;
+  color: $dark;
+}
+#count-down .clock-presenter .note {
+  position: relative;
+  bottom: 0;
+  padding-top: 5px;
+  cursor: default;
+  font-size: 13px;
+  color: $dark;
+  text-transform: uppercase;
+}
+
+@media (max-width: 767px) {
+  #count-down .clock-presenter {
+    width: 50%;
+    float: left;
+  }
+  #count-down .hours_dash {
+    border-right: none;
+  }
+}

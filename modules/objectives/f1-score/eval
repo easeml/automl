@@ -1,0 +1,79 @@
+#!/usr/bin/python
+
+import argparse
+import json
+import os
+
+def warn(*args, **kwargs):
+    pass
+import warnings
+warnings.warn = warn
+
+from sklearn.metrics import f1_score
+
+import easemlschema.schema as sch
+import easemlschema.dataset as ds
+
+with open("schema-in.json") as f:
+    schema = json.load(f)
+
+schIn = sch.Schema.load(schema)
+className = "cls"
+
+if __name__ == "__main__":
+
+    description = "Mean absolute error."
+    parser = argparse.ArgumentParser(description=description)
+
+    parser.add_argument("--actual", required=True, help="directory containing actual values")
+    parser.add_argument("--predicted", required=True, help="directory containing predicted values")
+
+    args = parser.parse_args()
+
+    actualDataset = ds.Dataset.load(os.path.join(args.actual, "output"))
+    predictedDataset = ds.Dataset.load(os.path.join(args.predicted, "output"))
+
+    # Infer schemas.
+    actualSchema = actualDataset.infer_schema()
+    predictedSchema = predictedDataset.infer_schema()
+
+    actualSchemaMatching = schIn.match(actualSchema, build_matching=True)
+    predictedSchemaMatching = schIn.match(predictedSchema, build_matching=True)
+
+    actName = actualSchemaMatching.nodes["s1"].src_name
+    predName = predictedSchemaMatching.nodes["s1"].src_name
+
+    actClassName = actualSchemaMatching.category_classes[className].src_name
+    predClassName = predictedSchemaMatching.category_classes[className].src_name
+
+    actClassCategories = actualDataset.children[actClassName].categories
+    predClassCategories = predictedDataset.children[predClassName].categories
+
+    actClassCategories = dict([(actClassCategories[i], i) for i in range(len(actClassCategories))])
+    predClassCategories = dict([(predClassCategories[i], i) for i in range(len(predClassCategories))])
+
+    actValues = []
+    predValues = []
+
+    avgErr = 0
+    count = 0
+    for name in actualDataset.children:
+        if isinstance(actualDataset.children[name], ds.Directory):
+            if name in predictedDataset.children:
+
+                actValue = actualDataset.children[name].children[actName].categories[0]
+                predValue = predictedDataset.children[name].children[predName].categories[0]
+
+                actIntValue = actClassCategories[actValue]
+                predIntValue = predClassCategories[predValue]
+
+                actValues.append(actIntValue)
+                predValues.append(predIntValue)
+                
+                err = 1 if actIntValue == predIntValue else 0
+                print(name, "|", err)
+
+    
+    score = f1_score(actValues, predValues, average='weighted')
+    print(score)
+    

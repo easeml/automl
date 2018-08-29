@@ -1,0 +1,6 @@
+nodes:
+    s1:
+        singleton: true
+        type: tensor
+        dim: [1]
+        

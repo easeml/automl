@@ -1,0 +1,30 @@
+/* =============
+   Card
+============= */
+
+/* Card Box */
+.card-box{
+  padding: 20px;
+  border-radius: 3px;
+  margin-bottom: 30px;
+  background-color: $white;
+}
+
+
+/* Card */
+.card {
+  border: none;
+}
+
+.card-title,.card-header {
+  margin-top: 0 !important;
+}
+
+.card-header,.card-footer {
+  background-color: $light;
+  border-bottom-color: darken($light,5%);
+}
+
+.card-footer {
+  border-top-color: darken($light,5%);
+}

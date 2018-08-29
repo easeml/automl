@@ -1,0 +1,11 @@
+{
+    "C" : {
+        ".choice" : [0.25, 0.5, 0.75, 1.0]
+    },
+    "epsilon" : {
+        ".choice" : [0.01, 0.1, 0.2]
+    },
+    "kernel" : {
+        ".choice" : ["linear", "poly", "rbf", "sigmoid"]
+    }
+}

@@ -1,0 +1,66 @@
+
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,700');
+@import url('https://fonts.googleapis.com/css?family=Rubik:300,400,500,700');
+
+
+// Color variables
+
+$custom: #02c0ce;
+
+$white: #ffffff;
+$primary: #2d7bf4;
+$secondary: #9a9a9a;
+$success: #0acf97;
+$info: #4eb7eb;
+$warning: #f9bc0b;
+$danger: #f1556c;
+$purple: #777edd;
+$pink: #ff679b;
+$muted: #98a6ad;
+$light: #e3eaef;
+$light3: #f3f3f3;
+$light7: #797979;
+$dark: #313a46;
+
+
+// Body Background
+$bg-body: #f3f6f8;
+
+
+// Shadow
+$shadow: 0 0 24px 0 rgba(0, 0, 0, 0.06), 0 1px 0 0 rgba(0, 0, 0, 0.02);
+$shadow-lg: 0 0 24px 0 rgba(0, 0, 0, 0.15), 0 1px 0 0 rgba(0, 0, 0, 0.1);
+
+
+//Background left-sidebar
+$bg-leftbar: #ffffff;
+
+
+//Background left-sidebar Dark
+$bg-leftbar-dark: #313541;
+$bg-leftbar-menu-color: #7c8e9a;
+
+
+// Leftbar width
+$leftbar-width: 240px;
+
+
+// Small Leftbar width
+$leftbar-width-sm: 170px;
+
+
+// Width variables
+$width: 100%;
+
+
+// Height variables
+$height: 100%;
+
+
+//Font variables
+$font-primary: 'Roboto', sans-serif;
+$font-secondary: 'Rubik', sans-serif;
+
+
+//Font Base
+$font-size-base: 14px;

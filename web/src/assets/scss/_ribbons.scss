@@ -1,0 +1,305 @@
+/* =================
+   Ribbons
+==================== */
+
+.ribbon-box {
+  position: relative;
+
+  .ribbon{
+    position: relative;
+    float: left;
+    clear: both;
+    padding: 5px 12px 5px 12px;
+    margin-left: -30px;
+    margin-bottom: 15px;
+    font-family: $font-secondary;
+    -moz-box-shadow: 2px 5px 10px rgba($dark, 0.15);
+    -webkit-box-shadow: 2px 5px 10px rgba($dark, 0.15);
+    -o-box-shadow: 2px 5px 10px rgba($dark, 0.15);
+    box-shadow: 2px 5px 10px rgba($dark, 0.15);
+    color: $white;
+    font-size: 13px;
+
+    &:before{
+      content: " ";
+      border-style: solid;
+      border-width: 10px;
+      display: block;
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      margin-bottom: -10px;
+      z-index: -1;
+    }
+  }
+
+  .ribbon + p {
+    clear: both;
+  }
+
+  .ribbon-custom {
+    background: $custom;
+
+    &:before {
+      border-color: darken($custom,10%) transparent transparent;
+    }
+  }
+
+  .ribbon-primary {
+    background: $primary;
+
+    &:before {
+      border-color: darken($primary,10%) transparent transparent;
+    }
+  }
+
+  .ribbon-success {
+    background: $success;
+
+    &:before {
+      border-color: darken($success,10%) transparent transparent;
+    }
+  }
+
+  .ribbon-info {
+    background: $info;
+
+    &:before {
+      border-color: darken($info,10%) transparent transparent;
+    }
+  }
+
+  .ribbon-warning {
+    background: $warning;
+
+    &:before {
+      border-color: darken($warning,10%) transparent transparent;
+    }
+  }
+
+  .ribbon-danger {
+    background: $danger;
+
+    &:before {
+      border-color: darken($danger,10%) transparent transparent;
+    }
+  }
+
+  .ribbon-pink {
+    background: $pink;
+
+    &:before {
+      border-color: darken($pink,10%) transparent transparent;
+    }
+  }
+
+  .ribbon-purple {
+    background: $purple;
+
+    &:before {
+      border-color: darken($purple,10%) transparent transparent;
+    }
+  }
+
+  .ribbon-dark {
+    background: $dark;
+
+    &:before {
+      border-color: darken($dark,10%) transparent transparent;
+    }
+  }
+
+
+  /* Ribbon two */
+  .ribbon-two {
+    position: absolute;
+    left: -5px;
+    top: -5px;
+    z-index: 1;
+    overflow: hidden;
+    width: 75px;
+    height: 75px;
+    text-align: right;
+
+    span {
+      font-size: 13px;
+      color: $white;
+      font-family: $font-secondary;
+      text-align: center;
+      line-height: 20px;
+      transform: rotate(-45deg);
+      -webkit-transform: rotate(-45deg);
+      width: 100px;
+      display: block;
+      box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0 0 rgba(0, 0, 0, 0.02);
+      position: absolute;
+      top: 19px;
+      left: -21px;
+
+      &:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 100%;
+        z-index: -1;
+        border-right: 3px solid transparent;
+        border-bottom: 3px solid transparent;
+      }
+
+      &:after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 100%;
+        z-index: -1;
+        border-left: 3px solid transparent;
+        border-bottom: 3px solid transparent;
+      }
+    }
+  }
+
+  .ribbon-two-custom {
+    span {
+      background: $custom;
+
+      &:before {
+        border-left: 3px solid darken($custom,15%);
+        border-top: 3px solid darken($custom,15%);
+      }
+
+      &:after {
+        border-right: 3px solid darken($custom,15%);
+        border-top: 3px solid darken($custom,15%);
+      }
+    }
+  }
+
+  .ribbon-two-primary {
+    span {
+      background: $primary;
+
+      &:before {
+        border-left: 3px solid darken($primary,15%);
+        border-top: 3px solid darken($primary,15%);
+      }
+
+      &:after {
+        border-right: 3px solid darken($primary,15%);
+        border-top: 3px solid darken($primary,15%);
+      }
+    }
+  }
+
+  .ribbon-two-success {
+    span {
+      background: $success;
+
+      &:before {
+        border-left: 3px solid darken($success,15%);
+        border-top: 3px solid darken($success,15%);
+      }
+
+      &:after {
+        border-right: 3px solid darken($success,15%);
+        border-top: 3px solid darken($success,15%);
+      }
+    }
+  }
+
+  .ribbon-two-info {
+    span {
+      background: $info;
+
+      &:before {
+        border-left: 3px solid darken($info,15%);
+        border-top: 3px solid darken($info,15%);
+      }
+
+      &:after {
+        border-right: 3px solid darken($info,15%);
+        border-top: 3px solid darken($info,15%);
+      }
+    }
+  }
+
+  .ribbon-two-warning {
+    span {
+      background: $warning;
+
+      &:before {
+        border-left: 3px solid darken($warning,15%);
+        border-top: 3px solid darken($warning,15%);
+      }
+
+      &:after {
+        border-right: 3px solid darken($warning,15%);
+        border-top: 3px solid darken($warning,15%);
+      }
+    }
+  }
+
+  .ribbon-two-danger {
+    span {
+      background: $danger;
+
+      &:before {
+        border-left: 3px solid darken($danger,15%);
+        border-top: 3px solid darken($danger,15%);
+      }
+
+      &:after {
+        border-right: 3px solid darken($danger,15%);
+        border-top: 3px solid darken($danger,15%);
+      }
+    }
+  }
+
+  .ribbon-two-pink {
+    span {
+      background: $pink;
+
+      &:before {
+        border-left: 3px solid darken($pink,15%);
+        border-top: 3px solid darken($pink,15%);
+      }
+
+      &:after {
+        border-right: 3px solid darken($pink,15%);
+        border-top: 3px solid darken($pink,15%);
+      }
+    }
+  }
+
+  .ribbon-two-purple {
+    span {
+      background: $purple;
+
+      &:before {
+        border-left: 3px solid darken($purple,15%);
+        border-top: 3px solid darken($purple,15%);
+      }
+
+      &:after {
+        border-right: 3px solid darken($purple,15%);
+        border-top: 3px solid darken($purple,15%);
+      }
+    }
+  }
+
+  .ribbon-two-dark {
+    span {
+      background: $dark;
+
+      &:before {
+        border-left: 3px solid darken($dark,15%);
+        border-top: 3px solid darken($dark,15%);
+      }
+
+      &:after {
+        border-right: 3px solid darken($dark,15%);
+        border-top: 3px solid darken($dark,15%);
+      }
+    }
+  }
+
+}

@@ -1,0 +1,108 @@
+/* =============
+   Progressbars
+============= */
+
+
+.progress {
+  -webkit-box-shadow: none;
+  background-color: $light3;
+  box-shadow: none;
+  margin-bottom: 18px;
+  overflow: hidden;
+  height: 0.7rem;
+}
+
+.progress-bar {
+  box-shadow: none;
+  font-size: 8px;
+  font-weight: 600;
+  line-height: 12px;
+  background-color: $custom;
+}
+
+.progress-bar-primary {
+  background-color: $primary;
+}
+
+.progress-bar-success {
+  background-color: $success;
+}
+
+.progress-bar-info {
+  background-color: $info;
+}
+
+.progress-bar-warning {
+  background-color: $warning;
+}
+
+.progress-bar-danger {
+  background-color: $danger;
+}
+
+.progress-bar-dark {
+  background-color: $dark;
+}
+
+.progress-bar-purple {
+  background-color: $purple;
+}
+
+.progress-bar-pink {
+  background-color: $pink;
+}
+
+
+/* Progressbar Vertical */
+.progress-vertical {
+  min-height: 250px;
+  height: 250px;
+  width: 10px;
+  position: relative;
+  display: inline-block;
+  margin-bottom: 0;
+  margin-right: 20px;
+
+  .progress-bar {
+    width: 100%;
+  }
+}
+.progress-vertical-bottom{
+  min-height: 250px;
+  height: 250px;
+  position: relative;
+  width: 10px;
+  display: inline-block;
+  margin-bottom: 0;
+  margin-right: 20px;
+
+  .progress-bar {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+  }
+}
+
+.progress-vertical.progress-sm,.progress-vertical-bottom.progress-sm {
+  width: 5px;
+  .progress-bar {
+    font-size: 8px;
+    line-height: 5px;
+  }
+}
+
+.progress-vertical.progress-md,.progress-vertical-bottom.progress-md {
+  width: 15px;
+  .progress-bar {
+    font-size: 10.8px;
+    line-height: 14.4px;
+  }
+}
+
+.progress-vertical.progress-lg,.progress-vertical-bottom.progress-lg {
+  width: 20px;
+  .progress-bar {
+    font-size: 12px;
+    line-height: 20px;
+  }
+}
