@@ -75,7 +75,11 @@
 
                         <td>{{item.quality}}</td>
 
-                        <td></td>
+                        <td>
+                            <button type="button" class="btn btn-icon waves-effect btn-light">
+                                <i class="fa fa-cloud-download"></i>
+                            </button>
+                        </td>
 
                     </tr>
                 </tbody>
