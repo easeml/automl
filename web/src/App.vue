@@ -6,8 +6,8 @@
 </template>
 
 <style>
-@import "assets/css/bootstrap.min.css";
-@import "assets/css/icons.css";
-@import "assets/css/metismenu.min.css";
-@import "assets/css/style.css";
+@import "assets/external/css/bootstrap.min.css";
+@import "assets/external/css/icons.css";
+@import "assets/external/css/metismenu.min.css";
+@import "assets/external/css/style.css";
 </style>

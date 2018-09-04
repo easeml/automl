@@ -9,9 +9,6 @@
                 <span>
                     <img src="../assets/images/logo-new.png" alt="" height="60">
                 </span>
-                <i>
-                    <img src="../assets/images/logo_sm.png" alt="" height="28">
-                </i>
             </a>
         </div>
 
