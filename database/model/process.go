@@ -469,8 +469,9 @@ func (context Context) StartProcess(processType string) (result Process, err err
 	var hostAddress string
 	hostAddress, err = getOutboundIP()
 	if err != nil {
-		err = errors.Wrap(err, "get outbound ip failed")
-		return
+		//err = errors.Wrap(err, "get outbound ip failed")
+		//return
+		hostAddress = "localhost"
 	}
 
 	process := Process{
