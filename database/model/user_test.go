@@ -1,8 +1,9 @@
 package model
 
 import (
-	"github.com/ds3lab/easeml/database"
 	"testing"
+
+	"github.com/ds3lab/easeml/database"
 
 	"github.com/pkg/errors"
 	"github.com/satori/go.uuid"
@@ -69,9 +70,10 @@ func TestUserGenerateAPIKey(t *testing.T) {
 	assert.Nil(err)
 
 	// Generate the API key.
-	user, err = context.UserGenerateAPIKey()
+	var result string
+	result, err = context.UserGenerateAPIKey()
 	assert.Nil(err)
-	apiKey, err := uuid.FromString(user.APIKey)
+	apiKey, err := uuid.FromString(result)
 	assert.Nil(err)
 	assert.Equal(uuid.V4, apiKey.Version())
 
@@ -100,8 +102,10 @@ func TestUserDeleteAPIKey(t *testing.T) {
 	assert.Nil(err)
 
 	// Generate the API key.
-	user, err = context.UserGenerateAPIKey()
+	var apiKey string
+	apiKey, err = context.UserGenerateAPIKey()
 	assert.Nil(err)
+	context.User.APIKey = apiKey
 
 	// Delete the API key.
 	err = context.UserDeleteAPIKey()
@@ -383,6 +387,7 @@ func TestUserLoginAndOut(t *testing.T) {
 	user, err = context.UserLogin()
 	assert.Nil(err)
 	assert.NotEmpty(user.APIKey)
+	context.User.APIKey = user.APIKey
 
 	// Verify the database has been updated.
 	err = connection.Session.DB(TestDBName).C("users").Find(bson.M{"id": "user1"}).One(&user)

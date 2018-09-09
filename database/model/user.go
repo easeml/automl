@@ -1,10 +1,11 @@
 package model
 
 import (
-	"github.com/ds3lab/easeml/database"
 	"encoding/hex"
 	e "errors"
 	"strings"
+
+	"github.com/ds3lab/easeml/database"
 
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
@@ -159,8 +160,10 @@ func (context Context) UserAuthenticate(user User) (result User, err error) {
 	return dbUser, nil
 }
 
-// UserGenerateAPIKey creates a new API key for the user and stores it in the database.
-func (context Context) UserGenerateAPIKey() (result User, err error) {
+// UserGenerateAPIKey creates a new API key for the user and stores it in the database. The operation only works if
+// the API key in the context corresponds to the API key in the database. Otherwise, no change will be applied and
+// the caller should try again.
+func (context Context) UserGenerateAPIKey() (result string, err error) {
 
 	// Generate the new API Key.
 	var apiKey uuid.UUID
@@ -174,27 +177,30 @@ func (context Context) UserGenerateAPIKey() (result User, err error) {
 		database.Cache.Delete(context.User.APIKey)
 	}
 
-	// Assign the new API key.
-	context.User.APIKey = apiKey.String()
-
 	// Store the API key in the database.
 	c := context.Session.DB(context.DBName).C("users")
-	if err = c.Update(bson.M{"id": context.User.ID}, bson.M{"$set": bson.M{"api-key": context.User.APIKey}}); err != nil {
+	err = c.Update(bson.M{"id": context.User.ID, "api-key": context.User.APIKey}, bson.M{"$set": bson.M{"api-key": apiKey.String()}})
+
+	// If the user or the API key was not found, then we simply ignore.
+	if err == mgo.ErrNotFound {
+		err = nil
+		return
+	} else if err != nil {
 		err = errors.Wrap(err, "mongo update failed")
 		return
 	}
 
 	// Add the API key to the cache.
-	database.Cache.SetDefault(context.User.APIKey, context.User.ID)
+	database.Cache.SetDefault(apiKey.String(), context.User.ID)
 
-	return context.User, nil
+	return apiKey.String(), nil
 }
 
 // UserDeleteAPIKey deletes the API key of the user.
 func (context Context) UserDeleteAPIKey() (err error) {
 
 	c := context.Session.DB(context.DBName).C("users")
-	if err = c.Update(bson.M{"id": context.User.ID}, bson.M{"$set": bson.M{"api-key": ""}}); err != nil {
+	if err = c.Update(bson.M{"id": context.User.ID, "api-key": context.User.APIKey}, bson.M{"$set": bson.M{"api-key": ""}}); err != nil {
 		err = errors.Wrap(err, "mongo update failed")
 		return
 	}
@@ -540,9 +546,19 @@ func (context Context) UserLogin() (result User, err error) {
 
 		// If the user has not logged in (API key missing even in the database) then generate a new API key.
 		if user.APIKey == "" {
-			if user, err = context.UserGenerateAPIKey(); err != nil {
+			var apiKey string
+			if apiKey, err = context.UserGenerateAPIKey(); err != nil {
 				err = errors.Wrap(err, "user generate API key failed")
 				return
+			}
+			if apiKey != "" {
+				user.APIKey = apiKey
+			} else {
+				// There was a race condition and an API key was generated in the meantime. We can simply read it.
+				if user, err = context.GetUserByID(user.ID); err != nil {
+					err = errors.Wrap(err, "get user by ID failed")
+					return
+				}
 			}
 		}
 	}
