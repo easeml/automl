@@ -1,14 +1,15 @@
 package scheduler
 
 import (
-	"github.com/ds3lab/easeml/process"
-	"github.com/ds3lab/easeml/database/model"
-	"github.com/ds3lab/easeml/logger"
-	"github.com/ds3lab/easeml/storage"
-	"github.com/ds3lab/easeml/workers"
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/ds3lab/easeml/database/model"
+	"github.com/ds3lab/easeml/logger"
+	"github.com/ds3lab/easeml/process"
+	"github.com/ds3lab/easeml/storage"
+	"github.com/ds3lab/easeml/workers"
 )
 
 // Start is the entry point.
@@ -27,6 +28,12 @@ func Start(context process.Context) {
 		log.WriteFatal(fmt.Sprintf("fatal: %+v", err))
 	}
 	defer modelContext.Session.Close()
+
+	// Initialize the database.
+	err = modelContext.Initialize(context.DatabaseName)
+	if err != nil {
+		log.WriteFatal(fmt.Sprintf("fatal: %+v", err))
+	}
 
 	// Register the new process.
 	var process model.Process
