@@ -149,10 +149,6 @@ func init() {
 	startCmd.PersistentFlags().String("server-address", "localhost:8080",
 		"Host address and port of the ease.ml controller process.")
 
-	// Default working directory is called ".easeml" and placed in the user's home directory.
-	startCmd.PersistentFlags().String("working-dir", defaultWorkingDir,
-		"Path to the working directory that stores all ease.ml files.")
-
 	startCmd.PersistentFlags().Uint("keepalive-period", 1000,
 		"Duration in miliseconds between two keepalive messages.")
 	startCmd.PersistentFlags().Uint("listener-period", 250,

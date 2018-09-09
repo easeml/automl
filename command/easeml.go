@@ -27,6 +27,7 @@ import (
 var cfgFile string
 var homeDir string
 var defaultWorkingDir string
+var workingDir string
 
 const defaultConfigFileName = "config"
 
@@ -71,6 +72,11 @@ func init() {
 
 	viper.BindPFlag("api-key", rootCmd.PersistentFlags().Lookup("api-key"))
 
+	// Default working directory is called ".easeml" and placed in the user's home directory.
+	rootCmd.PersistentFlags().StringVar(&workingDir, "working-dir", defaultWorkingDir,
+		"Path to the working directory that stores all ease.ml files.")
+	viper.BindPFlag("working-dir", rootCmd.PersistentFlags().Lookup("working-dir"))
+
 	rootCmd.Long = getEasemlSign() + "\n" + rootCmd.Long
 }
 
@@ -96,7 +102,7 @@ func setConfigInfo(v *viper.Viper) {
 	} else {
 
 		// Search config in home directory with name ".easeml" (without extension).
-		v.AddConfigPath(defaultWorkingDir)
+		v.AddConfigPath(workingDir)
 		v.SetConfigName(defaultConfigFileName)
 	}
 
@@ -112,7 +118,7 @@ func updateConfigAndWrite(values map[string]interface{}) (err error) {
 		v.Set(k, values[k])
 	}
 	if v.ConfigFileUsed() == "" {
-		v.SetConfigFile(filepath.Join(defaultWorkingDir, defaultConfigFileName+".yaml"))
+		v.SetConfigFile(filepath.Join(workingDir, defaultConfigFileName+".yaml"))
 	}
 	err = v.WriteConfig()
 
