@@ -149,7 +149,11 @@ func (context Context) Initialize(databaseName string) (err error) {
 		c := context.Session.DB(databaseName).C("users")
 		err = c.Insert(User{ObjectID: bson.NewObjectId(), ID: UserRoot, Name: "Admin User", Status: "active"})
 		if err != nil {
-			return errors.Wrap(err, "mongo insert failed")
+			// If it is a duplicate, then this was a simple race condition and a user was created in the meantime.
+			// Since the same code is creating the user, we can simply ignore.
+			if mgo.IsDup(err) == false {
+				return errors.Wrap(err, "mongo insert failed")
+			}
 		}
 	} else if err != nil {
 		return errors.Wrap(err, "user get by ID failed")
