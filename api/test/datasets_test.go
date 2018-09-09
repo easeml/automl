@@ -2,7 +2,6 @@ package test
 
 import (
 	"crypto/sha256"
-	"github.com/ds3lab/easeml/database/model"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -11,12 +10,14 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/ds3lab/easeml/database/model"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/emicklei/forest"
 	"github.com/stretchr/testify/assert"
 )
 
-const testSchemaIn1 string = `{
+const testSchemaInSrc1 string = `{
 	"nodes":{
 		"c1_src":{"singleton":true,"type":"category","class":"class1_src"}
 	},"classes":{
@@ -24,7 +25,7 @@ const testSchemaIn1 string = `{
 	}
 }`
 
-const testSchemaOut1 string = `{
+const testSchemaOutSrc1 string = `{
 	"nodes":{
 		"node1_src":{"singleton":true,"type":"tensor","dim":[16]}
 	}
@@ -56,9 +57,9 @@ func TestDatasetsGet(t *testing.T) {
 
 	// Create datasets.
 	var datasets = []model.Dataset{
-		model.Dataset{ID: "root/dataset1", User: "root", Name: "Dataset 1", Source: "download", SchemaIn: testSchemaIn1, SchemaOut: testSchemaOut1},
-		model.Dataset{ID: "user2/dataset2", User: "user2", Name: "Dataset 2", Source: "upload", SchemaIn: testSchemaIn1, SchemaOut: testSchemaOut1},
-		model.Dataset{ID: "user2/dataset3", User: "user2", Name: "Dataset 3", Source: "download", SchemaIn: testSchemaIn1, SchemaOut: testSchemaOut1},
+		model.Dataset{ID: "root/dataset1", User: "root", Name: "Dataset 1", Source: "download", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
+		model.Dataset{ID: "user2/dataset2", User: "user2", Name: "Dataset 2", Source: "upload", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
+		model.Dataset{ID: "user2/dataset3", User: "user2", Name: "Dataset 3", Source: "download", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
 	}
 	for _, dataset := range datasets {
 		_, err = createDataset(dataset)
@@ -167,11 +168,11 @@ func TestDatasetsPost(t *testing.T) {
 
 	var bodyFormat = `{"id" : "%s", "name" : "%s", "source" : "%s", "schema-in" : %s, "schema-out" : %s }`
 	var testSchemaByteIn1 []byte
-	testSchemaByteIn1, err = json.Marshal(testSchemaIn1)
+	testSchemaByteIn1, err = json.Marshal(testSchemaInSrc1)
 	assert.Nil(t, err)
 	testSchemaStrIn1 := string(testSchemaByteIn1)
 	var testSchemaByteOut1 []byte
-	testSchemaByteOut1, err = json.Marshal(testSchemaOut1)
+	testSchemaByteOut1, err = json.Marshal(testSchemaOutSrc1)
 	assert.Nil(t, err)
 	testSchemaStrOut1 := string(testSchemaByteOut1)
 
@@ -227,7 +228,7 @@ func TestDatasetsGetById(t *testing.T) {
 	var err error
 
 	// Create the dataset which we will use in the test.
-	_, err = createDataset(model.Dataset{ID: "user2/dataset10", User: "user2", Name: "Dataset 1", Source: "download", SchemaIn: testSchemaIn1, SchemaOut: testSchemaOut1})
+	_, err = createDataset(model.Dataset{ID: "user2/dataset10", User: "user2", Name: "Dataset 1", Source: "download", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1})
 	assert.Nil(t, err)
 
 	// Create user_dbid_1.
@@ -268,8 +269,8 @@ func TestDatasetsPatch(t *testing.T) {
 
 	// Create datasets.
 	var datasets = []model.Dataset{
-		model.Dataset{ID: "root/dataset10", User: "root", Name: "Dataset 10", Source: "download", SchemaIn: testSchemaIn1, SchemaOut: testSchemaOut1},
-		model.Dataset{ID: "user_du_1/dataset21", User: "user_du_1", Name: "Dataset 21", Source: "upload", SchemaIn: testSchemaIn1, SchemaOut: testSchemaOut1},
+		model.Dataset{ID: "root/dataset10", User: "root", Name: "Dataset 10", Source: "download", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
+		model.Dataset{ID: "user_du_1/dataset21", User: "user_du_1", Name: "Dataset 21", Source: "upload", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
 	}
 	for _, dataset := range datasets {
 		_, err = createDataset(dataset)
@@ -331,8 +332,8 @@ func BenchmarkDatasetsGet1000(b *testing.B) {
 			User:      "root",
 			Name:      "Dataset 1",
 			Source:    "download",
-			SchemaIn:  testSchemaIn1,
-			SchemaOut: testSchemaOut1,
+			SchemaIn:  testSchemaInSrc1,
+			SchemaOut: testSchemaOutSrc1,
 		})
 		if err != nil {
 			panic(err)

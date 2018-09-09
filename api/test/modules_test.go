@@ -2,7 +2,6 @@ package test
 
 import (
 	"crypto/sha256"
-	"github.com/ds3lab/easeml/database/model"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -10,6 +9,8 @@ import (
 	"net/http"
 	"net/url"
 	"testing"
+
+	"github.com/ds3lab/easeml/database/model"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/emicklei/forest"
@@ -42,9 +43,9 @@ func TestModulesGet(t *testing.T) {
 
 	// Create modules.
 	var modules = []model.Module{
-		model.Module{ID: "root/module1", User: "root", Name: "Module 1", Source: "download", Type: "model", SchemaIn: testSchemaIn1, SchemaOut: testSchemaOut1},
-		model.Module{ID: "user2/module2", User: "user2", Name: "Module 2", Source: "upload", Type: "model", SchemaIn: testSchemaIn1, SchemaOut: testSchemaOut1},
-		model.Module{ID: "user2/module3", User: "user2", Name: "Module 3", Source: "download", Type: "objective", SchemaIn: testSchemaIn1, SchemaOut: testSchemaOut1},
+		model.Module{ID: "root/module1", User: "root", Name: "Module 1", Source: "download", Type: "model", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
+		model.Module{ID: "user2/module2", User: "user2", Name: "Module 2", Source: "upload", Type: "model", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
+		model.Module{ID: "user2/module3", User: "user2", Name: "Module 3", Source: "download", Type: "objective", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
 	}
 	for _, module := range modules {
 		_, err = createModule(module)
@@ -153,11 +154,11 @@ func TestModulesPost(t *testing.T) {
 
 	var bodyFormat = `{"id" : "%s", "name" : "%s", "source" : "%s", "type" : "%s", "schema-in" : %s, "schema-out" : %s }`
 	var testSchemaByteIn1 []byte
-	testSchemaByteIn1, err = json.Marshal(testSchemaIn1)
+	testSchemaByteIn1, err = json.Marshal(testSchemaInSrc1)
 	assert.Nil(t, err)
 	testSchemaStrIn1 := string(testSchemaByteIn1)
 	var testSchemaByteOut1 []byte
-	testSchemaByteOut1, err = json.Marshal(testSchemaOut1)
+	testSchemaByteOut1, err = json.Marshal(testSchemaOutSrc1)
 	assert.Nil(t, err)
 	testSchemaStrOut1 := string(testSchemaByteOut1)
 
@@ -213,7 +214,7 @@ func TestModulesGetById(t *testing.T) {
 	var err error
 
 	// Create the module which we will use in the test.
-	_, err = createModule(model.Module{ID: "user2/module10", User: "user2", Name: "Module 1", Source: "download", Type: "model", SchemaIn: testSchemaIn1, SchemaOut: testSchemaOut1})
+	_, err = createModule(model.Module{ID: "user2/module10", User: "user2", Name: "Module 1", Source: "download", Type: "model", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1})
 	assert.Nil(t, err)
 
 	// Create user_mbid_1.
@@ -254,8 +255,8 @@ func TestModulesPatch(t *testing.T) {
 
 	// Create modules.
 	var modules = []model.Module{
-		model.Module{ID: "root/module10", User: "root", Name: "Module 10", Source: "download", Type: "model", SchemaIn: testSchemaIn1, SchemaOut: testSchemaOut1},
-		model.Module{ID: "user_mu_1/module21", User: "user_mu_1", Name: "Module 21", Source: "upload", Type: "model", SchemaIn: testSchemaIn1, SchemaOut: testSchemaOut1},
+		model.Module{ID: "root/module10", User: "root", Name: "Module 10", Source: "download", Type: "model", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
+		model.Module{ID: "user_mu_1/module21", User: "user_mu_1", Name: "Module 21", Source: "upload", Type: "model", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
 	}
 	for _, module := range modules {
 		_, err = createModule(module)
@@ -317,8 +318,8 @@ func BenchmarkModulesGet1000(b *testing.B) {
 			User:      "root",
 			Name:      "Module 1",
 			Source:    "download",
-			SchemaIn:  testSchemaIn1,
-			SchemaOut: testSchemaOut1,
+			SchemaIn:  testSchemaInSrc1,
+			SchemaOut: testSchemaOutSrc1,
 		})
 		if err != nil {
 			panic(err)

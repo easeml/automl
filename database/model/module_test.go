@@ -1,9 +1,10 @@
 package model
 
 import (
-	"github.com/ds3lab/easeml/database"
 	"testing"
 	"time"
+
+	"github.com/ds3lab/easeml/database"
 
 	"github.com/globalsign/mgo/bson"
 	"github.com/pkg/errors"
@@ -24,8 +25,8 @@ func TestGetModuleByID(t *testing.T) {
 		User:          "root",
 		Name:          "Module1",
 		Description:   "Description of Module1",
-		SchemaIn:      testSchemaIn1,
-		SchemaOut:     testSchemaOut1,
+		SchemaIn:      testSchemaInSrc1,
+		SchemaOut:     testSchemaOutSrc1,
 		Source:        "upload",
 		SourceAddress: "http://module1",
 		CreationTime:  time.Now(),
@@ -68,8 +69,8 @@ func TestGetModules(t *testing.T) {
 		User:          "root",
 		Name:          "Module1",
 		Description:   "Description of Module1",
-		SchemaIn:      testSchemaIn1,
-		SchemaOut:     testSchemaOut1,
+		SchemaIn:      testSchemaInDst1,
+		SchemaOut:     testSchemaOutDst1,
 		Source:        "upload",
 		SourceAddress: "http://module1",
 		CreationTime:  time.Now().Round(time.Millisecond).UTC(),
@@ -81,8 +82,8 @@ func TestGetModules(t *testing.T) {
 		User:          "user1",
 		Name:          "Module2",
 		Description:   "Description of Module2",
-		SchemaIn:      testSchemaIn2,
-		SchemaOut:     testSchemaOut2,
+		SchemaIn:      testSchemaInDst2,
+		SchemaOut:     testSchemaOutDst2,
 		Source:        "download",
 		SourceAddress: "http://module2",
 		CreationTime:  time.Now().Round(time.Millisecond).Add(time.Second).UTC(),
@@ -121,7 +122,7 @@ func TestGetModules(t *testing.T) {
 	assert.Equal("", cm.NextPageCursor)
 
 	// Filter datasets by schema.
-	filter := F{"schema-in": testSchemaIn1Src, "schema-out": testSchemaOut1Src}
+	filter := F{"schema-in": testSchemaInSrc1, "schema-out": testSchemaOutSrc1}
 	result, cm, err = context.GetModules(filter, 0, "", "", "")
 	assert.Nil(err)
 	assert.ElementsMatch([]Module{module1}, result)
@@ -225,8 +226,8 @@ func TestCreateModule(t *testing.T) {
 		User:          "root",
 		Name:          "Module1",
 		Description:   "Description of Module1",
-		SchemaIn:      testSchemaIn1,
-		SchemaOut:     testSchemaOut1,
+		SchemaIn:      testSchemaInSrc1,
+		SchemaOut:     testSchemaOutSrc1,
 		Source:        "upload",
 		Type:          "model",
 		SourceAddress: "http://module1",
@@ -270,8 +271,8 @@ func TestPatchModule(t *testing.T) {
 		User:          "root",
 		Name:          "Module1",
 		Description:   "Description of Module1",
-		SchemaIn:      testSchemaIn1,
-		SchemaOut:     testSchemaOut1,
+		SchemaIn:      testSchemaInSrc1,
+		SchemaOut:     testSchemaOutSrc1,
 		Source:        "upload",
 		SourceAddress: "http://module1",
 		CreationTime:  time.Now(),
@@ -328,8 +329,8 @@ func TestLockModules(t *testing.T) {
 		User:          "root",
 		Name:          "Module1",
 		Description:   "Description of Module1",
-		SchemaIn:      testSchemaIn1,
-		SchemaOut:     testSchemaOut1,
+		SchemaIn:      testSchemaInSrc1,
+		SchemaOut:     testSchemaOutSrc1,
 		Source:        "upload",
 		SourceAddress: "http://module1",
 		CreationTime:  time.Now().Round(time.Millisecond).UTC(),
@@ -341,8 +342,8 @@ func TestLockModules(t *testing.T) {
 		User:          "user1",
 		Name:          "Module2",
 		Description:   "Description of Module2",
-		SchemaIn:      testSchemaIn1,
-		SchemaOut:     testSchemaOut1,
+		SchemaIn:      testSchemaInSrc1,
+		SchemaOut:     testSchemaOutSrc1,
 		Source:        "download",
 		SourceAddress: "http://module2",
 		CreationTime:  time.Now().Round(time.Millisecond).Add(time.Second).UTC(),

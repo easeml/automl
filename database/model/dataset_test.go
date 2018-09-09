@@ -1,16 +1,17 @@
 package model
 
 import (
-	"github.com/ds3lab/easeml/database"
 	"testing"
 	"time"
+
+	"github.com/ds3lab/easeml/database"
 
 	"github.com/globalsign/mgo/bson"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
 
-const testSchemaIn1 string = `{
+const testSchemaInSrc1 string = `{
 	"nodes":{
 		"c1_src":{"singleton":true,"type":"category","class":"class1_src"}
 	},"classes":{
@@ -18,13 +19,13 @@ const testSchemaIn1 string = `{
 	}
 }`
 
-const testSchemaOut1 string = `{
+const testSchemaOutSrc1 string = `{
 	"nodes":{
 		"node1_src":{"singleton":true,"type":"tensor","dim":[16]}
 	}
 }`
 
-const testSchemaIn2 string = `{
+const testSchemaInSrc2 string = `{
 	"nodes":{
 		"c1_src":{"singleton":true,"type":"category","class":"class1_src"}
 	},"classes":{
@@ -32,13 +33,13 @@ const testSchemaIn2 string = `{
 	}
 }`
 
-const testSchemaOut2 string = `{
+const testSchemaOutSrc2 string = `{
 	"nodes":{
 		"node1_src":{"singleton":true,"type":"tensor","dim":[32, 32]}
 	}
 }`
 
-const testSchemaIn1Src string = `{
+const testSchemaInDst1 string = `{
 	"nodes":{
 		"c1_src":{"singleton":true,"type":"category","class":"class1_src"}
 	},"classes":{
@@ -46,9 +47,23 @@ const testSchemaIn1Src string = `{
 	}
 }`
 
-const testSchemaOut1Src string = `{
+const testSchemaOutDst1 string = `{
 	"nodes":{
 		"node1_src":{"singleton":true,"type":"tensor","dim":["a"]}
+	}
+}`
+
+const testSchemaInDst2 string = `{
+	"nodes":{
+		"c1_src":{"singleton":true,"type":"category","class":"class1_src"}
+	},"classes":{
+		"class1_src":{"dim":"a"}
+	}
+}`
+
+const testSchemaOutDst2 string = `{
+	"nodes":{
+		"node1_src":{"singleton":true,"type":"tensor","dim":["a", "a"]}
 	}
 }`
 
@@ -66,8 +81,8 @@ func TestGetDatasetByID(t *testing.T) {
 		User:          "root",
 		Name:          "Dataset1",
 		Description:   "Description of Dataset1",
-		SchemaIn:      testSchemaIn1,
-		SchemaOut:     testSchemaOut1,
+		SchemaIn:      testSchemaInSrc1,
+		SchemaOut:     testSchemaOutSrc1,
 		Source:        "upload",
 		SourceAddress: "http://dataset1",
 		CreationTime:  time.Now(),
@@ -110,8 +125,8 @@ func TestGetDatasets(t *testing.T) {
 		User:          "root",
 		Name:          "Dataset1",
 		Description:   "Description of Dataset1",
-		SchemaIn:      testSchemaIn1,
-		SchemaOut:     testSchemaOut1,
+		SchemaIn:      testSchemaInSrc1,
+		SchemaOut:     testSchemaOutSrc1,
 		Source:        "upload",
 		SourceAddress: "http://dataset1",
 		CreationTime:  time.Now().Round(time.Millisecond).UTC(),
@@ -123,8 +138,8 @@ func TestGetDatasets(t *testing.T) {
 		User:          "user1",
 		Name:          "Dataset2",
 		Description:   "Description of Dataset2",
-		SchemaIn:      testSchemaIn2,
-		SchemaOut:     testSchemaOut2,
+		SchemaIn:      testSchemaInSrc2,
+		SchemaOut:     testSchemaOutSrc2,
 		Source:        "download",
 		SourceAddress: "http://dataset2",
 		CreationTime:  time.Now().Round(time.Millisecond).Add(time.Second).UTC(),
@@ -163,7 +178,7 @@ func TestGetDatasets(t *testing.T) {
 	assert.Equal("", cm.NextPageCursor)
 
 	// Filter datasets by schema.
-	filter := F{"schema-in": testSchemaIn1Src, "schema-out": testSchemaOut1Src}
+	filter := F{"schema-in": testSchemaInDst1, "schema-out": testSchemaOutDst1}
 	result, cm, err = context.GetDatasets(filter, 0, "", "", "")
 	assert.Nil(err)
 	assert.ElementsMatch([]Dataset{dataset1}, result)
@@ -267,8 +282,8 @@ func TestCreateDataset(t *testing.T) {
 		User:          "root",
 		Name:          "Dataset1",
 		Description:   "Description of Dataset1",
-		SchemaIn:      testSchemaIn1,
-		SchemaOut:     testSchemaOut1,
+		SchemaIn:      testSchemaInSrc1,
+		SchemaOut:     testSchemaOutSrc1,
 		Source:        "upload",
 		SourceAddress: "http://dataset1",
 		CreationTime:  time.Now(),
@@ -311,8 +326,8 @@ func TestPatchDataset(t *testing.T) {
 		User:          "root",
 		Name:          "Dataset1",
 		Description:   "Description of Dataset1",
-		SchemaIn:      testSchemaIn1,
-		SchemaOut:     testSchemaOut1,
+		SchemaIn:      testSchemaInSrc1,
+		SchemaOut:     testSchemaOutSrc1,
 		Source:        "upload",
 		SourceAddress: "http://dataset1",
 		CreationTime:  time.Now(),
@@ -369,8 +384,8 @@ func TestLockDatasets(t *testing.T) {
 		User:          "root",
 		Name:          "Dataset1",
 		Description:   "Description of Dataset1",
-		SchemaIn:      testSchemaIn1,
-		SchemaOut:     testSchemaOut1,
+		SchemaIn:      testSchemaInSrc1,
+		SchemaOut:     testSchemaOutSrc1,
 		Source:        "upload",
 		SourceAddress: "http://dataset1",
 		CreationTime:  time.Now().Round(time.Millisecond).UTC(),
@@ -382,8 +397,8 @@ func TestLockDatasets(t *testing.T) {
 		User:          "user1",
 		Name:          "Dataset2",
 		Description:   "Description of Dataset2",
-		SchemaIn:      testSchemaIn1,
-		SchemaOut:     testSchemaOut1,
+		SchemaIn:      testSchemaInSrc1,
+		SchemaOut:     testSchemaOutSrc1,
 		Source:        "download",
 		SourceAddress: "http://dataset2",
 		CreationTime:  time.Now().Round(time.Millisecond).Add(time.Second).UTC(),
