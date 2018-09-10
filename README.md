@@ -75,6 +75,30 @@ If you would like to set up a different database directory
 mongod --dbpath <your_new_db_path>
 ```
 
+### Install Docker
+
+See [this page](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04).
+
+```bash
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+
+sudo apt update
+
+sudo apt install docker-ce
+```
+
+To enable execution of docker commands without sudo, add the current user to the `docker` group:
+
+```bash
+sudo usermod -aG docker ${USER}
+
+su - ${USER}
+```
+
 ### Build ease.ml
 
 ```bash
