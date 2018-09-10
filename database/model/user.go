@@ -166,11 +166,7 @@ func (context Context) UserAuthenticate(user User) (result User, err error) {
 func (context Context) UserGenerateAPIKey() (result string, err error) {
 
 	// Generate the new API Key.
-	var apiKey uuid.UUID
-	if apiKey, err = uuid.NewV4(); err != nil {
-		err = errors.Wrap(err, "uuid new failed")
-		return
-	}
+	apiKey := uuid.NewV4()
 
 	// If there was an old API key, make sure it's removed from the cache.
 	if context.User.APIKey != "" {
