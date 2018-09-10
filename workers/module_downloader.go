@@ -2,13 +2,14 @@ package workers
 
 import (
 	ctx "context"
-	"github.com/ds3lab/easeml/database/model"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/ds3lab/easeml/database/model"
 
 	"github.com/cavaliercoder/grab"
 	"github.com/docker/docker/api/types"

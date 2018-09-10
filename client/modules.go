@@ -3,12 +3,13 @@ package client
 import (
 	"bytes"
 	ctx "context"
-	"github.com/ds3lab/easeml/database/model"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/url"
 	"path"
+
+	"github.com/ds3lab/easeml/database/model"
 
 	"github.com/docker/docker/client"
 	tus "github.com/eventials/go-tus"

@@ -1,10 +1,11 @@
 package workers
 
 import (
-	"github.com/ds3lab/easeml/database/model"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/ds3lab/easeml/database/model"
 
 	"github.com/mholt/archiver"
 	"github.com/pkg/errors"
