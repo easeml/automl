@@ -1,6 +1,11 @@
 package controller
 
 import (
+	"fmt"
+	"net/http"
+	"os"
+	"path/filepath"
+
 	"github.com/ds3lab/easeml/api"
 	"github.com/ds3lab/easeml/api/router"
 	"github.com/ds3lab/easeml/database/model"
@@ -8,10 +13,6 @@ import (
 	"github.com/ds3lab/easeml/process"
 	"github.com/ds3lab/easeml/storage"
 	"github.com/ds3lab/easeml/workers"
-	"fmt"
-	"net/http"
-	"os"
-	"path/filepath"
 
 	"github.com/gobuffalo/packr"
 )
@@ -19,7 +20,7 @@ import (
 // Start is the entry point.
 func Start(context process.Context) {
 
-	log := logger.NewProcessLogger()
+	log := logger.NewProcessLogger(context.DebugLog)
 
 	// Initialize the storage context.
 	storageContext := storage.Context{WorkingDir: context.WorkingDir}

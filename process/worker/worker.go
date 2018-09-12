@@ -16,7 +16,7 @@ import (
 func Start(context process.Context) {
 	fmt.Println("worker called")
 
-	log := logger.NewProcessLogger()
+	log := logger.NewProcessLogger(context.DebugLog)
 
 	// Initialize the storage context.
 	storageContext := storage.Context{WorkingDir: context.WorkingDir}

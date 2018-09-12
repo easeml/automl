@@ -31,7 +31,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var startLogin, openInBrowser bool
+var startLogin, openInBrowser, debugLog bool
 
 // startCmd represents the start command
 var startCmd = &cobra.Command{
@@ -57,6 +57,7 @@ var startCmd = &cobra.Command{
 			ListenerPeriod:  time.Duration(listenerMilliseconds) * time.Millisecond,
 			OptimizerID:     "user1/opt-rand-search",
 			RootAPIKey:      make(chan string, 1),
+			DebugLog:        debugLog,
 		}
 
 		var wg sync.WaitGroup
@@ -160,6 +161,7 @@ func init() {
 
 	startCmd.Flags().BoolVar(&startLogin, "login", false, "Add root API key to the config so that it can be used for CLI access.")
 	startCmd.Flags().BoolVar(&openInBrowser, "browser", false, "Open browser window with the web UI.")
+	startCmd.Flags().BoolVar(&debugLog, "debug", false, "Write debug trace.")
 
 	// Bind with viper config.
 	viper.BindPFlags(startCmd.PersistentFlags())

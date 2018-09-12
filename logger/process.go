@@ -32,13 +32,17 @@ const (
 )
 
 // NewProcessLogger instantiates a new process logger with a given process ID and log file path.
-func NewProcessLogger() (logger *ProcessLogger) {
+func NewProcessLogger(debug bool) (logger *ProcessLogger) {
 
 	logger = &ProcessLogger{}
 	logger.entry = []*logrus.Entry{}
 
 	// Initialize logger.
 	log := logrus.New()
+
+	if debug {
+		log.Level = logrus.DebugLevel
+	}
 
 	// Set color scheme.
 	/* colors := &prefixed.ColorScheme{

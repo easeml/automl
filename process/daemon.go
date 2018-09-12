@@ -12,4 +12,5 @@ type Context struct {
 	ListenerPeriod  time.Duration
 	OptimizerID     string
 	RootAPIKey      chan string
+	DebugLog        bool
 }
