@@ -109,7 +109,9 @@ export default {
         login() {
 
             this.error = ""
-            const serverAddress = "http://localhost:8080/";
+
+            const serverAddress = window.location.protocol + "//" + window.location.host + "/";
+            //const serverAddress = "http://localhost:8080/";
 
             console.log(this.apiKey);
 
