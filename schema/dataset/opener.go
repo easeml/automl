@@ -29,6 +29,7 @@ func (DefaultOpener) GetFile(root string, relPath string, readOnly bool, binary 
 func (DefaultOpener) GetDir(root string, relPath string, readOnly bool) ([]string, error) {
 	path := path.Join(root, relPath)
 	file, err := os.Open(path)
+	defer file.Close()
 	if err != nil {
 		if readOnly == false && os.IsNotExist(err) {
 			err = os.MkdirAll(path, 0700)
