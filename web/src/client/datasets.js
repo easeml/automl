@@ -167,6 +167,7 @@ function uploadDataset(id, data, filename, onProgress) {
             metadata: {
                 filename: filename
             },
+            headers: this.authHeader,
             onProgress: onProgress,
             onSuccess: () => resolve(),
             onError: (e) => reject(e)

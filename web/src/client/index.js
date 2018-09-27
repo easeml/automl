@@ -25,16 +25,22 @@ function Context(serverAddress, userCredentials) {
         baseURL: this.baseURL,
         headers: {}
     };
+
+
+    this.authHeader = {};
     if ("apiKey" in userCredentials) {
         axiosConfig.headers["X-API-KEY"] = userCredentials.apiKey;
+        this.authHeader["X-API-KEY"] = userCredentials.apiKey;
     } else if ("username" in userCredentials && "password" in userCredentials) {
         axiosConfig["auth"] = {
             username: userCredentials.username,
             password: userCredentials.password
         }
+        this.authHeader["Authorization"] = "Basic " + btoa(userCredentials.username + ":" + userCredentials.password)
     }
 
-    this.axiosInstance = axios.create(axiosConfig)
+    this.userCredentials = userCredentials;
+    this.axiosInstance = axios.create(axiosConfig);
 }
 
 Context.prototype.getDatasets = datasets.getDatasets;

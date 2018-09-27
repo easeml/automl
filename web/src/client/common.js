@@ -16,7 +16,8 @@ function runGetQuery(axiosInstance, url, query) {
             let cursor = response.data.metadata["next-page-cursor"];
 
             if (cursor==="") {
-                resolve(response.data.data);
+                let data = response.data.data || [];
+                resolve(data);
             } else {
                 query["cursor"] = cursor;
                 runGetQuery(axiosInstance, url, query)
