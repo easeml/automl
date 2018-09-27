@@ -55,7 +55,7 @@ var startCmd = &cobra.Command{
 			WorkingDir:      viper.GetString("working-dir"),
 			KeepAlivePeriod: time.Duration(keepaliveMilliseconds) * time.Millisecond,
 			ListenerPeriod:  time.Duration(listenerMilliseconds) * time.Millisecond,
-			OptimizerID:     "user1/opt-rand-search",
+			OptimizerID:     "root/opt-rand-search",
 			RootAPIKey:      make(chan string, 1),
 			DebugLog:        debugLog,
 		}
