@@ -210,7 +210,7 @@ export default {
         // Repeat call every 1 second.
         this.timer = setInterval(function() {
             this.loadData();
-        }.bind(this), 5000);
+        }.bind(this), 1000);
     },
     beforeDestroy() {
         clearInterval(this.timer);

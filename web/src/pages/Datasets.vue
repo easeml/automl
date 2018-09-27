@@ -78,7 +78,7 @@ export default {
         // Repeat call every 10 seconds.
         this.timer = setInterval(function() {
             this.loadData();
-        }.bind(this), 10000);
+        }.bind(this), 3000);
     },
     beforeDestroy() {
         clearInterval(this.timer);

@@ -128,7 +128,7 @@
                     <transition name="fade" mode="out-in">
 
                         <div class="wiz-step" v-show="step === 4">
-                            <h3> Dataset Upload: {{currentUploadProgress}}% </h3>
+                            <h3> Dataset Upload: {{currentUploadProgress}} % </h3>
 
                             <div class="progress progress-lg mb-0">
                                 <div class="progress-bar progress-bar-warning progress-bar-striped progress-bar-animated"
@@ -300,9 +300,10 @@ export default {
                         dataset.id,
                         this.datasetRawData,
                         this.datasetRawData.name,
-                        function(bytesUploaded, bytesTotal) {
+                        (bytesUploaded, bytesTotal) => {
 
-                            this.currentUploadProgress = 100 * bytesUploaded / bytesTotal;
+                            this.currentUploadProgress = Math.round(100 * bytesUploaded / bytesTotal);
+                            console.log(this.currentUploadProgress);
 
                     }).then(() => {
 

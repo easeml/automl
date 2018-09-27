@@ -169,6 +169,7 @@ function uploadDataset(id, data, filename, onProgress) {
             },
             headers: this.authHeader,
             onProgress: onProgress,
+            //chunkSize: 10000,
             onSuccess: () => resolve(),
             onError: (e) => reject(e)
         });
