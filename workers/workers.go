@@ -1,13 +1,15 @@
 package workers
 
 import (
-	"github.com/ds3lab/easeml/database/model"
-	"github.com/ds3lab/easeml/logger"
-	"github.com/ds3lab/easeml/storage"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
+
+	"github.com/ds3lab/easeml/database/model"
+	"github.com/ds3lab/easeml/logger"
+	"github.com/ds3lab/easeml/storage"
 
 	"github.com/globalsign/mgo/bson"
 	"github.com/pkg/errors"
@@ -65,7 +67,7 @@ func (context Context) getModuleImagePath(moduleID, moduleType string) string {
 		panic(err)
 	}
 	if len(matches) != 1 {
-		panic("there should be only one image tar file")
+		panic("there should be only one image tar file, moduleID: " + moduleID + " found: [" + strings.Join(matches, ", ") + "]")
 	}
 	return matches[0]
 }
