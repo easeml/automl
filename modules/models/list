@@ -1,0 +1,8 @@
+class-gp
+class-knn
+class-rnd-forest
+class-svm
+reg-gp
+reg-mlp
+reg-sgd
+reg-svm
