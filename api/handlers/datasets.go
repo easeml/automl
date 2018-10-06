@@ -2,8 +2,6 @@ package handlers
 
 import (
 	"bytes"
-	"github.com/ds3lab/easeml/api/responses"
-	"github.com/ds3lab/easeml/database/model"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -13,6 +11,9 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/ds3lab/easeml/api/responses"
+	"github.com/ds3lab/easeml/database/model"
 
 	"github.com/mholt/archiver"
 
@@ -403,7 +404,7 @@ func (apiContext Context) DatasetsDownloadHandler(basePath string) http.HandlerF
 		}
 
 		// Uploading is permitted only if the dataset status is "unpacked".
-		if dataset.Status != model.DatasetUnpacked {
+		if dataset.Status != model.DatasetValidated {
 			responses.Context(apiContext).RespondWithError(w, r, http.StatusNotFound, http.StatusText(http.StatusNotFound), nil)
 			return
 		}
