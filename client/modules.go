@@ -93,7 +93,7 @@ func (context Context) GetModuleByID(id string) (result *model.Module, err error
 }
 
 // CreateModule creates a new module given the provided parameters.
-func (context Context) CreateModule(id, moduleType, name, description, source, sourceAddress string) (string, error) {
+func (context Context) CreateModule(id, moduleType, label, name, description, source, sourceAddress string) (string, error) {
 
 	if id == "" {
 		panic("id argument cannot be empty")
@@ -114,6 +114,7 @@ func (context Context) CreateModule(id, moduleType, name, description, source, s
 	module := model.Module{
 		ID:            id,
 		Type:          moduleType,
+		Label:         label,
 		Name:          name,
 		Description:   description,
 		Source:        source,

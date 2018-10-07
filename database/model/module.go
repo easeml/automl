@@ -57,6 +57,7 @@ type Module struct {
 	ID            string        `bson:"id" json:"id"`
 	User          string        `bson:"user" json:"user"`
 	Type          string        `bson:"type" json:"type"`
+	Label         string        `bson:"label" json:"label"`
 	Name          string        `bson:"name" json:"name"`
 	Description   string        `bson:"description" json:"description"`
 	SchemaIn      string        `bson:"schema-in" json:"schema-in"`
@@ -118,6 +119,7 @@ func (context Context) GetModules(
 		sortBy != "id" &&
 		sortBy != "user" &&
 		sortBy != "type" &&
+		sortBy != "label" &&
 		sortBy != "source" &&
 		sortBy != "source-address" &&
 		sortBy != "creation-time" &&
@@ -148,7 +150,7 @@ func (context Context) GetModules(
 		case "id":
 			setDefault(&query, "id", bson.M{})
 			query["id"].(bson.M)["$in"] = v.([]string)
-		case "user", "type", "status", "source", "source-address":
+		case "user", "type", "label", "status", "source", "source-address":
 			setDefault(&query, k, bson.M{})
 			query[k].(bson.M)["$eq"] = v.(string)
 		case "schema-in":
@@ -196,7 +198,7 @@ func (context Context) GetModules(
 			}
 			var otherCursor interface{}
 			switch sortBy {
-			case "id", "user", "type", "source", "source-address", "status":
+			case "id", "user", "type", "label", "source", "source-address", "status":
 				otherCursor = string(decoded)
 			case "creation-time":
 				var t time.Time
@@ -296,6 +298,8 @@ func (context Context) GetModules(
 				b = []byte(lastResult.User)
 			case "type":
 				b = []byte(lastResult.Type)
+			case "label":
+				b = []byte(lastResult.Label)
 			case "source":
 				b = []byte(lastResult.Source)
 			case "source-address":

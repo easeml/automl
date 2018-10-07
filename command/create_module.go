@@ -1,17 +1,18 @@
 package command
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/ds3lab/easeml/client"
 	"github.com/ds3lab/easeml/database/model"
 	"github.com/ds3lab/easeml/modules"
-	"fmt"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var moduleID, moduleType, moduleName, moduleDescription, moduleSchema, moduleSource, moduleSourceAddress string
+var moduleID, moduleType, moduleLabel, moduleName, moduleDescription, moduleSchema, moduleSource, moduleSourceAddress string
 
 var createModuleCmd = &cobra.Command{
 	Use:   "module",
@@ -130,7 +131,17 @@ var createModuleCmd = &cobra.Command{
 				}
 			}
 
-			_, err := context.CreateModule(moduleID, moduleType, moduleName, descriptionString, moduleSource, moduleSourceAddress)
+			// Module Label is optional.
+			if moduleLabel == "" {
+				prompt := "Module Label [optional]:"
+				err := readLine(prompt, &moduleLabel)
+				if err != nil {
+					fmt.Printf(err.Error() + "\n")
+					return
+				}
+			}
+
+			_, err := context.CreateModule(moduleID, moduleType, moduleLabel, moduleName, descriptionString, moduleSource, moduleSourceAddress)
 			if err != nil {
 				fmt.Println(err.Error())
 				return
@@ -160,6 +171,7 @@ func init() {
 
 	createModuleCmd.Flags().StringVar(&moduleID, "id", "", "Module ID.")
 	createModuleCmd.Flags().StringVar(&moduleType, "type", "", "Module type.")
+	createModuleCmd.Flags().StringVar(&moduleLabel, "label", "", "Module label.")
 	createModuleCmd.Flags().StringVar(&moduleName, "name", "", "Module full name.")
 	createModuleCmd.Flags().StringVar(&moduleDescription, "description", "", "Module description. "+
 		"Can be a path to a text file or \"-\" in order to read the description from stdin.")

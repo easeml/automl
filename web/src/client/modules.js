@@ -8,6 +8,7 @@ function transformDataItem(input) {
     return {
         id: input.id,
         type: input.type,
+        label: input.label,
         name: input.name,
         description: input.description,
         schemaIn: input["schema-in"],
@@ -114,6 +115,7 @@ function createModule(input) {
     let data = {
         "id" : input["id"],
         "type" : input["type"],
+        "label" : input["label"],
         "source" : input["source"],
         "source-address" : input["source-address"],
         "name" : input["name"] || "",

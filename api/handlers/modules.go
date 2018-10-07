@@ -1,14 +1,15 @@
 package handlers
 
 import (
-	"github.com/ds3lab/easeml/api/responses"
-	"github.com/ds3lab/easeml/database/model"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/ds3lab/easeml/api/responses"
+	"github.com/ds3lab/easeml/database/model"
 
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
@@ -29,6 +30,7 @@ func (apiContext Context) ModulesGet(w http.ResponseWriter, r *http.Request) {
 	user := query.Get("user")
 	status := query.Get("status")
 	moduleType := query.Get("type")
+	label := query.Get("label")
 	source := query.Get("source")
 	schemaIn := query.Get("schema-in")
 	schemaOut := query.Get("schema-out")
@@ -72,6 +74,9 @@ func (apiContext Context) ModulesGet(w http.ResponseWriter, r *http.Request) {
 	if moduleType != "" {
 		filters["type"] = moduleType
 	}
+	if label != "" {
+		filters["label"] = label
+	}
 	if source != "" {
 		filters["source"] = source
 	}
@@ -107,6 +112,7 @@ func (apiContext Context) ModulesGet(w http.ResponseWriter, r *http.Request) {
 		query.Set("user", user)
 		query.Set("status", status)
 		query.Set("type", moduleType)
+		query.Set("label", label)
 		query.Set("source", source)
 		query.Set("schema-in", schemaIn)
 		query.Set("schema-out", schemaOut)
