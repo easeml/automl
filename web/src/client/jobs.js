@@ -21,6 +21,7 @@ function transformDataItem(input) {
         models: input.models,
         objective: input.objective,
         maxTasks: input["max-tasks"],
+        configSpace: input["config-space"],
         creationTime: creationTime,
         creationTimeString: creationTime.toLocaleString(),
         runningDuration: runningDuration,
