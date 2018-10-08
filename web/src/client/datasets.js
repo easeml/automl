@@ -180,11 +180,48 @@ function uploadDataset(id, data, filename, onProgress) {
 
 }
 
+function listDatasetDirectoryByPath(id, relPath) {
+
+    // Run query and collect results as a promise.
+    return new Promise((resolve, reject) => {
+
+        this.axiosInstance.get("/datasets/"+id+"/data/"+relPath)
+        .then(response => {
+            let result = response.data;
+            resolve(result);
+        })
+        .catch(e => {
+            reject(e);
+        });
+    });
+
+}
+
+function downloadDatasetByPath(id, relPath) {
+
+    // Run query and collect results as a promise. The result passed to the promise is a Blob.
+    return new Promise((resolve, reject) => {
+
+        this.axiosInstance.get("/datasets/"+id+"/data/"+relPath)
+        .then(response => {
+            let contentType = response.headers["Content-Type"] || "";
+            let result = new Blob([response.data], {type : contentType});
+            resolve(result);
+        })
+        .catch(e => {
+            reject(e);
+        });
+    });
+
+}
+
 export default {
     getDatasets: getDatasets,
     getDatasetById: getDatasetById,
     validateDatasetFields: validateDatasetFields,
     createDataset: createDataset,
     updateDataset: updateDataset,
-    uploadDataset: uploadDataset
+    uploadDataset: uploadDataset,
+    listDatasetDirectoryByPath: listDatasetDirectoryByPath,
+    downloadDatasetByPath: downloadDatasetByPath
 };

@@ -100,8 +100,45 @@ function updateTask(id, updates) {
     });
 }
 
+function listTaskPredictionsDirectoryByPath(id, relPath) {
+
+    // Run query and collect results as a promise.
+    return new Promise((resolve, reject) => {
+
+        this.axiosInstance.get("/tasks/"+id+"/predictions/"+relPath)
+        .then(response => {
+            let result = response.data;
+            resolve(result);
+        })
+        .catch(e => {
+            reject(e);
+        });
+    });
+
+}
+
+function downloadTaskPredictionsByPath(id, relPath) {
+
+    // Run query and collect results as a promise. The result passed to the promise is a Blob.
+    return new Promise((resolve, reject) => {
+
+        this.axiosInstance.get("/tasks/"+id+"/predictions/"+relPath)
+        .then(response => {
+            let contentType = response.headers["Content-Type"] || "";
+            let result = new Blob([response.data], {type : contentType});
+            resolve(result);
+        })
+        .catch(e => {
+            reject(e);
+        });
+    });
+
+}
+
 export default {
     getTasks: getTasks,
     getTaskById: getTaskById,
-    updateTask: updateTask
+    updateTask: updateTask,
+    listTaskPredictionsDirectoryByPath: listTaskPredictionsDirectoryByPath,
+    downloadTaskPredictionsByPath: downloadTaskPredictionsByPath
 };
