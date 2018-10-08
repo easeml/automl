@@ -29,6 +29,18 @@ function transformDataItem(input) {
     };
 }
 
+function mergeModelConfigSpaces(input) {
+    // Take an object where keys are model IDs and values are config spaces.
+    let result = [];
+    for (let modelId in input) {
+        if (input.hasOwnProperty(modelId)) {
+           result.push({"id" : modelId, "config" : input[modelId]})
+        }
+    }
+    // Return the object formatted as it should be sent to the easeml REST API.
+    return result
+}
+
 function getJobs(query) {
     
     // This allows us to accept camel case keys.
@@ -105,6 +117,12 @@ function createJob(input) {
         "models" : input["models"],
         "accept-new-models" : input["accept-new-models"] == true,
         "max-tasks" : Number(input["max-tasks"]),
+        "config-space" : input["config-space"] || "",
+    }
+
+    // The config space must be passed as a string because that is how it is stored.
+    if (typeof data["config-space"] !== "string") {
+        data["config-space"] = JSON.stringify(data["config-space"]);
     }
 
     // Run post request as a promise.
@@ -153,6 +171,7 @@ export default {
     getJobs: getJobs,
     getJobById: getJobById,
     validateJobFields: validateJobFields,
+    mergeModelConfigSpaces: mergeModelConfigSpaces,
     createJob: createJob,
     updateJob: updateJob
 };

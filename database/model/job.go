@@ -2,6 +2,7 @@ package model
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -480,6 +481,8 @@ func (context Context) GetJobConfigSpaceByID(id bson.ObjectId) (configSpace stri
 		return
 	}
 
+	// TODO: This doesn't work as intended probably. It will just read the existing job config space.
+	//       This function is never used. Reconsider rewriting before usage.
 	return context.GetJobConfigSpace(job)
 }
 
@@ -494,12 +497,43 @@ func (context Context) GetJobConfigSpace(job Job) (configSpace string, err error
 		return
 	}
 
+	// If the job config space has been specified for some models then we want to take those definitions instead
+	// of the original ones.
+	redefinedConfigSpaces := map[string]string{}
+	if job.ConfigSpace != "" {
+		type modelConfigElement struct {
+			ID     string      `json:"id"`
+			Config interface{} `json:"config"`
+		}
+		var jobConfigSpace []modelConfigElement
+		err = json.Unmarshal([]byte(job.ConfigSpace), &jobConfigSpace)
+		if err != nil {
+			err = errors.Wrap(err, "error while json decoding the job config space field")
+			return
+		}
+		for i := range jobConfigSpace {
+			var configDef []byte
+			configDef, err = json.Marshal(jobConfigSpace[i])
+			if err != nil {
+				err = errors.Wrap(err, "error while json encoding the job config space object")
+				return
+			}
+			redefinedConfigSpaces[jobConfigSpace[i].ID] = string(configDef)
+		}
+	}
+
 	// Build the config space by building a .choice structure above the model config spaces.
 	configSpaceList := make([]string, len(job.Models))
 	for i := range job.Models {
 		for j := range models {
 			if job.Models[i] == models[j].ID {
-				configSpaceList[i] = fmt.Sprintf("{\"id\" : \"%s\", \"config\" : %s }", models[j].ID, models[j].ConfigSpace)
+				// If the model config space was redefined, then we use that instead of the default.
+				if configDef, ok := redefinedConfigSpaces[models[j].ID]; ok {
+					// TODO: Validate the redefined config space by checking that it is a subset of the default.
+					configSpaceList[i] = configDef
+				} else {
+					configSpaceList[i] = fmt.Sprintf("{\"id\" : \"%s\", \"config\" : %s }", models[j].ID, models[j].ConfigSpace)
+				}
 				break
 			}
 		}
