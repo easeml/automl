@@ -24,6 +24,8 @@ function transformDataItem(input) {
         altObjectives: input["alt-objectives"],
         config: input.config,
         quality: input.quality,
+        qualityTrain: input["quality-train"],
+        qualityExpected: input["quality-expected"],
         altQualities: input["alt-qualities"],
         status: input.status,
         statusMessage: input["status-message"],

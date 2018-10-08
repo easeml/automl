@@ -85,6 +85,7 @@ type Task struct {
 	Config          string             `bson:"config" json:"config"`
 	Quality         float64            `bson:"quality" json:"quality"`
 	QualityTrain    float64            `bson:"quality-train" json:"quality-train"`
+	QualityExpected float64            `bson:"quality-expected" json:"quality-expected"`
 	AltQualities    []float64          `bson:"alt-qualities" json:"alt-qualities"`
 	Status          string             `bson:"status" json:"status"`
 	StatusMessage   string             `bson:"status-message" json:"status-message"`
@@ -203,6 +204,7 @@ func (context Context) GetTasks(
 		sortBy != "model" &&
 		sortBy != "quality" &&
 		sortBy != "quality-train" &&
+		sortBy != "quality-expected" &&
 		sortBy != "creation-time" &&
 		sortBy != "status" &&
 		sortBy != "stage" {
@@ -277,7 +279,7 @@ func (context Context) GetTasks(
 				var t time.Time
 				t.GobDecode(decoded)
 				otherCursor = t
-			case "quality", "quality-train":
+			case "quality", "quality-train", "quality-expected":
 				otherCursor = math.Float64frombits(binary.BigEndian.Uint64(decoded))
 			}
 
@@ -362,6 +364,9 @@ func (context Context) GetTasks(
 				b = make([]byte, 8)
 				binary.BigEndian.PutUint64(b, math.Float64bits(lastResult.Quality))
 			case "quality-train":
+				b = make([]byte, 8)
+				binary.BigEndian.PutUint64(b, math.Float64bits(lastResult.QualityTrain))
+			case "quality-expected":
 				b = make([]byte, 8)
 				binary.BigEndian.PutUint64(b, math.Float64bits(lastResult.QualityTrain))
 			case "status":
@@ -514,6 +519,8 @@ func (context Context) UpdateTask(id string, updates map[string]interface{}) (re
 			valueUpdates["quality"] = v.(float64)
 		case "quality-train":
 			valueUpdates["quality-train"] = v.(float64)
+		case "quality-expected":
+			valueUpdates["quality-expected"] = v.(float64)
 		case "alt-qualities":
 			valueUpdates["alt-qualities"] = v.([]float64)
 		case "status":
