@@ -1,11 +1,12 @@
 package router
 
 import (
+	"fmt"
+	"net/http"
+
 	"github.com/ds3lab/easeml/api"
 	"github.com/ds3lab/easeml/api/handlers"
 	"github.com/ds3lab/easeml/api/middleware"
-	"fmt"
-	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/justinas/alice"
@@ -221,6 +222,13 @@ func New(context api.Context) http.Handler {
 			Methods: []string{"GET"},
 			Pattern: "/tasks/{job-id}/{id}",
 			Handler: commonMiddleware.Append(middlewareContext.HideFromAnon).ThenFunc(handlerContext.TasksByIDGet),
+		},
+		Route{
+			Name:     "PatchUser",
+			Methods:  []string{"GET"},
+			Pattern:  "/tasks/{job-id}/{task-id}/predictions",
+			IsPrefix: true,
+			Handler:  commonMiddleware.ThenFunc(handlerContext.TaskPredictionsDownloadHandler("/api/v1/tasks/{job-id}/{task-id}/predictions")),
 		},
 	}
 

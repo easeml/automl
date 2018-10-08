@@ -1,13 +1,14 @@
 package handlers
 
 import (
-	"github.com/ds3lab/easeml/api/responses"
-	"github.com/ds3lab/easeml/database/model"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/ds3lab/easeml/api/responses"
+	"github.com/ds3lab/easeml/database/model"
 
 	"github.com/globalsign/mgo/bson"
 	"github.com/gorilla/context"
@@ -172,4 +173,63 @@ func (apiContext Context) TasksByIDGet(w http.ResponseWriter, r *http.Request) {
 	var response = map[string]interface{}{}
 	response["data"] = task
 	responses.RespondWithJSON(w, http.StatusOK, response)
+}
+
+// TaskPredictionsDownloadHandler handles all task prediction download requests.
+func (apiContext Context) TaskPredictionsDownloadHandler(basePath string) http.HandlerFunc {
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		// Get context variables.
+		modelContext := context.Get(r, "modelContext").(model.Context)
+
+		// Get path parameters. Format the ID as job-id/task-id.
+		vars := mux.Vars(r)
+		jobID := vars["job-id"]
+		taskID := vars["task-id"]
+
+		// Build base path.
+		myBasePath := basePath
+		myBasePath = strings.Replace(myBasePath, "{job-id}", jobID, 1)
+		myBasePath = strings.Replace(myBasePath, "{task-id}", taskID, 1)
+
+		// Validate parameters.
+		if taskID == "" {
+			responses.Context(apiContext).RespondWithError(w, r, http.StatusBadRequest, "The 'task-id' parameter is required.", nil)
+			return
+		}
+		id := fmt.Sprintf("%s/%s", jobID, taskID)
+
+		// Extract the relative path.
+		if strings.HasPrefix(r.RequestURI, myBasePath) == false {
+			panic(fmt.Sprintf("the request URI '%s' does not match basePath '%s'", r.RequestURI, myBasePath))
+		}
+		relativePath := r.RequestURI[len(myBasePath):]
+
+		// Access model.
+		task, err := modelContext.GetTaskByID(id)
+		if errors.Cause(err) == model.ErrNotFound {
+			responses.Context(apiContext).RespondWithError(w, r, http.StatusNotFound, http.StatusText(http.StatusNotFound), errors.WithStack(err))
+			return
+		} else if err != nil {
+			responses.Context(apiContext).RespondWithError(w, r, http.StatusInternalServerError, "Something went wrong.", errors.WithStack(err))
+			return
+		}
+
+		// Predictions access is permitted only if the task status is "completed".
+		if task.Status != model.TaskCompleted {
+			responses.Context(apiContext).RespondWithError(w, r, http.StatusNotFound, http.StatusText(http.StatusNotFound), nil)
+			return
+		}
+
+		// Get the data directory of the task while ensuring it exists.
+		taskPaths, err := apiContext.StorageContext.GetAllTaskPaths(id)
+		if err != nil {
+			responses.Context(apiContext).RespondWithError(w, r, http.StatusInternalServerError, "Something went wrong.", errors.WithStack(err))
+			return
+		}
+		apiContext.ServeLocalResource(taskPaths.Predictions, relativePath, task.StageTimes.Predicting.End, w, r)
+
+	})
+
 }
