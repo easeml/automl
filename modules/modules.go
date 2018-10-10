@@ -20,6 +20,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/ghodss/yaml"
+	"github.com/mholt/archiver"
 	"github.com/pkg/errors"
 )
 
@@ -513,4 +514,72 @@ func ValidateModel(modelImageName string, schemaStringIn, schemaStringOut, confi
 	}
 
 	return nil
+}
+
+// BuildModelImageWithMemory takes a model image, copies the memory content to it and builds a new image from that.
+func BuildModelImageWithMemory(baseImageName string, memoryLocation string) (result io.ReadSeeker, err error) {
+	// Load image.
+
+	// Generate dockerfile and save it to a temp directory so that we can add it to the tar file.
+	const dockerfileFormat string = `
+	FROM %s
+	COPY %s/* /memory/
+	`
+	tempDirName, err := ioutil.TempDir("", "easeml_dockerfile_")
+	if err != nil {
+		err = errors.Wrap(err, "failed to generate temp directory")
+		return
+	}
+	dockerfilePath := filepath.Join(tempDirName, "Dockerfile")
+	dockerfileContent := fmt.Sprintf(dockerfileFormat, baseImageName, filepath.Base(memoryLocation))
+	err = ioutil.WriteFile(dockerfilePath, []byte(dockerfileContent), storage.DefaultFilePerm)
+	if err != nil {
+		err = errors.Wrap(err, "failed to write temporary docker file")
+		return
+	}
+
+	// Generate a tar file that will contain the docker build context. Add the docker file and model memory.
+	buildContextFiles := []string{
+		dockerfilePath,
+		memoryLocation,
+	}
+	var b bytes.Buffer
+	err = archiver.Tar.Write(&b, buildContextFiles)
+
+	// Build the image and return the tar file bytes.
+	imageTags := []string{"easeml-temp-model"}
+	buildOptions := types.ImageBuildOptions{Tags: imageTags}
+	ctx := context.Background()
+	cli := GetDockerClient()
+	var buildResponse types.ImageBuildResponse
+	buildResponse, err = cli.ImageBuild(ctx, bytes.NewReader(b.Bytes()), buildOptions)
+	defer buildResponse.Body.Close()
+	//_, err = io.Copy(os.Stdout, buildResponse.Body) // Use for debugging.
+	if err != nil {
+		err = errors.Wrap(err, "failed to build docker image")
+		return
+	}
+
+	// Get image as tar file.
+	reader, err := cli.ImageSave(ctx, imageTags)
+	if err != nil {
+		err = errors.Wrap(err, "failed to save docker image")
+		return
+	}
+	defer reader.Close()
+
+	var data []byte
+	data, err = ioutil.ReadAll(reader)
+	if err != nil {
+		err = errors.Wrap(err, "reader access error")
+		return
+	}
+	// TODO: Delete image.
+	_, err = cli.ImageRemove(ctx, imageTags[0], types.ImageRemoveOptions{Force: true})
+	if err != nil {
+		err = errors.Wrap(err, "failed to remove docker image")
+		return
+	}
+
+	return bytes.NewReader(data), nil
 }

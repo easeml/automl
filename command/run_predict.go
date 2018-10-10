@@ -1,16 +1,19 @@
 package command
 
 import (
-	"github.com/ds3lab/easeml/modules"
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	"github.com/ds3lab/easeml/modules"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var runPredictData, runPredictMemory, runPredictOutput string
+
+const defaultMemory = "/memory"
 
 var runPredictCmd = &cobra.Command{
 	Use:   "predict [image]",
@@ -26,7 +29,11 @@ var runPredictCmd = &cobra.Command{
 			fmt.Printf("Data path \"%s\" doesn't exist.\n", runPredictData)
 			return
 		}
-		if _, err := os.Stat(runPredictMemory); os.IsNotExist(err) {
+		if runPredictMemory == "" {
+			// We allow the memory to be omitted.
+			// Then we assume the model is trained and has a local /memory directory.
+			runPredictMemory = defaultMemory
+		} else if _, err := os.Stat(runPredictMemory); os.IsNotExist(err) {
 			fmt.Printf("Memory path \"%s\" doesn't exist.\n", runPredictMemory)
 			return
 		}
@@ -34,6 +41,8 @@ var runPredictCmd = &cobra.Command{
 			fmt.Printf("Output path \"%s\" doesn't exist.\n", runPredictOutput)
 			return
 		}
+
+		// TODO: If the image is a tar file we load it.
 
 		command := []string{
 			"predict",

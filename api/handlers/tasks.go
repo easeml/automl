@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"path/filepath"
 	"strconv"
 	"strings"
 
 	"github.com/ds3lab/easeml/api/responses"
 	"github.com/ds3lab/easeml/database/model"
+	"github.com/ds3lab/easeml/modules"
 
 	"github.com/globalsign/mgo/bson"
 	"github.com/gorilla/context"
@@ -232,4 +234,56 @@ func (apiContext Context) TaskPredictionsDownloadHandler(basePath string) http.H
 
 	})
 
+}
+
+// TaskImageDownload bulds a trained model Docker image and returns it as a tar archive.
+func (apiContext Context) TaskImageDownload(w http.ResponseWriter, r *http.Request) {
+
+	// Get context variables.
+	modelContext := context.Get(r, "modelContext").(model.Context)
+
+	// Get path parameters. Format the ID as user-id/module-id.
+	vars := mux.Vars(r)
+	taskID := vars["job-id"]
+	id := vars["id"]
+
+	// Validate parameters.
+	if id == "" {
+		responses.Context(apiContext).RespondWithError(w, r, http.StatusBadRequest, "The 'id' parameter is required.", nil)
+		return
+	}
+	id = fmt.Sprintf("%s/%s", taskID, id)
+
+	// Access model and get task object.
+	task, err := modelContext.GetTaskByID(id)
+	if errors.Cause(err) == model.ErrNotFound || task.Status != model.TaskCompleted {
+		responses.Context(apiContext).RespondWithError(w, r, http.StatusNotFound, http.StatusText(http.StatusNotFound), errors.WithStack(err))
+		return
+	} else if err != nil {
+		responses.Context(apiContext).RespondWithError(w, r, http.StatusInternalServerError, "Something went wrong.", errors.WithStack(err))
+		return
+	}
+
+	// Access data model and model object. The model should exist, if not then this is an internal server error.
+	taskModel, err := modelContext.GetModuleByID(task.Model)
+	if err != nil {
+		responses.Context(apiContext).RespondWithError(w, r, http.StatusInternalServerError, "Something went wrong.", errors.WithStack(err))
+		return
+	}
+
+	// Get the task parameters location.
+	allPaths, err := apiContext.StorageContext.GetAllTaskPaths(task.ID)
+	if err != nil {
+		responses.Context(apiContext).RespondWithError(w, r, http.StatusInternalServerError, "Something went wrong.", errors.WithStack(err))
+		return
+	}
+
+	// Build model and serve the tar file.
+	imageReader, err := modules.BuildModelImageWithMemory(taskModel.SourceAddress, allPaths.Parameters)
+	if err != nil {
+		responses.Context(apiContext).RespondWithError(w, r, http.StatusInternalServerError, "Something went wrong.", errors.WithStack(err))
+		return
+	}
+	fileName := filepath.Base(taskModel.ID) + "-trained.tar"
+	http.ServeContent(w, r, fileName, task.StageTimes.Training.End, imageReader)
 }

@@ -230,6 +230,12 @@ func New(context api.Context) http.Handler {
 			IsPrefix: true,
 			Handler:  commonMiddleware.ThenFunc(handlerContext.TaskPredictionsDownloadHandler("/api/v1/tasks/{job-id}/{task-id}/predictions")),
 		},
+		Route{
+			Name:    "GetUser",
+			Methods: []string{"GET"},
+			Pattern: "/tasks/{job-id}/{id}/image/download",
+			Handler: commonMiddleware.Append(middlewareContext.HideFromAnon).ThenFunc(handlerContext.TaskImageDownload),
+		},
 	}
 
 	router := mux.NewRouter().StrictSlash(true).PathPrefix("/api/v1").Subrouter()
