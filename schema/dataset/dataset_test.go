@@ -161,8 +161,14 @@ func testDatasetGenerate(exampleFile string) func(*testing.T) {
 			panic(err)
 		}
 
+		// Generate sample names.
+		sampleNames := make([]string, 10)
+		for i := range sampleNames {
+			sampleNames[i] = RandomString(10, "")
+		}
+
 		// Generate random dataset from the schema.
-		dataset, err := GenerateFromSchema("root", dstSchema, 10, 10)
+		dataset, err := GenerateFromSchema("root", dstSchema, sampleNames, 10)
 		if err != nil {
 			t.Error("Schema generation error. " + err.Error())
 			return

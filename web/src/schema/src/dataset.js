@@ -425,12 +425,13 @@ Dataset.prototype.inferSchema = function() {
         // If a links file is missing, we might have implicit links.
         if (Object.keys(sampleChildren["links"]).length === 0) {
             
-            // If we have non-signleton nodes, then we assume a single chain.
+            // If we have non-signleton nodes, then we assume a single directed chain.
             // To construct a graph without links, there must be an empty links file.
             for (let nodeName in schNodes) {
                 let node = schNodes[nodeName];
                 if (node.isSingleton === false) {
                     node.links[nodeName] = new sch.Link(1);
+                    schUndirected = false
                 }
             }
         

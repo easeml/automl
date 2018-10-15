@@ -416,11 +416,12 @@ func (d *Dataset) InferSchema() (*sch.Schema, Error) {
 		// If a links file is missing, we might have implicit links.
 		if len(sampleLinks) == 0 {
 
-			// If we have non-signleton nodes, then we assume a single chain.
+			// If we have non-signleton nodes, then we assume a single undirected chain.
 			// To construct a graph without links, there must be an empty links file.
 			for nodeName, node := range schNodes {
 				if node.IsSingleton == false {
 					node.Links[nodeName] = &sch.Link{LBound: 1, UBound: 1}
+					schUndirected = false
 				}
 			}
 
