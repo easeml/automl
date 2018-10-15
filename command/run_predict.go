@@ -42,7 +42,19 @@ var runPredictCmd = &cobra.Command{
 			return
 		}
 
-		// TODO: If the image is a tar file we load it.
+		// If the image is a tar file we load it.
+		fileStat, err := os.Stat(modelImageName)
+		if err == nil {
+			if fileStat.IsDir() == false {
+				modelImagePath := modelImageName
+				modelImageName, err = modules.LoadImage(modelImagePath)
+				if err != nil {
+					fmt.Printf("Error while loading image from \"%s\":\n", modelImagePath)
+					fmt.Println(err)
+					return
+				}
+			}
+		}
 
 		command := []string{
 			"predict",
