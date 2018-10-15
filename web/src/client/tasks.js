@@ -105,7 +105,7 @@ function listTaskPredictionsDirectoryByPath(id, relPath) {
     // Run query and collect results as a promise.
     return new Promise((resolve, reject) => {
 
-        this.axiosInstance.get("/tasks/"+id+"/predictions/"+relPath)
+        this.axiosInstance.get("/tasks/"+id+"/predictions"+relPath)
         .then(response => {
             let result = response.data;
             resolve(result);
@@ -117,22 +117,56 @@ function listTaskPredictionsDirectoryByPath(id, relPath) {
 
 }
 
-function downloadTaskPredictionsByPath(id, relPath) {
+function downloadTaskPredictionsByPath(id, relPath, inBrowser=false) {
 
-    // Run query and collect results as a promise. The result passed to the promise is a Blob.
-    return new Promise((resolve, reject) => {
+    if (inBrowser) {
+        const url = this.axiosInstance.defaults.baseURL + "/tasks/"+id+"/predictions"+relPath
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', id+".tar"); //or any other extension
+        document.body.appendChild(link);
+        link.click();
+    } else {
+        // Run query and collect results as a promise. The result passed to the promise is a Blob.
+        return new Promise((resolve, reject) => {
 
-        this.axiosInstance.get("/tasks/"+id+"/predictions/"+relPath)
-        .then(response => {
-            let contentType = response.headers["Content-Type"] || "";
-            let result = new Blob([response.data], {type : contentType});
-            resolve(result);
-        })
-        .catch(e => {
-            reject(e);
+            this.axiosInstance.get("/tasks/"+id+"/predictions"+relPath)
+            .then(response => {
+                let contentType = response.headers["Content-Type"] || "";
+                let result = new Blob([response.data], {type : contentType});
+                resolve(result);
+            })
+            .catch(e => {
+                reject(e);
+            });
         });
-    });
+    }
+}
 
+function downloadTrainedModelAsImage(id, inBrowser=false) {
+
+    if (inBrowser) {
+        const url = this.axiosInstance.defaults.baseURL + "/tasks/"+id+"/image/download" + "?api-key=" + this.userCredentials.apiKey
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', id+".tar"); //or any other extension
+        document.body.appendChild(link);
+        link.click();
+    } else {
+        // Run query and collect results as a promise. The result passed to the promise is a Blob.
+        return new Promise((resolve, reject) => {
+
+            this.axiosInstance.get("/tasks/"+id+"/image/download")
+            .then(response => {
+                let contentType = response.headers["Content-Type"] || "";
+                let result = new Blob([response.data], {type : contentType});
+                resolve(result);
+            })
+            .catch(e => {
+                reject(e);
+            });
+        });
+    }
 }
 
 export default {
@@ -140,5 +174,6 @@ export default {
     getTaskById: getTaskById,
     updateTask: updateTask,
     listTaskPredictionsDirectoryByPath: listTaskPredictionsDirectoryByPath,
-    downloadTaskPredictionsByPath: downloadTaskPredictionsByPath
+    downloadTaskPredictionsByPath: downloadTaskPredictionsByPath,
+    downloadTrainedModelAsImage: downloadTrainedModelAsImage
 };

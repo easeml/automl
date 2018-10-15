@@ -38,7 +38,7 @@
                         <td>{{item.status}}</td>
 
                         <td>
-                            <button type="button" class="btn btn-icon waves-effect btn-light">
+                            <button type="button" class="btn btn-icon waves-effect btn-light" v-show="item.status==='validated'" @click.prevent="downloadData(item.id)">
                                 <i class="fa fa-cloud-download"></i>
                             </button>
                         </td>
@@ -69,16 +69,27 @@ export default {
                 this.items = data;
             })
             .catch(e => console.log(e));
+        },
+        downloadData: function(datasetId) {
+
+            let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
+
+            context.downloadDatasetByPath(datasetId, ".tar", true)
         }
     },
     mounted() {
 
         this.loadData();
         
+        // (function runForever(){
+        //     this.loadData();
+        //     setTimeout(runForever, 5000);
+        // })()
+        
         // Repeat call every 10 seconds.
         this.timer = setInterval(function() {
             this.loadData();
-        }.bind(this), 3000);
+        }.bind(this), 5000);
     },
     beforeDestroy() {
         clearInterval(this.timer);

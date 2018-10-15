@@ -74,10 +74,12 @@
                         <td>{{ item.runningDurationString }}</td>
 
                         <td>{{item.quality}}</td>
-
                         <td>
-                            <button type="button" class="btn btn-icon waves-effect btn-light">
+                            <button type="button" class="btn btn-icon waves-effect btn-light" v-show="item.status==='completed'" @click.prevent="downloadPredictions(item.id)">
                                 <i class="fa fa-cloud-download"></i>
+                            </button>
+                            <button type="button" class="btn btn-icon waves-effect btn-light" v-show="item.status==='completed'" @click.prevent="downloadTrainedModel(item.id)">
+                                <i class="mdi mdi-cube-send"></i>
                             </button>
                         </td>
 
@@ -200,6 +202,16 @@ export default {
                 this.job.status = "terminating";
             }
 
+        },
+        downloadPredictions: function(taskId) {
+            let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
+
+            context.downloadTaskPredictionsByPath(taskId, ".tar", true)
+        },
+        downloadTrainedModel: function(taskId) {
+            let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
+
+            context.downloadTrainedModelAsImage(taskId, true)
         }
     },
     mounted() {
@@ -210,7 +222,7 @@ export default {
         // Repeat call every 1 second.
         this.timer = setInterval(function() {
             this.loadData();
-        }.bind(this), 1000);
+        }.bind(this), 5000);
     },
     beforeDestroy() {
         clearInterval(this.timer);

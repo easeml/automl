@@ -185,7 +185,7 @@ function listDatasetDirectoryByPath(id, relPath) {
     // Run query and collect results as a promise.
     return new Promise((resolve, reject) => {
 
-        this.axiosInstance.get("/datasets/"+id+"/data/"+relPath)
+        this.axiosInstance.get("/datasets/"+id+"/data"+relPath)
         .then(response => {
             let result = response.data;
             resolve(result);
@@ -197,22 +197,30 @@ function listDatasetDirectoryByPath(id, relPath) {
 
 }
 
-function downloadDatasetByPath(id, relPath) {
+function downloadDatasetByPath(id, relPath, inBrowser=false) {
 
-    // Run query and collect results as a promise. The result passed to the promise is a Blob.
-    return new Promise((resolve, reject) => {
+    if (inBrowser) {
+        const url = this.axiosInstance.defaults.baseURL + "/datasets/"+id+"/data"+relPath
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', id+".tar"); //or any other extension
+        document.body.appendChild(link);
+        link.click();
+    } else {
+        // Run query and collect results as a promise. The result passed to the promise is a Blob.
+        return new Promise((resolve, reject) => {
 
-        this.axiosInstance.get("/datasets/"+id+"/data/"+relPath)
-        .then(response => {
-            let contentType = response.headers["Content-Type"] || "";
-            let result = new Blob([response.data], {type : contentType});
-            resolve(result);
-        })
-        .catch(e => {
-            reject(e);
+            this.axiosInstance.get("/datasets/"+id+"/data"+relPath)
+            .then(response => {
+                let contentType = response.headers["Content-Type"] || "";
+                let result = new Blob([response.data], {type : contentType});
+                resolve(result);
+            })
+            .catch(e => {
+                reject(e);
+            });
         });
-    });
-
+    }
 }
 
 export default {

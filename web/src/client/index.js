@@ -49,6 +49,8 @@ Context.prototype.validateDatasetFields = datasets.validateDatasetFields;
 Context.prototype.createDataset = datasets.createDataset;
 Context.prototype.updateDataset = datasets.updateDataset;
 Context.prototype.uploadDataset = datasets.uploadDataset;
+Context.prototype.listDatasetDirectoryByPath = datasets.listDatasetDirectoryByPath;
+Context.prototype.downloadDatasetByPath = datasets.downloadDatasetByPath;
 
 Context.prototype.getModules = modules.getModules;
 Context.prototype.getModuleById = modules.getModuleById;
@@ -65,6 +67,9 @@ Context.prototype.updateJob = jobs.updateJob;
 Context.prototype.getTasks = tasks.getTasks;
 Context.prototype.getTaskById = tasks.getTaskById;
 Context.prototype.updateTask = tasks.updateTask;
+Context.prototype.listTaskPredictionsDirectoryByPath = tasks.listTaskPredictionsDirectoryByPath;
+Context.prototype.downloadTaskPredictionsByPath = tasks.downloadTaskPredictionsByPath;
+Context.prototype.downloadTrainedModelAsImage = tasks.downloadTrainedModelAsImage;
 
 Context.prototype.getUsers = users.getUsers;
 Context.prototype.getUserById = users.getUserById;
