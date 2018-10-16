@@ -16,8 +16,11 @@ type Class struct {
 // Type is.
 func (f Class) Type() string { return "class" }
 
-func loadClass(root string, relPath string, name string, opener Opener, metadataOnly bool) (*Class, error) {
-	path := path.Join(relPath, name+TypeExtensions["class"])
+// Subtype is.
+func (f Class) Subtype() string { return "default" }
+
+func loadClass(root string, relPath string, name string, opener Opener, metadataOnly bool, subtype string) (File, error) {
+	path := path.Join(relPath, name+TypeExtensions["class"][subtype])
 	file, err := opener.GetFile(root, path, true, false)
 	if err != nil {
 		return nil, err
@@ -40,7 +43,7 @@ func loadClass(root string, relPath string, name string, opener Opener, metadata
 }
 
 func (f *Class) dump(root string, relPath string, name string, opener Opener) error {
-	path := path.Join(relPath, name) + TypeExtensions["category"]
+	path := path.Join(relPath, name) + TypeExtensions["category"][f.Subtype()]
 	file, err := opener.GetFile(root, path, false, false)
 	if err != nil {
 		return err

@@ -14,7 +14,10 @@ type Directory struct {
 // Type is.
 func (f Directory) Type() string { return "directory" }
 
-func loadDirectory(root string, relPath string, name string, opener Opener, metadataOnly bool) (*Directory, error) {
+// Subtype is.
+func (f Directory) Subtype() string { return "default" }
+
+func loadDirectory(root string, relPath string, name string, opener Opener, metadataOnly bool, subtype string) (File, error) {
 	path := path.Join(relPath, name)
 	files, err := opener.GetDir(root, path, true)
 	if err != nil {
@@ -23,52 +26,36 @@ func loadDirectory(root string, relPath string, name string, opener Opener, meta
 
 	children := map[string]File{}
 	for i := range files {
-		if strings.HasSuffix(files[i], TypeExtensions["tensor"]) {
 
-			fileName := files[i][:len(files[i])-len(TypeExtensions["tensor"])]
-			tensor, err := loadTensor(root, path, fileName, opener, metadataOnly)
-			if err != nil {
-				return nil, err
+		matched := false
+		for fileType := range TypeExtensions {
+			for fileSubtype, ext := range TypeExtensions[fileType] {
+				if strings.HasSuffix(files[i], ext) {
+
+					fileName := files[i][:len(files[i])-len(ext)]
+					loader := LoaderFunctions[fileType]
+					file, err := loader(root, path, fileName, opener, metadataOnly, fileSubtype)
+					if err != nil {
+						return nil, err
+					}
+					children[fileName] = file
+					matched = true
+
+				}
 			}
-			children[fileName] = tensor
+		}
 
-		} else if strings.HasSuffix(files[i], TypeExtensions["category"]) {
-
-			fileName := files[i][:len(files[i])-len(TypeExtensions["category"])]
-			category, err := loadCategory(root, path, fileName, opener, metadataOnly)
-			if err != nil {
-				return nil, err
-			}
-			children[fileName] = category
-
-		} else if strings.HasSuffix(files[i], TypeExtensions["links"]) {
-
-			fileName := files[i][:len(files[i])-len(TypeExtensions["links"])]
-			links, err := loadLinks(root, path, fileName, opener, metadataOnly)
-			if err != nil {
-				return nil, err
-			}
-			children[fileName] = links
-
-		} else if strings.HasSuffix(files[i], TypeExtensions["class"]) {
-
-			fileName := files[i][:len(files[i])-len(TypeExtensions["class"])]
-			class, err := loadClass(root, path, fileName, opener, metadataOnly)
-			if err != nil {
-				return nil, err
-			}
-			children[fileName] = class
-
-		} else {
+		if matched == false {
 
 			fileName := files[i]
-			directory, err := loadDirectory(root, path, fileName, opener, metadataOnly)
+			directory, err := loadDirectory(root, path, fileName, opener, metadataOnly, "default")
 			if err != nil {
 				return nil, err
 			}
 			children[fileName] = directory
 
 		}
+
 	}
 
 	return &Directory{Name: name, Children: children}, nil

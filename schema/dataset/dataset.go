@@ -11,6 +11,7 @@ import (
 // File is.
 type File interface {
 	Type() string
+	Subtype() string
 }
 
 // Dataset is.
@@ -19,21 +20,32 @@ type Dataset struct {
 	Root string
 }
 
+// LoaderFunc is.
+type LoaderFunc func(string, string, string, Opener, bool, string) (File, error)
+
 // TypeExtensions is.
-var TypeExtensions = map[string]string{
-	"tensor":   ".ten.npy",
-	"category": ".cat.txt",
-	"class":    ".class.txt",
-	"links":    ".links.csv",
+var TypeExtensions = map[string]map[string]string{
+	"tensor":   map[string]string{"default": ".ten.npy", "csv": ".ten.csv"},
+	"category": map[string]string{"default": ".cat.txt"},
+	"class":    map[string]string{"default": ".class.txt"},
+	"links":    map[string]string{"default": ".links.csv"},
+}
+
+// LoaderFunctions is.
+var LoaderFunctions = map[string]LoaderFunc{
+	"tensor":   loadTensor,
+	"category": loadCategory,
+	"class":    loadClass,
+	"links":    loadLinks,
 }
 
 // Load is.
 func Load(root string, metadataOnly bool, opener Opener) (*Dataset, error) {
-	directory, err := loadDirectory(root, "", "", opener, metadataOnly)
+	directory, err := loadDirectory(root, "", "", opener, metadataOnly, "default")
 	if err != nil {
 		return nil, err
 	}
-	return &Dataset{Root: root, Directory: *directory}, nil
+	return &Dataset{Root: root, Directory: *(directory.(*Directory))}, nil
 }
 
 // Dump is.

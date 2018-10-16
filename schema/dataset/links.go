@@ -29,6 +29,9 @@ type Links struct {
 // Type is.
 func (f Links) Type() string { return "links" }
 
+// Subtype is.
+func (f Links) Subtype() string { return "default" }
+
 func loadInstanceID(input string) (*InstanceID, error) {
 	splits := strings.Split(input, "/")
 	if len(splits) > 2 {
@@ -78,8 +81,8 @@ func (l *Link) getReverse() *Link {
 	return &Link{Src: l.Dst, Dst: l.Src}
 }
 
-func loadLinks(root string, relPath string, name string, opener Opener, metadataOnly bool) (*Links, error) {
-	path := path.Join(relPath, name+TypeExtensions["links"])
+func loadLinks(root string, relPath string, name string, opener Opener, metadataOnly bool, subtype string) (File, error) {
+	path := path.Join(relPath, name+TypeExtensions["links"][subtype])
 	file, err := opener.GetFile(root, path, true, false)
 	if err != nil {
 		return nil, err
@@ -103,7 +106,7 @@ func loadLinks(root string, relPath string, name string, opener Opener, metadata
 }
 
 func (f *Links) dump(root string, relPath string, name string, opener Opener) error {
-	path := path.Join(relPath, name) + TypeExtensions["links"]
+	path := path.Join(relPath, name) + TypeExtensions["links"][f.Subtype()]
 	file, err := opener.GetFile(root, path, false, false)
 	if err != nil {
 		return err

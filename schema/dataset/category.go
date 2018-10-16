@@ -16,8 +16,11 @@ type Category struct {
 // Type is.
 func (f Category) Type() string { return "category" }
 
-func loadCategory(root string, relPath string, name string, opener Opener, metadataOnly bool) (*Category, error) {
-	path := path.Join(relPath, name+TypeExtensions["category"])
+// Subtype is.
+func (f Category) Subtype() string { return "default" }
+
+func loadCategory(root string, relPath string, name string, opener Opener, metadataOnly bool, subtype string) (File, error) {
+	path := path.Join(relPath, name+TypeExtensions["category"][subtype])
 	file, err := opener.GetFile(root, path, true, false)
 	if err != nil {
 		return nil, err
@@ -35,7 +38,7 @@ func loadCategory(root string, relPath string, name string, opener Opener, metad
 }
 
 func (f *Category) dump(root string, relPath string, name string, opener Opener) error {
-	path := path.Join(relPath, name) + TypeExtensions["category"]
+	path := path.Join(relPath, name) + TypeExtensions["category"][f.Subtype()]
 	file, err := opener.GetFile(root, path, false, false)
 	if err != nil {
 		return err

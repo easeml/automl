@@ -22,20 +22,22 @@ const FILE_TYPES = {
 };
 
 const TYPE_EXTENSIONS = {
-    "tensor" : ".ten.npy",
-    "category" : ".cat.txt",
-    "class" : ".class.txt",
-    "links" : ".links.csv"
+    "tensor" : { "default" : ".ten.npy", "csv" : ".ten.csv"},
+    "category" : { "default" : ".cat.txt"},
+    "class" : { "default" : ".class.txt"},
+    "links" : { "default" : ".links.csv" }
 };
 
 const NODE_SOURCE = "SOURCE";
 const NODE_SINK = "SINK";
 
-function File(name, fileType) {
+function File(name, fileType, subtype="default") {
     assert(typeof name === "string");
     assert(fileType in FILE_TYPES);
+    assert(typeof subtype === "string");
     this.name = name;
     this.fileType = fileType;
+    this.subtype = subtype;
 }
 
 function Directory(name, children=null) {
@@ -48,7 +50,7 @@ function Directory(name, children=null) {
 Directory.prototype = Object.create(File.prototype);
 Directory.prototype.constructor = Directory;
 
-function loadDirectory(root, relPath, name, opener, metadataOnly=false) {
+function loadDirectory(root, relPath, name, opener, metadataOnly=false, subtype="default") {
     let dirPath = name.length > 0 ? path.join(relPath, name) : relPath;
     let dirlist = opener(root, dirPath, true, true);
     let children = {};
@@ -58,25 +60,26 @@ function loadDirectory(root, relPath, name, opener, metadataOnly=false) {
         let child = null;
         let childName = dirlist[i];
 
-        if (childName.endsWith(TYPE_EXTENSIONS["tensor"])) {
-            childName = childName.slice(0, -TYPE_EXTENSIONS["tensor"].length);
-            child = loadTensor(root, dirPath, childName, opener, metadataOnly);
+        let loaderFunction = {
+            "tensor" : loadTensor,
+            "category" : loadCategory,
+            "class" : loadClass,
+            "links" : loadLinks,
+        }
 
-        } else if (childName.endsWith(TYPE_EXTENSIONS["category"])) {
-            childName = childName.slice(0, -TYPE_EXTENSIONS["category"].length);
-            child = loadCategory(root, dirPath, childName, opener, metadataOnly);
+        for (let fileType in TYPE_EXTENSIONS) {
+            for (let subtype in TYPE_EXTENSIONS[fileType]) {
+                let ext = TYPE_EXTENSIONS[fileType][subtype]
+                if (childName.endsWith(ext)) {
+                    childName = childName.slice(0, -ext.length);
+                    let loader = loaderFunction[fileType];
+                    child = loader(root, dirPath, childName, opener, metadataOnly, subtype);
+                }
+            }
+        }
 
-        } else if (childName.endsWith(TYPE_EXTENSIONS["class"])) {
-            childName = childName.slice(0, -TYPE_EXTENSIONS["class"].length);
-            child = loadClass(root, dirPath, childName, opener, metadataOnly);
-
-        } else if (childName.endsWith(TYPE_EXTENSIONS["links"])) {
-            childName = childName.slice(0, -TYPE_EXTENSIONS["links"].length);
-            child = loadLinks(root, dirPath, childName, opener, metadataOnly);
-
-        } else {
+        if (child === null) {
             child = loadDirectory(root, dirPath, childName, opener, metadataOnly);
-
         }
 
         children[childName] = child;
@@ -774,30 +777,79 @@ function generateFromSchema(root, schema, numSamples = 10, numNodeInstances = 10
     return new Dataset(root, new Directory("", allChildren));
 }
 
-function loadTensor(root, relPath, name, opener, metadataOnly=false) {
-    let filePath = path.join(relPath, name + TYPE_EXTENSIONS["tensor"]);
+function loadTensor(root, relPath, name, opener, metadataOnly=false, subtype="default") {
+    let filePath = path.join(relPath, name + TYPE_EXTENSIONS["tensor"][subtype]);
     let reader = opener(root, filePath, false, true);
-    let npyReader = new jsnpy.NpyReader(reader);
 
-    let data = null;
-    if (metadataOnly === false) {
-        data = npyReader.read(false);
+    if (subtype === "default") {
+        let npyReader = new jsnpy.NpyReader(reader);
+
+        let data = null;
+        if (metadataOnly === false) {
+            data = npyReader.read(false);
+        }
+        reader.close();
+
+        if (npyReader.dtype !== "f8") {
+            throw new DatasetException("Tensor datatype must be float64.", filePath);
+        }
+
+        return new Tensor(name, npyReader.shape, data);
+
+    } else if (subtype === "csv") {
+
+        let lines = reader.readLines();
+        let data = [];
+        let lineLength = null;
+        for (let i = 0; i < lines.length; i++) {
+            let values = lines[i].split(",");
+            if (lineLength !== null && lineLength !== values.length){
+                throw new DatasetException("Each row of the CSV file must have the same number of elements.", filePath);
+            }
+            data = data.concat(values.map(x => parseFloat(x)));
+            lineLength = values.length;
+        }
+        data = new Float64Array(data);
+        let shape = lines.length > 1 ? [lines.length, lineLength] : [lineLength];
+
+        return new Tensor(name, shape, data);
+
+    } else {
+        throw new DatasetException("Unknown tensor subtype '" + subtype + "'.", filePath);
     }
-    reader.close();
-
-    if (npyReader.dtype !== "f8") {
-        throw new DatasetException("Tensor datatype must be float64.", filePath);
-    }
-
-    return new Tensor(name, npyReader.shape, data);
 }
 
 function dumpTensor(self, root, relPath, name, opener) {
 
-    let filePath = path.join(relPath, name + TYPE_EXTENSIONS["tensor"]);
+    let filePath = path.join(relPath, name + TYPE_EXTENSIONS["tensor"][self.subtype]);
     let writer = opener(root, filePath, false, false);
-    let npyWriter = new jsnpy.NpyWriter(writer, self.dimensions, "f8");
-    npyWriter.write(self.data);
+
+    if (self.subtype === "default") {
+
+        let npyWriter = new jsnpy.NpyWriter(writer, self.dimensions, "f8");
+        npyWriter.write(self.data);
+
+    } else if (self.subtype === "csv") {
+
+        let numLines = self.dimensions.length > 1 ? self.dimensions[0] : 1;
+        let lineLength = self.dimensions.length > 1 ? self.dimensions[1] : self.dimensions[0];
+        let lines = [];
+        let pos = 0;
+
+        for (let i = 0; i < numLines; i++) {
+            let line = [];
+            for (let j = 0; j < lineLength; j++) {
+                line.push(self.data[pos]);
+                pos++;
+            }
+            lines.push(line.join(","));
+        }
+        writer.writeLines(lines);
+
+
+    } else {
+        throw new DatasetException("Unknown tensor subtype '" + subtype + "'.", filePath);
+    }
 
 }
 
@@ -809,8 +861,8 @@ function Category(name, categories) {
 Category.prototype = Object.create(File.prototype);
 Category.prototype.constructor = Category;
 
-function loadCategory(root, relPath, name, opener, metadataOnly=false) {
-    let filePath = path.join(relPath, name + TYPE_EXTENSIONS["category"]);
+function loadCategory(root, relPath, name, opener, metadataOnly=false, subtype="default") {
+    let filePath = path.join(relPath, name + TYPE_EXTENSIONS["category"][subtype]);
     let reader = opener(root, filePath, false, true);
     let lines = reader.readLines();
 
@@ -826,7 +878,7 @@ function loadCategory(root, relPath, name, opener, metadataOnly=false) {
 }
 
 function dumpCategory(self, root, relPath, name, opener) {
-    let filePath = path.join(relPath, name + TYPE_EXTENSIONS["category"]);
+    let filePath = path.join(relPath, name + TYPE_EXTENSIONS["category"][self.subtype]);
     let writer = opener(root, filePath, false, false);
     writer.writeLines(self.categories);
 }
@@ -900,8 +952,8 @@ function Links(name, links) {
 Links.prototype = Object.create(File.prototype);
 Links.prototype.constructor = Links;
 
-function loadLinks(root, relPath, name, opener, metadataOnly=false) {
-    let filePath = path.join(relPath, name + TYPE_EXTENSIONS["links"]);
+function loadLinks(root, relPath, name, opener, metadataOnly=false, subtype="default") {
+    let filePath = path.join(relPath, name + TYPE_EXTENSIONS["links"][subtype]);
     let reader = opener(root, filePath, false, true);
     let lines = reader.readLines();
 
@@ -918,7 +970,7 @@ function loadLinks(root, relPath, name, opener, metadataOnly=false) {
 }
 
 function dumpLinks(self, root, relPath, name, opener) {
-    let filePath = path.join(relPath, name + TYPE_EXTENSIONS["links"]);
+    let filePath = path.join(relPath, name + TYPE_EXTENSIONS["links"][self.subtype]);
     let writer = opener(root, filePath, false, false);
     let lines = Array.from(self.links.keys());
     writer.writeLines(lines);
@@ -1130,8 +1182,8 @@ function Class(name, categories) {
 Class.prototype = Object.create(File.prototype);
 Class.prototype.constructor = Class;
 
-function loadClass(root, relPath, name, opener, metadataOnly=false) {
-    let filePath = path.join(relPath, name + TYPE_EXTENSIONS["class"]);
+function loadClass(root, relPath, name, opener, metadataOnly=false, subtype="default") {
+    let filePath = path.join(relPath, name + TYPE_EXTENSIONS["class"][subtype]);
     let reader = opener(root, filePath, false, true);
     let lines = reader.readLines();
 
@@ -1152,7 +1204,7 @@ function loadClass(root, relPath, name, opener, metadataOnly=false) {
 }
 
 function dumpClass(self, root, relPath, name, opener) {
-    let filePath = path.join(relPath, name + TYPE_EXTENSIONS["class"]);
+    let filePath = path.join(relPath, name + TYPE_EXTENSIONS["class"][self.subtype]);
     let writer = opener(root, filePath, false, false);
     writer.writeLines(self.categories);
 }
