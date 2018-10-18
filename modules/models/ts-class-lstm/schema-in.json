@@ -1,0 +1,21 @@
+{
+    "nodes" : {
+        "s1" : {
+            "singleton" : false,
+            "fields": {
+                "data": {
+                    "type": "tensor",
+                    "dim" : ["n_features"]
+                }
+            },
+            "links": {
+                "s1": 1
+            }
+        }
+    },
+    "ref-constraints": {
+        "cyclic": false,
+        "undirected": false,
+        "fan-in": false
+    }
+}

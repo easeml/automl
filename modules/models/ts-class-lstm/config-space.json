@@ -1,0 +1,11 @@
+{
+    "learning_rate" : {
+        ".choice" : [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05]
+    },
+    "learning_rate_decay" : {
+        ".choice" : [0.0, 0.01, 0.1]
+    },
+    "gradient_clip_norm" : {
+        ".choice" : [0, 1.0, 5.0]
+    }
+}

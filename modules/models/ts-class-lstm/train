@@ -1,0 +1,120 @@
+#!/usr/bin/python
+
+import argparse
+import json
+import numpy as np
+import os
+import sys
+
+from sklearn.externals import joblib
+from sklearn.preprocessing import StandardScaler
+
+from keras.models import Model
+from keras.layers import LSTM, Activation, Dense, Dropout, Input
+from keras.optimizers import RMSprop
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing import sequence
+from keras.utils import to_categorical
+
+import easemlschema.schema as sch
+import easemlschema.dataset as ds
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+with open(os.path.join(dir_path, "schema-in.json")) as f:
+    schemaIn = json.load(f)
+
+with open(os.path.join(dir_path, "schema-out.json")) as f:
+    schemaOut = json.load(f)
+
+schIn = sch.Schema.load(schemaIn)
+schOut = sch.Schema.load(schemaOut)
+
+className = "cls"
+
+#schIn = sch.Schema.load(schema["input"])
+#schOut = sch.Schema.load(schema["output"])
+
+if __name__ == "__main__":
+
+    description = "LSTM Time Series Classifier Classifier."
+    parser = argparse.ArgumentParser(description=description)
+
+    parser.add_argument("--data", required=True, help="directory containing input data")
+    parser.add_argument("--config", required=True, help="config file")
+    parser.add_argument("--output", required=True, help="directory where the memory will be dumped")
+
+    args = parser.parse_args()
+
+    datasetIn = ds.Dataset.load(os.path.join(args.data, "input"))
+    datasetOut = ds.Dataset.load(os.path.join(args.data, "output"))
+
+    # Infer schemas.
+    srcSchemaIn = datasetIn.infer_schema()
+    srcSchemaOut = datasetOut.infer_schema()
+
+    matchSchemaIn = schIn.match(srcSchemaIn, build_matching=True)
+    matchSchemaOut = schOut.match(srcSchemaOut, build_matching=True)
+
+    inName = matchSchemaIn.nodes["s1"].src_name
+    inFieldName = matchSchemaIn.nodes["s1"].fields["data"].src_name
+    inFieldDim = matchSchemaIn.nodes["s1"].fields["data"].src_dim
+    outname = matchSchemaOut.nodes["s1"].src_name
+
+    outClassName = matchSchemaOut.category_classes[className].src_name
+    outClassCategoriesList = datasetOut.children[outClassName].categories
+    outClassCategories = dict([(outClassCategoriesList[i], i) for i in range(len(outClassCategoriesList))])
+    outDim = len(outClassCategoriesList)
+
+    X_vectors = []
+    y_values = []
+    for name in datasetIn.children:
+        if isinstance(datasetIn.children[name], ds.Directory) and name in datasetOut.children:
+            inValue = datasetIn.children[name].children[inName].children[inFieldName].data
+            outValue = datasetOut.children[name].children[outname].categories[0]
+            outIntValue = outClassCategories[outValue]
+
+            X_vectors.append(inValue)
+            y_values.append(outIntValue)
+    
+    # Build and fit scaler.
+    X_cc = np.concatenate(X_vectors)
+    scaler = StandardScaler()    
+    scaler.fit(X_cc)
+    X_vectors = [scaler.transform(x) for x in X_vectors]
+    
+    X = sequence.pad_sequences(X_vectors)
+    y = np.stack(y_values)
+    y = to_categorical(y, num_classes=outDim, dtype='float32')
+
+    print(X.shape, y.shape)
+
+    # Load the config file.
+    with open(args.config) as f:
+        config = json.load(f)
+
+    learning_rate = config["learning_rate"]
+    learning_rate_decay = config["learning_rate_decay"]
+    gradient_clip_norm = config["gradient_clip_norm"]
+
+    # Initialize model and fit.
+    inputs = Input(name='inputs',shape=[None, inFieldDim[0]])
+    layer = LSTM(64)(inputs)
+    layer = Dense(256,name='FC1')(layer)
+    layer = Activation('relu')(layer)
+    layer = Dropout(0.5)(layer)
+    layer = Dense(outDim,name='out_layer')(layer)
+    layer = Activation('softmax')(layer)
+    model = Model(inputs=inputs,outputs=layer)
+    model.summary()
+
+    optimizer = RMSprop(lr=learning_rate, decay=learning_rate_decay, clipnorm=gradient_clip_norm)
+    model.compile(loss='categorical_crossentropy',optimizer=optimizer,metrics=['accuracy'])
+
+    model.fit(X, y, batch_size=128, epochs=20, validation_split=0.2)
+
+    # Save model, scaler and category names for convenience.
+    joblib.dump(scaler, os.path.join(args.output, "scaler.bin"))
+    model.save(os.path.join(args.output, "keras-model.hdf5"))
+    with open(os.path.join(args.output, "classes.json"), "w") as fp:
+        json.dump(outClassCategoriesList, fp)

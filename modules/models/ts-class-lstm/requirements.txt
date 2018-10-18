@@ -1,0 +1,6 @@
+numpy
+EasemlSchema
+keras
+tensorflow
+scipy
+scikit-learn
