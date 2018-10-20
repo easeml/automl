@@ -44,10 +44,10 @@ func (apiContext Context) ServeLocalResource(dataPath, relativePath string, modt
 	var extension string
 	var arch archiver.Archiver
 	if strings.HasSuffix(resourcePath, ".tar") {
-		arch = archiver.Zip
+		arch = archiver.Tar
 		extension = ".tar"
 	} else if strings.HasSuffix(resourcePath, ".zip") {
-		arch = archiver.Tar
+		arch = archiver.Zip
 		extension = ".zip"
 	} else if strings.HasSuffix(resourcePath, ".tar.gz") {
 		arch = archiver.TarGz
