@@ -279,7 +279,8 @@ func (apiContext Context) TaskImageDownload(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Build model and serve the tar file.
-	imageReader, err := modules.BuildModelImageWithMemory(taskModel.SourceAddress, allPaths.Parameters)
+	newImageTag := strings.Replace(task.Model, "/", "-", -1) + ":" + strings.Replace(task.ID, "/", "-", -1)
+	imageReader, err := modules.BuildModelImageWithMemory(taskModel.SourceAddress, allPaths.Parameters, newImageTag)
 	if err != nil {
 		responses.Context(apiContext).RespondWithError(w, r, http.StatusInternalServerError, "Something went wrong.", errors.WithStack(err))
 		return

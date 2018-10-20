@@ -517,7 +517,7 @@ func ValidateModel(modelImageName string, schemaStringIn, schemaStringOut, confi
 }
 
 // BuildModelImageWithMemory takes a model image, copies the memory content to it and builds a new image from that.
-func BuildModelImageWithMemory(baseImageName string, memoryLocation string) (result io.ReadSeeker, err error) {
+func BuildModelImageWithMemory(baseImageName, memoryLocation, newImageTag string) (result io.ReadSeeker, err error) {
 	// Load image.
 
 	// Generate dockerfile and save it to a temp directory so that we can add it to the tar file.
@@ -547,14 +547,14 @@ func BuildModelImageWithMemory(baseImageName string, memoryLocation string) (res
 	err = archiver.Tar.Write(&b, buildContextFiles)
 
 	// Build the image and return the tar file bytes.
-	imageTags := []string{"easeml-temp-model"}
+	imageTags := []string{newImageTag}
 	buildOptions := types.ImageBuildOptions{Tags: imageTags}
 	ctx := context.Background()
 	cli := GetDockerClient()
 	var buildResponse types.ImageBuildResponse
 	buildResponse, err = cli.ImageBuild(ctx, bytes.NewReader(b.Bytes()), buildOptions)
 	defer buildResponse.Body.Close()
-	//_, err = io.Copy(os.Stdout, buildResponse.Body) // Use for debugging.
+	_, err = io.Copy(os.Stdout, buildResponse.Body) // Use for debugging.
 	if err != nil {
 		err = errors.Wrap(err, "failed to build docker image")
 		return
