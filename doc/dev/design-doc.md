@@ -220,32 +220,32 @@ A schema is described in a JSON or YAML format that closely corresponds to the d
 
 ```yaml
 nodes:
-	node-name-1:
-		singleton: true
-		type: tensor
-		dim: [16, 16]
-	node-name-2:
-		singleton: true
-		type: category
-		class: category-class-name-1
-	node-name-3:
-		singleton: false
-		fields:
-			field-name-1:
-				type: tensor
-				dim: [16, 16]
-			field-name-2:
-				type: category
-				class: category-class-1
-		links:
-			node-name-3: [1, 1]
+  node-name-1:
+    singleton: true
+    type: tensor
+    dim: [16, 16]
+  node-name-2:
+    singleton: true
+    type: category
+    class: category-class-name-1
+  node-name-3:
+    singleton: false
+    fields:
+      field-name-1:
+        type: tensor
+        dim: [16, 16]
+      field-name-2:
+        type: category
+        class: category-class-1
+    links:
+      node-name-3: [1, 1]
 classes:
-	category-class-1:
-		dim: 16
+  category-class-1:
+    dim: 16
 ref-constraints:
-	cyclic: false
-	undirected: false
-	fan-in: false
+  cyclic: false
+  undirected: false
+  fan-in: false
 ```
 
 There are a few things to note about this schema structure:
@@ -268,23 +268,23 @@ Currently the only variability we permit in module schema is setting variable di
 
 ```yaml
 nodes:
-	node-name-1:
-		singleton: true
-		type: tensor
-		dim: [dim_a, dim_b]
+  node-name-1:
+    singleton: true
+    type: tensor
+    dim: [dim_a, dim_b]
 ```
 
 The same goes for category class schema:
 
 ```yaml
 nodes:
-	node-name-1:
-		singleton: true
-		type: category
-		class: category-class-name-1
+  node-name-1:
+    singleton: true
+    type: category
+    class: category-class-name-1
 classes:
-	category-class-1:
-		dim: num_categories
+  category-class-1:
+    dim: num_categories
 ```
 
 There are a few things to note about variable schemata:
@@ -389,24 +389,24 @@ The directory structure is the following:
             /[task-id]
                 /config
                     /config.json
-            	/parameters
-            	/logs
-            		/train.log
-            		/predict.log
-            	/debug
-            		/train
-            		/predict
-            	/predictions
-            	/evaluation
-            		/evals.csv
+              /parameters
+              /logs
+                /train.log
+                /predict.log
+              /debug
+                /train
+                /predict
+              /predictions
+              /evaluation
+                /evals.csv
     
     /scheduling
-    	/input
-    		/config
-    			/[job-id].json
-    		/history
-    			/[job-id]
-    				/[task-id].json
+      /input
+        /config
+          /[job-id].json
+        /history
+          /[job-id]
+            /[task-id].json
     /processes
         /[process-id]
             /[process-type].log            
