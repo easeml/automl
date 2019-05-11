@@ -161,7 +161,7 @@ func Start(context process.Context) {
 	http.Handle("/api/v1/", apiRouter)
 
 	// Initialize the WEB router.
-	box := packr.NewBox("../../web/dist")
+	box := packr.NewBox("../../../../web/dist")
 	webRouter := http.FileServer(box)
 	http.Handle("/", webRouter)
 
