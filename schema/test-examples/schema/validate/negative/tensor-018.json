@@ -1,0 +1,14 @@
+{
+    "nodes" : {
+        "t1" : {
+            "singleton" : false,
+            "fields" : {
+                "t1" : {
+                    "type" : "tensor",
+                    "dim" : ["a"],
+                    "src-dim" : [null]
+                }
+            }
+        }
+    }
+}

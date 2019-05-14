@@ -1,0 +1,18 @@
+{
+    "nodes" : {
+        "node1_dst" : {
+            "singleton" : false,
+            "fields" : {
+                "t1_dst" : {
+                    "type" : "category",
+                    "class" : "class1_dst"
+                }
+            }
+        }
+    },
+    "classes" : {
+        "class1_dst" : {
+            "dim" : "a_16"
+        }
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "nodes" : {
+        "t1" : {
+            "singleton" : true,
+            "type" : "tensor",
+            "dim" : ["a"],
+            "src-name" : "t1_src",
+            "src-dim" : [16]
+        }
+    },
+    "src-dims" : {
+        "a" : 16
+    }
+}

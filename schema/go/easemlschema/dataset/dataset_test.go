@@ -8,11 +8,11 @@ import (
 	"strings"
 	"testing"
 
-	sch "github.com/ds3lab/easeml/schema/go/easemlschema/go/easemlschema/schema"
+	sch "github.com/ds3lab/easeml/schema/go/easemlschema/schema"
 )
 
 // Here we assume all test will be ran from the v0.1/go directory.
-const relTestPath = "../../../../test-examples"
+const relTestPath = "../../../test-examples"
 const datasetInferPositivePath = "dataset/infer/positive"
 const datasetInferNegativePath = "dataset/infer/negative"
 const datasetGenPositivePath = "dataset/generate/positive"

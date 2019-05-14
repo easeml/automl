@@ -76,7 +76,7 @@
     </div>
 </template>
 <script>
-import client from "@/client/index"
+import client from "easemlclient"
 import ContentFooter from "@/layout/ContentFooter.vue";
 export default {
     components: {
@@ -109,9 +109,12 @@ export default {
         login() {
 
             this.error = ""
-
-            const serverAddress = window.location.protocol + "//" + window.location.host + "/";
-            //const serverAddress = "http://localhost:8080/";
+            console.log('login function')
+            console.log(process.env.VUE_APP_SERVER_ADDRESS)
+            
+            // We either get the server address from the environment variable, or from the current browser window.
+            let host = process.env.VUE_APP_SERVER_ADDRESS || window.location.host;
+            let serverAddress = window.location.protocol + "//" + host + "/";
 
             console.log(this.apiKey);
 

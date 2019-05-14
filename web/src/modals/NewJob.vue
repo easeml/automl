@@ -146,7 +146,7 @@
 </template>
 
 <script>
-import client from "@/client/index";
+import client from "easemlclient";
 import showdown from "showdown";
 var converter = new showdown.Converter();
 

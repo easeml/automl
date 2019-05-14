@@ -1,0 +1,28 @@
+{
+    "nodes" : {
+        "node1" : {
+            "singleton" : false,
+            "fields" : {
+                "t1" : {
+                    "type" : "tensor",
+                    "dim" : [16]
+                }
+            },
+            "links" : {
+                "node1" : [0, "inf"],
+                "node2" : [0, 1]
+            }
+        },
+        "node2" : {
+            "singleton" : false,
+            "fields" : {
+                "t1" : {
+                    "type" : "tensor",
+                    "dim" : [16]
+                }
+            },
+            "links" : {
+            }
+        }
+    }
+}

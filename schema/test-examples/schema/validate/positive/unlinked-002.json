@@ -1,0 +1,22 @@
+{
+    "nodes" : {
+        "node1" : {
+            "singleton" : false,
+            "fields" : {
+                "t1" : {
+                    "type" : "tensor",
+                    "dim" : ["a"]
+                }
+            }
+        },
+        "node2" : {
+            "singleton" : false,
+            "fields" : {
+                "t1" : {
+                    "type" : "tensor",
+                    "dim" : ["a", "a"]
+                }
+            }
+        }
+    }
+}

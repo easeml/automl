@@ -163,12 +163,13 @@
 import yaml from "js-yaml";
 import vue2Dropzone from "vue2-dropzone";
 import FileDropzone from "@/components/FileDropzone.vue";
-import tarOpener from "@/schema/tar-opener";
-import client from "@/client/index";
+import client from "easemlclient";
 import showdown from "showdown";
 var converter = new showdown.Converter();
 
-import easemlSchema from "@/schema/src/index";
+import easemlSchema from "easemlschema";
+
+const tarOpener = easemlSchema.openers.tarOpener
 
 const NAME_FORMAT = /[a-zA-Z0-9 -]+/g;
 

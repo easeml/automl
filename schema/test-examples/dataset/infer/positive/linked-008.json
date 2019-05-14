@@ -1,0 +1,26 @@
+{
+    "nodes" : {
+        "node1" : {
+            "singleton" : false,
+            "fields" : {
+                "c1" : {
+                    "type" : "category",
+                    "class" : "cls1"
+                }
+            },
+            "links" : {
+                "node1" : [1, 3]
+            }
+        }
+    },
+    "classes" : {
+        "cls1" : {
+            "dim" : 10
+        }
+    },
+    "ref-constraints" : {
+        "cyclic" : true,
+        "undirected" : true,
+        "fan-in" : true
+    }
+}

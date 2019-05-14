@@ -1,0 +1,24 @@
+{
+    "nodes" : {
+        "t1_dst" : {
+            "singleton" : true,
+            "type" : "tensor",
+            "dim" : ["a_16"]
+        },
+        "t2_dst" : {
+            "singleton" : true,
+            "type" : "tensor",
+            "dim" : ["a_16", "a_16"]
+        },
+        "c1_dst" : {
+            "singleton" : true,
+            "type" : "category",
+            "class" : "class1_dst"
+        }
+    },
+    "classes" : {
+        "class1_dst" : {
+            "dim" : "a_16"
+        }
+    }
+}

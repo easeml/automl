@@ -1,0 +1,16 @@
+{
+    "nodes" : {
+        "c1" : {
+            "singleton" : true,
+            "type" : "category",
+            "class" : "cls1",
+            "src-name" : "c1_src"
+        }
+    },
+    "classes" : {
+        "cls1" : {
+            "dim" : "a",
+            "src-name" : "cls1_src"
+        }
+    }
+}

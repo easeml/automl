@@ -1,0 +1,9 @@
+{
+    "nodes" : {
+        "t1" : {
+            "singleton" : null,
+            "type" : "tensor",
+            "dim" : ["a"]
+        }
+    }
+}

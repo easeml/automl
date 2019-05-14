@@ -1,0 +1,14 @@
+{
+    "nodes" : {
+        "t1" : {
+            "singleton" : true,
+            "type" : "tensor",
+            "dim" : ["a"]
+        },
+        "t2" : {
+            "singleton" : true,
+            "type" : "tensor",
+            "dim" : ["a"]
+        }
+    }
+}

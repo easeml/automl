@@ -1,0 +1,18 @@
+{
+    "nodes" : {
+        "node1" : {
+            "singleton" : false,
+            "fields" : {
+                "c1" : {
+                    "type" : "category",
+                    "class" : "cls1"
+                }
+            }
+        }
+    },
+    "classes" : {
+        "cls1" : {
+            "dim" : 10
+        }
+    }
+}

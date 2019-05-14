@@ -1,0 +1,28 @@
+{
+    "nodes" : {
+        "node1_src" : {
+            "singleton" : false,
+            "fields" : {
+                "t1_src" : {
+                    "type" : "tensor",
+                    "dim" : [16]
+                }
+            },
+            "links" : {
+                "node2_src" : [10, 10]
+            }
+        },
+        "node2_src" : {
+            "singleton" : false,
+            "fields" : {
+                "t1_src" : {
+                    "type" : "tensor",
+                    "dim" : [16]
+                }
+            },
+            "links" : {
+                "node1_src" : [10, 10]
+            }
+        }
+    }
+}

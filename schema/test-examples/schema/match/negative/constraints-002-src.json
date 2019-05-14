@@ -1,0 +1,19 @@
+{
+    "nodes" : {
+        "node1_dst" : {
+            "singleton" : false,
+            "fields" : {
+                "t1_dst" : {
+                    "type" : "tensor",
+                    "dim" : [16]
+                }
+            },
+            "links" : {
+                "node1_dst" : [0, 2]
+            }
+        }
+    },
+    "ref-constraints" : {
+        "undirected" : false
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "nodes" : {
+        "c1_src" : {
+            "singleton" : true,
+            "type" : "category",
+            "class" : "class1_src"
+        },
+        "c2_src" : {
+            "singleton" : true,
+            "type" : "category",
+            "class" : "class2_src"
+        }
+    },
+    "classes" : {
+        "class1_src" : {
+            "dim" : 16
+        },
+        "class2_src" : {
+            "dim" : 16
+        }
+    }
+}

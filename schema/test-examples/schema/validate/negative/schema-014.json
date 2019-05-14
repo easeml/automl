@@ -1,0 +1,12 @@
+{
+    "nodes" : {
+        "t1" : {
+            "singleton" : true,
+            "type" : "tensor",
+            "dim" : ["a"]
+        }
+    },
+    "ref-constraints" : {
+        "fan-in" : null
+    }
+}

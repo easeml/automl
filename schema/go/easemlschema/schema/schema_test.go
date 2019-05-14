@@ -10,7 +10,7 @@ import (
 )
 
 // Here we assume all test will be ran from the v0.1/go directory.
-const relTestPath = "../../../../test-examples"
+const relTestPath = "../../../test-examples"
 const schemaValPositivePath = "schema/validate/positive"
 const schemaValNegativePath = "schema/validate/negative"
 const schemaMatchPositivePath = "schema/match/positive"
