@@ -398,8 +398,8 @@ export default {
                 return false;
             }
 
-            let openerTrainIn = tarOpener.new_opener(filestruct["train"]["input"]);
-            let openerTrainOut = tarOpener.new_opener(filestruct["train"]["output"]);
+            let openerTrainIn = tarOpener.newOpener(filestruct["train"]["input"]);
+            let openerTrainOut = tarOpener.newOpener(filestruct["train"]["output"]);
 
             // Load datasets.
             try {
@@ -472,7 +472,7 @@ export default {
                 console.log(result)
 
                 // Check if the root contains a readme file.
-                let opener = tarOpener.new_opener(result);
+                let opener = tarOpener.newOpener(result);
                 
                 // Try to find a README file and extract name and description.
                 let r = findReadmeAndScan(opener);

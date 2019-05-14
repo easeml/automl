@@ -19,7 +19,8 @@
     "test": "npm run test:node",
     "test:node": "mocha --compilers js:@babel/register test/node/*.js",
     "test:browser": "karma start --single-run --browsers ChromeHeadless,FirefoxHeadless karma.config.js",
-    "dev": "npm run build:node:watch"
+    "dev": "npm run build:node:watch",
+    "lint": "eslint --fix src/**/*.js && eslint --fix test/**/*.js"
   },
   "author": "Bojan Karlas",
   "license": "MIT",

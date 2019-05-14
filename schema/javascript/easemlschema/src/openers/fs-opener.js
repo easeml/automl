@@ -25,7 +25,7 @@ function mkDirByPathSync (targetDir, { isRelativeToScript = false } = {}) {
       }
 
       const caughtErr = ['EACCES', 'EPERM', 'EISDIR'].indexOf(err.code) > -1
-      if (!caughtErr || caughtErr && targetDir === curDir) {
+      if (!caughtErr || (caughtErr && targetDir === curDir)) {
         throw err // Throw if it's just the last created dir.
       }
     }
@@ -34,17 +34,17 @@ function mkDirByPathSync (targetDir, { isRelativeToScript = false } = {}) {
   }, initDir)
 }
 
-function default_opener (root, rel_path, directory = false, read_only = true) {
-  let abs_path = path.join(root, rel_path)
+function defaultOpener (root, relPath, directory = false, readOnly = true) {
+  let absPath = path.join(root, relPath)
 
   if (directory) {
-    if (read_only === false) {
-      mkDirByPathSync(abs_path)
+    if (readOnly === false) {
+      mkDirByPathSync(absPath)
     }
-    return fs.readdirSync(abs_path)
+    return fs.readdirSync(absPath)
   } else {
-    let flags = read_only ? 'r' : 'w'
-    let fd = fs.openSync(abs_path, flags)
+    let flags = readOnly ? 'r' : 'w'
+    let fd = fs.openSync(absPath, flags)
     return new FsReaderWriterCloser(fd)
   }
 }
@@ -58,14 +58,14 @@ FsReaderWriterCloser.prototype.constructor = FsReaderWriterCloser
 
 ReaderWriterCloser.prototype.read = function (buffer, offset, length, position) {
   // Returns number of bytes read.
-  return fs.readSync(this.fd, new Buffer(buffer), offset, length, position)
+  return fs.readSync(this.fd, Buffer.from(buffer), offset, length, position)
 }
 
 ReaderWriterCloser.prototype.readLines = function () {
   // Get file size from stats, create a buffer and read the file.
   let stats = fs.fstatSync(this.fd)
   let buffer = new ArrayBuffer(stats.size)
-  let size = fs.readSync(this.fd, new Buffer(buffer), 0, stats.size, 0)
+  let size = fs.readSync(this.fd, Buffer.from(buffer), 0, stats.size, 0)
 
   // Retrieve file lines.
   let view = new DataView(buffer)
@@ -105,7 +105,7 @@ function readLinesFromDataView (view, size) {
 
 ReaderWriterCloser.prototype.write = function (buffer, offset, length, position) {
   // Returns number of bytes read.
-  return fs.writeSync(this.fd, new Buffer(buffer), offset, length, position)
+  return fs.writeSync(this.fd, Buffer.from(buffer), offset, length, position)
 }
 
 ReaderWriterCloser.prototype.writeLines = function (data) {
@@ -118,5 +118,5 @@ ReaderWriterCloser.prototype.close = function () {
 }
 
 export default {
-  default_opener: default_opener
+  defaultOpener: defaultOpener
 }

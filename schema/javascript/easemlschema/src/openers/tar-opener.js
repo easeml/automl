@@ -5,7 +5,7 @@ import ReaderWriterCloser from '../reader-writer-closer'
 
 function loadTarFile (file) {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader()
+    const reader = new window.FileReader()
     reader.onload = function (event) {
       console.log('reader load')
 
@@ -51,9 +51,9 @@ function loadTarFile (file) {
   })
 }
 
-function new_opener (filestruct) {
-  return function (root, rel_path, directory = false, read_only = true) {
-    let pathSplits = (root + rel_path).split('/')
+function newOpener (filestruct) {
+  return function (root, relPath, directory = false, readOnly = true) {
+    let pathSplits = (root + relPath).split('/')
     let parent = null
     let element = filestruct
     let elementName = ''
@@ -63,7 +63,7 @@ function new_opener (filestruct) {
         parent = element
 
         // If we are building a directory tree.
-        if (directory && !read_only && !(name in element)) {
+        if (directory && !readOnly && !(name in element)) {
           element[name] = {}
         }
 
@@ -75,7 +75,7 @@ function new_opener (filestruct) {
     if (directory) {
       return Object.keys(element)
     } else {
-      if (read_only) {
+      if (readOnly) {
         if (element instanceof ArrayBuffer) {
           return new TarReaderWriterCloser(element)
         } else {
@@ -159,5 +159,5 @@ ReaderWriterCloser.prototype.close = function () {
 
 export default {
   loadTarFile: loadTarFile,
-  new_opener: new_opener
+  newOpener: newOpener
 }

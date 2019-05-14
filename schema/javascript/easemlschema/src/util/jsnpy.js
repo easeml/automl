@@ -3,8 +3,8 @@
 import assert from 'assert'
 import ReaderWriterCloser from '../reader-writer-closer'
 
-const data_types = ['f8', 'f4', 'i8', 'i4', 'i2', 'i1']
-const bytes_per_element = {
+const DATA_TYPES = ['f8', 'f4', 'i8', 'i4', 'i2', 'i1']
+const BYTES_PER_ELEMENT = {
   'f8': 8,
   'f4': 4,
   'i8': 8,
@@ -13,45 +13,45 @@ const bytes_per_element = {
   'i1': 1
 }
 
-function NpyWriter (writer, shape, dtype, column_major = false, big_endian = false, version = 1) {
+function NpyWriter (writer, shape, dtype, columnMajor = false, bigEndian = false, version = 1) {
   assert(writer instanceof ReaderWriterCloser)
-  assert(data_types.indexOf(dtype) > -1)
+  assert(DATA_TYPES.indexOf(dtype) > -1)
 
   this.writer = writer
   this.shape = shape
   this.dtype = dtype
-  this.column_major = column_major
-  this.big_endian = big_endian
+  this.columnMajor = columnMajor
+  this.bigEndian = bigEndian
   this.version = version
 
-  let pos = write_header(writer, shape, dtype, version, column_major, big_endian)
+  let pos = writeHeader(writer, shape, dtype, version, columnMajor, bigEndian)
   this.pos = pos
 }
 
 function NpyReader (reader) {
   assert(reader instanceof ReaderWriterCloser)
 
-  let header = read_header(reader)
+  let header = readHeader(reader)
 
   this.reader = reader
   this.shape = header.shape
   this.dtype = header.dtype
-  this.column_major = header.column_major
-  this.big_endian = header.big_endian
+  this.columnMajor = header.columnMajor
+  this.bigEndian = header.bigEndian
   this.version = header.version
   this.pos = header.pos
 }
 
-function write_header (writer, shape, dtype, version = 1, column_major = false, big_endian = false) {
+function writeHeader (writer, shape, dtype, version = 1, columnMajor = false, bigEndian = false) {
   assert(writer instanceof ReaderWriterCloser)
   assert(version in [1, 2])
 
   // Assemble all parameters.
   const magicString = '\x93NUMPY'
-  const versionString = (version == 1) ? '\x01\x00' : '\x02\x00'
-  const descrString = (big_endian ? '>' : '<') + dtype
+  const versionString = (version === 1) ? '\x01\x00' : '\x02\x00'
+  const descrString = (bigEndian ? '>' : '<') + dtype
   const shapeString = '(' + String(shape.join(',')) + ',' + ')'
-  const fortranString = column_major ? 'True' : 'False'
+  const fortranString = columnMajor ? 'True' : 'False'
 
   // Assemble the header.
   const header = "{'descr': '" + descrString + "', 'fortran_order': " + fortranString +
@@ -68,8 +68,8 @@ function write_header (writer, shape, dtype, version = 1, column_major = false, 
   assert(headerLength % padMul === 0)
 
   // Build the array buffer.
-  const buffer = new ArrayBuffer(totalHeaderLength)
-  const view = new DataView(buffer)
+  const BUFFER = new ArrayBuffer(totalHeaderLength)
+  const view = new DataView(BUFFER)
   let pos = 0
 
   // Write the magic string and version.
@@ -87,12 +87,12 @@ function write_header (writer, shape, dtype, version = 1, column_major = false, 
   pos = writeStringToDataView(view, header + padding, pos)
 
   // Write the buffer.
-  writer.write(buffer, 0, totalHeaderLength, 0)
+  writer.write(BUFFER, 0, totalHeaderLength, 0)
 
   return totalHeaderLength
 }
 
-function read_header (reader) {
+function readHeader (reader) {
   assert(reader instanceof ReaderWriterCloser)
 
   // Build a buffer for the magic string and version.
@@ -136,15 +136,15 @@ function read_header (reader) {
   const header = JSON.parse(headerJson)
 
   // Extract properties.
-  const big_endian = header.descr[0] === '>'
-  const column_major = header.fortran_order
+  const bigEndian = header.descr[0] === '>'
+  const columnMajor = header.fortran_order
   const dtype = header.descr.slice(1)
   const shape = header.shape
   const version = versionMajor
 
   let result = {
-    'big_endian': big_endian,
-    'column_major': column_major,
+    'bigEndian': bigEndian,
+    'columnMajor': columnMajor,
     'dtype': dtype,
     'shape': shape,
     'version': version,
@@ -185,54 +185,54 @@ NpyWriter.prototype.write = function (data, close = true) {
   assert(data.length === numberOfElements(this.shape))
 
   // Build an array buffer to store the data.
-  const elem_bytes = bytes_per_element[this.dtype]
-  const bufferSize = data.length * elem_bytes
-  const buffer = new ArrayBuffer(bufferSize)
-  const view = new DataView(buffer)
+  const ELEM_BYTES = BYTES_PER_ELEMENT[this.dtype]
+  const BUFFER_SIZE = data.length * ELEM_BYTES
+  const BUFFER = new ArrayBuffer(BUFFER_SIZE)
+  const view = new DataView(BUFFER)
   let pos = 0
 
   // Write to the buffer in the proper format.
   switch (this.dtype) {
     case 'f8':
       for (let i = 0; i < data.length; i++) {
-        view.setFloat64(pos, data[i], !this.big_endian)
-        pos += elem_bytes
+        view.setFloat64(pos, data[i], !this.bigEndian)
+        pos += ELEM_BYTES
       }
 
       break
 
     case 'f4':
       for (let i = 0; i < data.length; i++) {
-        view.setFloat32(pos, data[i], !this.big_endian)
-        pos += elem_bytes
+        view.setFloat32(pos, data[i], !this.bigEndian)
+        pos += ELEM_BYTES
       }
       break
     case 'i8':
       for (let i = 0; i < data.length; i++) {
-        view.setInt64(pos, data[i], !this.big_endian)
-        pos += elem_bytes
+        view.setInt64(pos, data[i], !this.bigEndian)
+        pos += ELEM_BYTES
       }
 
       break
 
     case 'i4':
       for (let i = 0; i < data.length; i++) {
-        view.setInt32(pos, data[i], !this.big_endian)
-        pos += elem_bytes
+        view.setInt32(pos, data[i], !this.bigEndian)
+        pos += ELEM_BYTES
       }
       break
     case 'i2':
       for (let i = 0; i < data.length; i++) {
-        view.setInt16(pos, data[i], !this.big_endian)
-        pos += elem_bytes
+        view.setInt16(pos, data[i], !this.bigEndian)
+        pos += ELEM_BYTES
       }
 
       break
 
     case 'i1':
       for (let i = 0; i < data.length; i++) {
-        view.setInt8(pos, data[i], !this.big_endian)
-        pos += elem_bytes
+        view.setInt8(pos, data[i], !this.bigEndian)
+        pos += ELEM_BYTES
       }
       break
   }
@@ -243,20 +243,20 @@ NpyWriter.prototype.write = function (data, close = true) {
   }
 
   // Write the buffer to the file.
-  this.writer.write(buffer, 0, bufferSize, this.pos)
+  this.writer.write(BUFFER, 0, BUFFER_SIZE, this.pos)
 
   // Shift the position by the amount of data we've just written.
-  this.pos += bufferSize
+  this.pos += BUFFER_SIZE
 }
 
 NpyReader.prototype.read = function (close = true) {
   // Compute the buffer size and read the data.
   const dataLength = numberOfElements(this.shape)
-  const elem_bytes = bytes_per_element[this.dtype]
-  const bufferSize = dataLength * elem_bytes
-  const buffer = new ArrayBuffer(bufferSize)
-  this.reader.read(buffer, 0, bufferSize, this.pos)
-  this.pos += bufferSize
+  const ELEM_BYTES = BYTES_PER_ELEMENT[this.dtype]
+  const BUFFER_SIZE = dataLength * ELEM_BYTES
+  const BUFFER = new ArrayBuffer(BUFFER_SIZE)
+  this.reader.read(BUFFER, 0, BUFFER_SIZE, this.pos)
+  this.pos += BUFFER_SIZE
 
   // Close the reader if specified.
   if (close) {
@@ -266,22 +266,23 @@ NpyReader.prototype.read = function (close = true) {
   // Feed the data into an appropriate array and return.
   switch (this.dtype) {
     case 'f8':
-      return new Float64Array(buffer)
+      return new Float64Array(BUFFER)
 
     case 'f4':
-      return new Float32Array(buffer)
+      return new Float32Array(BUFFER)
 
     case 'i8':
-      return new Int64Array(buffer)
+      // eslint-disable-next-line no-undef
+      return new Int64Array(BUFFER)
 
     case 'i4':
-      return new Int32Array(buffer)
+      return new Int32Array(BUFFER)
 
     case 'i2':
-      return new Int16Array(buffer)
+      return new Int16Array(BUFFER)
 
     case 'i1':
-      return new Int8Array(buffer)
+      return new Int8Array(BUFFER)
   }
 }
 
