@@ -1,10 +1,11 @@
 package command
 
 import (
-	"github.com/ds3lab/easeml/client/go/easemlclient"
 	"fmt"
 	"os"
 	"text/tabwriter"
+
+	client "github.com/ds3lab/easeml/client/go/easemlclient"
 
 	"github.com/ghodss/yaml"
 	"github.com/spf13/cobra"

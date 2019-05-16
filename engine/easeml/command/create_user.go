@@ -1,8 +1,9 @@
 package command
 
 import (
-	"github.com/ds3lab/easeml/client/go/easemlclient"
 	"fmt"
+
+	client "github.com/ds3lab/easeml/client/go/easemlclient"
 
 	"github.com/howeyc/gopass"
 	"github.com/spf13/cobra"
