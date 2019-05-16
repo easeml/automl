@@ -1,7 +1,7 @@
 package command
 
 import (
-	"github.com/ds3lab/easeml/client/go/client"
+	"github.com/ds3lab/easeml/client/go/easemlclient"
 	"fmt"
 	"os"
 	"text/tabwriter"

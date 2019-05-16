@@ -1,4 +1,4 @@
-module github.com/ds3lab/easeml/client/go/client
+module github.com/ds3lab/easeml/client/go/easemlclient
 
 go 1.12
 

@@ -10,7 +10,7 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/ds3lab/easeml/client/go/client/types"
+	"github.com/ds3lab/easeml/client/go/easemlclient/types"
 
 	tus "github.com/eventials/go-tus"
 	"github.com/mholt/archiver"

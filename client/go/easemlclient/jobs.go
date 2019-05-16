@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"path"
 
-	"github.com/ds3lab/easeml/client/go/client/types"
+	"github.com/ds3lab/easeml/client/go/easemlclient/types"
 
 	"github.com/pkg/errors"
 )

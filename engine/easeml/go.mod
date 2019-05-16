@@ -10,7 +10,7 @@ require (
 	github.com/cavaliercoder/grab v2.0.0+incompatible
 	github.com/docker/docker v0.7.3-0.20190121142752-69d9ff34556d
 	github.com/ds3lab/easeml v0.0.0-20181112043503-d69ef4611cf3
-	github.com/ds3lab/easeml/client/go/client v0.0.0
+	github.com/ds3lab/easeml/client/go/easemlclient v0.0.0
 	github.com/ds3lab/easeml/schema/go/easemlschema v0.0.0
 	github.com/emicklei/forest v1.1.0
 	github.com/ghodss/yaml v1.0.0
@@ -44,6 +44,6 @@ require (
 
 replace github.com/Sirupsen/logrus v1.1.1 => github.com/sirupsen/logrus v1.1.1
 
-replace github.com/ds3lab/easeml/client/go/client v0.0.0 => ../../client/go/client
+replace github.com/ds3lab/easeml/client/go/easemlclient v0.0.0 => ../../client/go/easemlclient
 
 replace github.com/ds3lab/easeml/schema/go/easemlschema v0.0.0 => ../../schema/go/easemlschema

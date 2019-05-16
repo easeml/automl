@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ds3lab/easeml/client/go/client"
-	"github.com/ds3lab/easeml/client/go/client/types"
+	"github.com/ds3lab/easeml/client/go/easemlclient"
+	"github.com/ds3lab/easeml/client/go/easemlclient/types"
 	"github.com/ds3lab/easeml/engine/easeml/storage"
 
 	sch "github.com/ds3lab/easeml/schema/go/easemlschema/schema"

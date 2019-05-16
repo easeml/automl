@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"path"
 
-	"github.com/ds3lab/easeml/client/go/client/types"
+	"github.com/ds3lab/easeml/client/go/easemlclient/types"
 
 	"github.com/docker/docker/client"
 	tus "github.com/eventials/go-tus"
