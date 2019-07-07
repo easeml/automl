@@ -27,8 +27,8 @@ VERSION := $(shell cat $(ROOT_DIR_PATH)/VERSION)
 
 
 # Include common make functions.
-include $(ROOT_DIR_PATH)/build/makefiles/show-help.mk
-include $(ROOT_DIR_PATH)/build/makefiles/show-prompt.mk
+include $(ROOT_DIR_PATH)/dev/makefiles/show-help.mk
+include $(ROOT_DIR_PATH)/dev/makefiles/show-prompt.mk
 
 
 .PHONY: init

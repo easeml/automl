@@ -12,8 +12,8 @@ ROOT_DIR_PATH := $(realpath $(MY_DIR_PATH)..)
 
 
 # Include common make functions.
-include $(ROOT_DIR_PATH)/build/makefiles/show-help.mk
-include $(ROOT_DIR_PATH)/build/makefiles/show-prompt.mk
+include $(ROOT_DIR_PATH)/dev/makefiles/show-help.mk
+include $(ROOT_DIR_PATH)/dev/makefiles/show-prompt.mk
 
 
 # All available language versions.

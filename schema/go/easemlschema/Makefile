@@ -29,8 +29,8 @@ RELEASE_TAR_NAME := $(PROJECT_NAME)-$(VERSION).tgz
 
 
 # Include common make functions.
-include $(ROOT_DIR_PATH)/build/makefiles/show-help.mk
-include $(ROOT_DIR_PATH)/build/makefiles/show-prompt.mk
+include $(ROOT_DIR_PATH)/dev/makefiles/show-help.mk
+include $(ROOT_DIR_PATH)/dev/makefiles/show-prompt.mk
 
 
 .PHONY: init
