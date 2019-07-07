@@ -22,7 +22,7 @@ include $(ROOT_DIR_PATH)/build/makefiles/show-prompt.mk
 
 # All available components. To include a component subdirectory in the build-all command, simply
 # ensure it implements all commands (at least with an empty recipe) and add its directory name here.
-COMPONENTS := client schema web engine/easeml
+COMPONENTS := client schema web engine
 
 
 # Other config variables.
