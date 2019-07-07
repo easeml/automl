@@ -7,11 +7,12 @@
   "files": [
     "lib/**/*",
     "src/**/*",
-    "dist/**/*",
+    "dist/**/*.js",
+    "dist/**/*.js.map",
     "test/**/*"
   ],
   "scripts": {
-    "clean": "rimraf dist && rimraf lib",
+    "clean": "rimraf dist && rimraf lib && rimraf docs",
     "build": "npm run build:node && npm run build:browser",
     "build:node": "babel src --out-dir ./lib --source-maps",
     "build:node:watch": "babel src --out-dir ./lib --source-maps --watch",
@@ -20,7 +21,8 @@
     "test:node": "mocha --compilers js:@babel/register test/node/*.js",
     "test:browser": "karma start --single-run --browsers ChromeHeadless,FirefoxHeadless karma.config.js",
     "dev": "npm run build:node:watch",
-    "lint": "eslint --fix src/**/*.js && eslint --fix test/**/*.js"
+    "lint": "eslint src/**/*.js test/**/*.js",
+    "lint-fix": "eslint --fix src/**/*.js test/**/*.js"
   },
   "author": "Bojan Karlas",
   "license": "MIT",
@@ -32,6 +34,7 @@
     "@babel/register": "^7.4.4",
     "browserify": "^16.2.2",
     "chai": "^4.1.2",
+    "doxdox": "^3.0.0",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.17.2",
