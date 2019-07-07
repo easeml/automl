@@ -54,6 +54,11 @@ func Execute() {
 	}
 }
 
+// GetRootCommand returns the root command.
+func GetRootCommand() *cobra.Command {
+	return rootCmd
+}
+
 func init() {
 
 	// Find home directory.

@@ -35,7 +35,7 @@ func (context Context) ModuleValidateListener() {
 }
 
 // ModuleValidateWorker performs the actual module validation. It makes sure the model has a defined
-// config space and
+// config space and input and output schema.
 func (context Context) ModuleValidateWorker(module types.Module) {
 
 	// Get the module directory.
@@ -44,14 +44,17 @@ func (context Context) ModuleValidateWorker(module types.Module) {
 		panic(err) // This means that we cannot access the file system, so we need to panic.
 	}
 
-	// Find all uploaded files and their target paths.
-	sourceFilePaths, destinationFilePaths := getUploadedFilesDestinationPaths(modulePath, "module.tar")
+	// If the module was uploaded, we need to rename the uploaded file into "module.tar".
+	if module.Source == types.ModuleUpload {
+		// Find all uploaded files and their target paths.
+		sourceFilePaths, destinationFilePaths := getUploadedFilesDestinationPaths(modulePath, "module.tar")
 
-	// Copy all files to the target path.
-	for i := range sourceFilePaths {
-		err := os.Rename(sourceFilePaths[i], destinationFilePaths[i])
-		if err != nil {
-			panic(err)
+		// Copy all files to the target path.
+		for i := range sourceFilePaths {
+			err := os.Rename(sourceFilePaths[i], destinationFilePaths[i])
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 

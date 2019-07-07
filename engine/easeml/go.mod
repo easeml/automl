@@ -1,6 +1,6 @@
 module github.com/ds3lab/easeml/engine/easeml
 
-go 1.12
+go 1.12.5
 
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 // indirect
@@ -8,8 +8,8 @@ require (
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40 // indirect
 	github.com/cavaliercoder/grab v2.0.0+incompatible
+	github.com/cpuguy83/go-md2man v1.0.10 // indirect
 	github.com/docker/docker v0.7.3-0.20190121142752-69d9ff34556d
-	github.com/ds3lab/easeml v0.0.0-20181112043503-d69ef4611cf3
 	github.com/ds3lab/easeml/client/go/easemlclient v0.0.0
 	github.com/ds3lab/easeml/schema/go/easemlschema v0.0.0
 	github.com/emicklei/forest v1.1.0
