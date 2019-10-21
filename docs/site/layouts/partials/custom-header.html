@@ -1,0 +1,65 @@
+
+
+
+<script src="{{`js/tocbot.js` | relURL}}"></script>
+
+<link href="{{`css/tocbot.css` | relURL}}" rel="stylesheet"></link>
+<link href="{{`css/syntax.css` | relURL}}" rel="stylesheet"></link>
+
+<script>
+    // Wait until DOM content has loaded.
+    document.addEventListener("DOMContentLoaded", function(event) {
+        // console.log("Init Tocbot");
+        tocbot.init({
+            // Where to render the table of contents.
+            tocSelector: "#js-toc",
+            // Where to grab the headings to build the table of contents.
+            contentSelector: "#body-inner",
+            // Which headings to grab inside of the contentSelector element.
+            headingSelector: "h2, h3, h4",
+
+            scrollEndCallback: function (e) {
+
+                // If there is no need to scroll, then we simply skip.
+                let container = $("#sidebar .highlightable");
+                let topicsList = $("#sidebar .highlightable .topics");
+
+                let containerScrollTop = container.scrollTop();
+                let containerHeight = container.height();
+                let topicsListHeight = topicsList.height();
+
+                if (topicsListHeight <= containerHeight) {
+                    if (containerScrollTop > 0) {
+                        container.animate({scrollTop: 0}, "fast");
+                    }
+                } else {
+
+                    // Otherwise we make sure that if there is an active element in the dynamic Table of Contents
+                    // that it is visible.
+                    let elements = $(".toc-link.is-active-link")
+                    
+                    if (elements.length > 0) {
+
+                        let element = elements[0];
+                        
+                        
+                        let elementHeight = element.offsetHeight;
+                        let elementTop = 0;
+                        while (element !== null && !element.classList.contains("highlightable")) {
+                            elementTop += element.offsetTop;
+                            element = element.offsetParent;
+                        }
+
+                        // console.log({elementTop: elementTop, containerScrollTop: containerScrollTop, containerHeight: containerHeight, elementHeight: elementHeight});
+
+                        if (elementTop - containerScrollTop + elementHeight > containerHeight) {
+                            container.animate({scrollTop: elementTop - containerHeight + elementHeight}, "fast");
+                        } else if (elementTop - containerScrollTop < 0) {
+                            container.animate({scrollTop: elementTop}, "fast");
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>

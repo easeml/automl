@@ -1,0 +1,15 @@
+baseURL = "http://example.org/"
+languageCode = "en-us"
+title = "ease.ml/docs"
+theme = "learn"
+pygmentsUseClasses=true
+
+[params]
+  # Change default color scheme with a variant one. Can be "red", "blue", "green".
+  themeVariant = "mine"
+  # Shows a checkmark for visited pages on the menu
+  showVisitedLinks = false
+  # Set this to true to disable copy-to-clipboard button for inline code.
+  disableInlineCopyToClipBoard = true
+  # Hide Next and Previous page buttons normally displayed full height beside content
+  disableNextPrev = true
