@@ -1,0 +1,95 @@
+#!/bin/sh
+
+# Constants.
+readonly ROOT_SERVICE_PATH="/lib/systemd/system"
+readonly USER_SERVICE_PATH="$HOME/.config/systemd/user"
+readonly ROOT_WORKING_DIR="/var/lib/easeml"
+readonly USER_WORKING_DIR="/var/lib/easeml"
+
+# Local variables.
+dest_path=$PWD
+config_path=
+arguments=
+is_root=0
+
+# Print the command usage info.
+usage()
+{
+    echo "Usage: $0 [-d DEST_PATH] [-c CONFIG_PATH]"
+    echo "Start an easeml instance and keep the persistent state in the given location."
+    echo "All binaries need to be reachable by following the PATH variable."
+    echo
+    echo "Arguments:"
+    echo " -d     Directory where the state of the daemon will be stored."
+    echo " -c     Config file to use."
+    echo " -a     String containing command line arguments to pass to the easeml daemon."
+    exit 2
+}
+
+# Parse the arguments.
+while getopts d:c: o
+do case $o in
+    d) dest_path=$(readlink -f $OPTARG) ;;
+    c) config_path=$(readlink -f $OPTARG) ;;
+    a) arguments=$(readlink -f $OPTARG) ;;
+    h|?) usage ;;
+esac done
+
+# Computed properties.
+[ $(id -u) -eq 0 ] && is_root=1
+[ is_root -eq 1] && user_flag= || user_flag="--user"
+[ is_root -eq 1] && service_path=$ROOT_SERVICE_PATH || service_path=$USER_SERVICE_PATH
+if [ -n "$dest_path" ]; then
+    working_dir=$dest_path
+else
+    [ is_root -eq 1] && working_dir=$ROOT_WORKING_DIR || working_dir=$USER_WORKING_DIR
+fi
+
+# If the config file was specified, copy it to the working directory.
+if [ -n "$config_path" ]; then
+    cp -f $config_path $working_dir
+fi
+
+# Find locations of commands.
+cmd_easeml=$(command -v easeml)
+if [ -z cmd_easeml ]; then
+    >&2 echo "Cannot find easeml on PATH of user $(id -un)."
+    exit 1
+else
+    echo "Using command:"
+    echo "  $cmd_easeml"
+    echo
+fi
+
+# Construct the systemd service unit file.
+cat > $service_path/easeml.service <<EOT
+[Unit]
+Description=The easeml scalable automated machine learning service.
+Documentation=
+
+[Service]
+ExecStart=$cmd_easeml start --working-dir $working_dir $arguments
+ExecReload=/bin/kill -s HUP \$MAINPID
+TimeoutSec=0
+RestartSec=2
+Restart=always
+StartLimitBurst=3
+StartLimitInterval=60s
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=infinity
+TasksMax=infinity
+Delegate=yes
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
+EOT
+
+systemctl daemon-reload $user_flag
+
+systemctl enable easeml.service $user_flag
+
+systemctl start easeml.service $user_flag
+
+# TODO: Print some instructions.
