@@ -1,0 +1,124 @@
+#!/bin/sh
+
+# Constants.
+readonly MONGO_DOWNLOAD_LINK="https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-4.0.9.tgz"
+
+set -ex
+
+# Local variables.
+is_global=0
+dest_path=
+is_force=0
+
+# Print the command usage info.
+usage()
+{
+    echo "Usage: $0 [-g | -d DEST_PATH] [-f]"
+    echo "Install MongoDB either globally (for all users) or locally (only for the current user)."
+    echo
+    echo "Arguments:"
+    echo " -g     Global install. Must be executed as ROOT."
+    echo " -d     Destination directory. Only for non-global mode. Default is the current directory ($PWD)"
+    echo " -f     Force mode. Never prompt the user for confirmation."
+    exit 2
+}
+
+# Parse the arguments.
+while getopts gd:f o
+do case $o in
+    g) is_global=1 ;;
+    d) dest_path=$(readlink -f $OPTARG) ;;
+    f) is_force=1 ;;
+    h|?) usage ;;
+esac done
+
+# Validity checks.
+[ $is_global = 1 ] && [ -n "$dest_path" ] && usage
+[ $is_global = 1 ] && [ $(id -u) -ne 0 ] && usage
+
+# Computed properties.
+lsb_dist=""
+if [ -r /etc/os-release ]; then
+    lsb_dist="$(. /etc/os-release && echo "$ID")"
+fi
+
+# Run the command in non-global mode.
+run_local()
+{
+    [ -n $dest_path ] && dest_path=$PWD
+    mkdir -p $dest_path
+
+    curl -L $MONGO_DOWNLOAD_LINK | tar -xz --strip-components 1 -C $dest_path
+}
+
+# Run the command in global mode.
+run_global()
+{
+    case "$lsb_dist" in
+        ubuntu)
+            # Source instructions: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
+            echo "System recognized: Ubuntu"
+            dist_version="$(grep UBUNTU_CODENAME /etc/os-release | cut -d '=' -f2)"
+            echo "Distribution: $dist_version"
+            apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+            echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu $dist_version/mongodb-org/4.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+            apt-get update
+            apt-get install mongodb-org $([ $is_force -eq 1 ] $$ echo "-y")
+
+        ;;
+        debian)
+            # Source instructions: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-debian/
+            echo "System recognized: Debian"
+            dist_version="$(sed 's/\/.*//' /etc/debian_version | sed 's/\..*//')"
+            echo "Distribution: $dist_version"
+            apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+            echo "deb http://repo.mongodb.org/apt/debian $dist_version/mongodb-org/4.0 main" | tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+            sudo apt-get update
+            apt-get install mongodb-org $([ $is_force -eq 1 ] $$ echo "-y")
+
+        ;;
+        amzn)
+            # Source instructions: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-amazon/
+            echo "System recognized: Amazon Linux"
+            cat > /etc/yum.repos.d/mongodb-org-4.0.repo <<EOM
+[mongodb-org-4.0]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/amazon/2013.03/mongodb-org/4.0/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc
+EOM
+            yum install mongodb-org $([ $is_force -eq 1 ] $$ echo "-y")
+
+        ;;
+        rhel|centos)
+            # Source instructions: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-red-hat/
+            echo "System recognized: Red Hat Linux or CentOS"
+            cat > /etc/yum.repos.d/mongodb-org-4.0.repo <<EOM
+[mongodb-org-4.0]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/4.0/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc
+EOM
+            yum install mongodb-org $([ $is_force -eq 1 ] $$ echo "-y")
+            
+        ;;
+        sles|opensuse)
+            # Source instructions: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-suse/
+            echo "System recognized: SUSE or OpenSUSE"
+            rpm --import https://www.mongodb.org/static/pgp/server-4.0.asc
+            zypper addrepo --gpgcheck "https://repo.mongodb.org/zypper/suse/12/mongodb-org/4.0/x86_64/" mongodb
+            zypper -n install mongodb-org
+
+        ;;
+    esac
+}
+
+# Run the actual command depending on the mode.
+if [ $is_global = 1 ]; then
+    run_global
+else
+    run_local
+fi

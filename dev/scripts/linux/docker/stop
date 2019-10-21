@@ -1,0 +1,44 @@
+#!/bin/sh
+
+# Local variables.
+dest_path=$PWD
+is_rootless=0
+
+# Print the command usage info.
+usage()
+{
+    echo "Usage: $0 [-g | -d DEST_PATH]"
+    echo "Stop a Docker instance. If it was started in root mode, it must be stopped in root mode."
+    echo
+    echo "Arguments:"
+    echo " -d     Directory where the state of the daemon is stored."
+    exit 2
+}
+
+# Parse the arguments.
+while getopts gd:f o
+do case $o in
+    d) dest_path=$(readlink -f $OPTARG) ;;
+    h|?) usage ;;
+esac done
+
+# Computed properties.
+[ $(id -u) -ne 0 ] && is_rootless=1
+readonly PID_PATH=$dest_path/exec/docker.pid
+pid=$(cat "$PID_PATH")
+
+if [ -z $pid ]; then
+    echo "No PID file found at $PID_PATH"
+    exit 1
+fi
+
+# Perform the kill.
+echo "Killing Docker process with PID $pid"
+kill -9 $pid
+
+# Clear the transient state directory.
+readonly EXEC_PATH=$(readlink -e $dest_path/exec)
+if [ -n "$EXEC_PATH" ]; then
+    [ -z "$EXEC_PATH" ] && exit 1   # Failsafe to prevent deletion of all files.
+    rm -rf $EXEC_PATH/*
+fi

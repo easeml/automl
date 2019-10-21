@@ -1,0 +1,218 @@
+#!/bin/sh
+
+# Exit on error.
+set -ex
+
+# This script is for Linux only.
+if [ "$(uname)" != "Linux" ]; then
+    >&2 echo "This script can only be run on Linux systems."
+    exit 1
+fi
+
+# Constants.
+VERSION=3.6.8
+case $(uname -m) in
+    x86_64) ARCH=x64 ;;
+    armv6l) ARCH=armv6l ;;
+    *) >&2 echo "This script expects the architecture of the system to be either x86_64 or armv6l."
+esac
+DOWNLOAD_LINK="https://www.python.org/ftp/python/${VERSION%%[a-z]*}/Python-$VERSION.tgz"
+PIP_DOWNLOAD_LINK="https://bootstrap.pypa.io/get-pip.py"
+PIPENV_DOWNLOAD_LINK="https://raw.githubusercontent.com/kennethreitz/pipenv/master/get-pipenv.py"
+
+# Local variables.
+is_global=0
+dest_path=
+is_force=0
+
+# Print the command usage info.
+usage()
+{
+    echo "Usage: $0 [-g | -d DEST_PATH] [-f]"
+    echo "Install Node.js either globally (for all users) or locally (only for the current user)."
+    echo
+    echo "Arguments:"
+    echo " -g     Global install. Must be executed as ROOT."
+    echo " -d     Destination directory. Only for non-global mode. Default is the current directory ($PWD)."
+    echo " -f     Force mode. Never prompt the user for confirmation."
+    exit 2
+}
+
+# Parse the arguments.
+while getopts gd:f o
+do case $o in
+    g) is_global=1 ;;
+    d) dest_path=$(readlink -f $OPTARG) ;;
+    f) is_force=1 ;;
+    h|?) usage ;;
+esac done
+
+# Validity checks.
+[ $is_global = 1 ] && [ -n "$dest_path" ] && usage
+[ $is_global = 1 ] && [ $(id -u) -ne 0 ] && usage
+
+# Make sure all prerequisites are met.
+check_prerequisites() {
+
+    # Check dependent commands.
+    local COMMANDS=curl tar dpkg bzip2
+    for CMD in $COMMANDS
+    do
+        if ! command -v $CMD > /dev/null 2>&1 ; then
+            >&2 echo "The $CMD command cannot be found. Please install it and re-run this script."
+            exit 1
+        fi
+    done
+
+    if ! command -v "dpkg-architecture" > /dev/null 2>&1 ; then
+        >&2 echo "The dpkg-architecture command cannot be found. Please install dpkg and dpkg-dev."
+        exit 1
+    fi
+
+    if ! command -v "bzip2" > /dev/null 2>&1 ; then
+        >&2 echo "The bzip2 command cannot be found. Please install bzip2-dev."
+        exit 1
+    fi
+
+    if ! command -v "bzip2" > /dev/null 2>&1 ; then
+        >&2 echo "The bzip2 command cannot be found. Please install bzip2-dev."
+        exit 1
+    fi
+}
+
+# Run the command in global mode.
+run_global()
+{
+    case "$lsb_dist" in
+        ubuntu)
+            # Source instructions: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
+            echo "System recognized: Ubuntu"
+            dist_version="$(grep UBUNTU_CODENAME /etc/os-release | cut -d '=' -f2)"
+            echo "Distribution: $dist_version"
+
+            apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+            echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu $dist_version/mongodb-org/4.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+            apt-get update
+            apt-get install mongodb-org $([ $is_force -eq 1 ] $$ echo "-y")
+
+        ;;
+        debian)
+            # Source instructions: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-debian/
+            echo "System recognized: Debian"
+            dist_version="$(sed 's/\/.*//' /etc/debian_version | sed 's/\..*//')"
+            echo "Distribution: $dist_version"
+            apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+            echo "deb http://repo.mongodb.org/apt/debian $dist_version/mongodb-org/4.0 main" | tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+            sudo apt-get update
+            apt-get install mongodb-org $([ $is_force -eq 1 ] $$ echo "-y")
+
+        ;;
+        amzn)
+            # Source instructions: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-amazon/
+            echo "System recognized: Amazon Linux"
+            cat > /etc/yum.repos.d/mongodb-org-4.0.repo <<EOM
+[mongodb-org-4.0]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/amazon/2013.03/mongodb-org/4.0/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc
+EOM
+            yum install mongodb-org $([ $is_force -eq 1 ] $$ echo "-y")
+
+        ;;
+        rhel|centos)
+            # Source instructions: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-red-hat/
+            echo "System recognized: Red Hat Linux or CentOS"
+            cat > /etc/yum.repos.d/mongodb-org-4.0.repo <<EOM
+[mongodb-org-4.0]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/4.0/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc
+EOM
+            yum install mongodb-org $([ $is_force -eq 1 ] $$ echo "-y")
+            
+        ;;
+        sles|opensuse)
+            # Source instructions: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-suse/
+            echo "System recognized: SUSE or OpenSUSE"
+            zypper install python3.6
+
+        ;;
+    esac
+}
+
+# Run the command in non-global mode.
+run_local() {
+
+    echo "> Installing Python."
+
+    check_prerequisites
+
+    [ -z "$dest_path" ] && dest_path=$PWD
+    dest_path=$dest_path/python
+    mkdir -p $dest_path
+
+    echo "Downloading and unpacking."
+    mkdir -p $dest_path/src
+    curl -L $DOWNLOAD_LINK | tar -xz --strip-components 1 -C $dest_path/src
+
+    echo "Building from source."
+    CD=$PWD
+    cd $dest_path/src
+    gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"
+    ./configure --build="$gnuArch" --prefix $dest_path --quiet
+    make --quiet -j "$(nproc)"
+    make --quiet install
+    cd $CD
+    rm -rf $dest_path/src
+
+    echo "Creating aliases."
+    CD=$PWD
+    cd $dest_path/bin
+    ln -s idle3 idle
+    ln -s pydoc3 pydoc
+    ln -s python3 python
+    ln -s python3-config python-config
+    cd $CD
+
+    echo "Creating the local .env file."
+    ENVLINE="for e in ./.env.d/*.sh; do . \$e; done;"
+    grep -qFs -- "$ENVLINE" .env || echo "$ENVLINE" >> .env
+
+    echo "Updating the local .env.d directory."
+    mkdir -p .env.d
+    cat > .env.d/golang.sh <<EOM
+export PATH=$dest_path/bin:$PATH
+
+# Used to prevent pipenv from crashing.
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
+# Make pipenv store the virtual environment in a local project directory.
+# Otherwise, it will be stored in the shared directory of the user.
+export PIPENV_VENV_IN_PROJECT=true
+EOM
+
+    # Check that it works.
+    . ./.env
+    python --version
+
+    echo "Installing pip."
+    curl $PIP_DOWNLOAD_LINK | python -
+    pip -V
+
+    echo "Installing pipenv."
+    curl $PIPENV_DOWNLOAD_LINK | python -
+    pipenv --version
+
+}
+
+# Run the actual command depending on the mode.
+if [ $is_global = 1 ]; then
+    run_global
+else
+    run_local
+fi

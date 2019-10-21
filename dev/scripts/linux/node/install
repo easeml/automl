@@ -1,0 +1,125 @@
+#!/bin/sh
+
+# Exit on error.
+set -e
+
+# This script is for Linux only.
+if [ "$(uname)" != "Linux" ]; then
+    >&2 echo "This script can only be run on Linux systems."
+    exit 1
+fi
+
+# Constants.
+VERSION=10.16.0
+case $(uname -m) in
+    x86_64) ARCH=x64 ;;
+    armv6l) ARCH=armv6l ;;
+    *) >&2 echo "This script expects the architecture of the system to be either x86_64 or armv6l."
+esac
+DOWNLOAD_LINK="https://nodejs.org/dist/v$VERSION/node-v$VERSION-linux-$ARCH.tar.gz"
+
+# Local variables.
+is_global=0
+dest_path=
+is_force=0
+
+# Print the command usage info.
+usage()
+{
+    echo "Usage: $0 [-g | -d DEST_PATH] [-f]"
+    echo "Install Node.js either globally (for all users) or locally (only for the current user)."
+    echo
+    echo "Arguments:"
+    echo " -g     Global install. Must be executed as ROOT."
+    echo " -d     Destination directory. Only for non-global mode. Default is the current directory ($PWD)."
+    echo " -f     Force mode. Never prompt the user for confirmation."
+    exit 2
+}
+
+# Parse the arguments.
+while getopts gd:f o
+do case $o in
+    g) is_global=1 ;;
+    d) dest_path=$(readlink -f $OPTARG) ;;
+    f) is_force=1 ;;
+    h|?) usage ;;
+esac done
+
+# Validity checks.
+[ $is_global = 1 ] && [ -n "$dest_path" ] && usage
+[ $is_global = 1 ] && [ $(id -u) -ne 0 ] && usage
+
+# Make sure all prerequisites are met.
+check_prerequisites() {
+
+    # Check dependent commands.
+    local COMMANDS=curl tar
+    for CMD in $COMMANDS
+    do
+        if ! command -v $CMD > /dev/null 2>&1 ; then
+            >&2 echo "The $CMD command cannot be found. Please install it and re-run this script."
+            exit 1
+        fi
+    done
+}
+
+# Run the command in global mode.
+run_global() {
+
+    echo "> Installing Node."
+
+    check_prerequisites
+
+    dest_path=/usr/local/node
+    mkdir -p $dest_path
+
+    echo "Downloading and unpacking."
+    mkdir -p $dest_path
+    curl -L $DOWNLOAD_LINK | tar -xz --strip-components 1 -C $dest_path
+
+    echo "Updating /etc/profile."
+    cat > /etc/profile.d/golang.sh <<EOM
+export PATH=$PATH:$dest_path/bin
+EOM
+
+    . /etc/profile
+    node -v
+    npm -v
+}
+
+# Run the command in non-global mode.
+run_local() {
+
+    echo "> Installing Node."
+
+    check_prerequisites
+
+    [ -z "$dest_path" ] && dest_path=$PWD
+    dest_path=$dest_path/node
+    mkdir -p $dest_path
+
+    echo "Downloading and unpacking."
+    curl -L $DOWNLOAD_LINK | tar -xz --strip-components 1 -C $dest_path
+
+    echo "Creating the local .env file."
+    ENVLINE="for e in ./.env.d/*.sh; do . \$e; done;"
+    grep -qFs -- "$ENVLINE" .env || echo "$ENVLINE" >> .env
+
+    echo "Updating the local .env.d directory."
+    mkdir -p .env.d
+    cat > .env.d/golang.sh <<EOM
+export PATH=$dest_path/bin:$PATH
+EOM
+
+    # Check that it works.
+    . ./.env
+    node -v
+    npm -v
+}
+
+# Run the actual command depending on the mode.
+if [ $is_global = 1 ]; then
+    run_global
+else
+    run_local
+fi

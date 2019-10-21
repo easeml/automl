@@ -1,0 +1,87 @@
+#!/bin/sh
+
+# Exit on error.
+set -e
+
+# This script is for Linux only.
+if [ "$(uname)" != "Linux" ]; then
+    >&2 echo "This script can only be run on Linux systems."
+    exit 1
+fi
+
+# Constants.
+readonly DOCKER_DOWNLOAD_LINK="https://download.docker.com/linux/static/edge/x86_64/docker-18.09.6.tgz"
+# readonly DOCKER_DOWNLOAD_LINK="https://master.dockerproject.org/linux/x86_64/docker.tgz"
+readonly DOCKER_ROOTLESS_DOWNLOAD_LINK="https://master.dockerproject.org/linux/x86_64/docker-rootless-extras.tgz"
+
+# Local variables.
+is_global=0
+dest_path=
+is_force=0
+
+# Print the command usage info.
+usage()
+{
+    echo "Usage: $0 [-g | -d DEST_PATH] [-f]"
+    echo "Install Docker either globally (for all users) or locally (only for the current user)."
+    echo
+    echo "Arguments:"
+    echo " -g     Global install. Must be executed as ROOT."
+    echo " -d     Destination directory. Only for non-global mode. Default is the current directory ($PWD)"
+    echo " -f     Force mode. Never prompt the user for confirmation."
+    exit 2
+}
+
+# Parse the arguments.
+while getopts gd:f o
+do case $o in
+    g) is_global=1 ;;
+    d) dest_path=$(readlink -f $OPTARG) ;;
+    f) is_force=1 ;;
+    h|?) usage ;;
+esac done
+
+# Validity checks.
+[ $is_global = 1 ] && [ -n "$dest_path" ] && usage
+[ $is_global = 1 ] && [ $(id -u) -ne 0 ] && usage
+
+# Make sure all prerequisites are met.
+check_prerequisites() {
+
+    # Check dependent commands.
+    local COMMANDS=curl tar
+    for CMD in $COMMANDS
+    do
+        if ! command -v $CMD > /dev/null 2>&1 ; then
+            >&2 echo "The $CMD command cannot be found. Please install it and re-run this script."
+            exit 1
+        fi
+    done
+}
+
+# Run the command in non-global mode.
+run_local()
+{
+    [ -n $dest_path ] && dest_path=$PWD
+    mkdir -p $dest_path
+
+    curl -L $DOCKER_DOWNLOAD_LINK | tar -xz --strip-components 1 -C $dest_path
+    curl -L $DOCKER_ROOTLESS_DOWNLOAD_LINK | tar -xz --strip-components 1 -C $dest_path
+}
+
+# Run the command in global mode.
+run_global()
+{
+    curl -fsSL https://get.docker.com | sh -
+
+    echo
+    echo "NOTE: To be able to run docker commands without sudo, please execute the following command:"
+    echo "sudo usermod -aG docker ${USER}"
+}
+
+# Run the actual command depending on the mode.
+if [ $is_global = 1 ]; then
+    run_global
+else
+    run_local
+fi

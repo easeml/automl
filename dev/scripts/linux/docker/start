@@ -1,0 +1,169 @@
+#!/bin/sh
+
+# Constants.
+readonly ROOT_EXEC_BASE_PATH="/var/run"                             # Transient data needs to be stored under /var/run.
+readonly USER_EXEC_BASE_PATH="$ROOT_EXEC_BASE_PATH/user/$(id -u)"   # Non-root transient data is stored here.
+
+set -x
+
+# Local variables.
+dest_path=$PWD
+config_path=
+arguments=
+is_rootless=0
+
+# Print the command usage info.
+usage()
+{
+    echo "Usage: $0 [-d DEST_PATH] [-c CONFIG_PATH] [-a ARGUMENTS]"
+    echo "Start a Docker instance and keep the persistent state in the given location."
+    echo "Can run both as root and as regular user. However, root is preferred due to performance and stability."
+    echo "All binaries need to be reachable by following the PATH variable."
+    echo
+    echo "Arguments:"
+    echo " -d     Directory where the state of the daemon will be stored."
+    echo " -c     Config file to use."
+    echo " -a     String containing command line arguments to pass to the Docker daemon."
+    exit 2
+}
+
+# Parse the arguments.
+while getopts d:c: o
+do case $o in
+    d) dest_path=$(readlink -f $OPTARG) ;;
+    c) config_path=$(readlink -f $OPTARG) ;;
+    a) arguments=$(readlink -f $OPTARG) ;;
+    h|?) usage ;;
+esac done
+
+# Computed properties.
+[ $(id -u) -ne 0 ] && is_rootless=1
+[ -z "$config_path" ] && config_path=$dest_path/daemon.json
+readonly DATA_PATH=$dest_path/data          # This directory will contain the persistent state of the Docker daemon.
+readonly EXEC_PATH_LN=$dest_path/exec       # This is going to be the symlink to the directory under /var/run.
+readonly EXEC_BASE_PATH=$( [ $is_rootless -eq 1 ] && echo $USER_EXEC_BASE_PATH || echo $ROOT_EXEC_BASE_PATH )
+
+# If the symlink already existed, we can reuse the old 
+if [ -L $EXEC_PATH_LN ] && [ -e "$EXEC_PATH_LN" ]; then
+    readonly EXEC_PATH=$(readlink -e $EXEC_PATH_LN)
+    [ -z "$EXEC_PATH" ] && exit 1   # Failsafe to prevent deletion of all files.
+    rm -rf $EXEC_PATH/*
+else
+    readonly EXEC_PATH=$(mktemp -d tmp-XXX -p $EXEC_BASE_PATH)
+
+    mkdir -p $dest_path
+    [ -L $EXEC_PATH_LN ] && rm $EXEC_PATH_LN
+    ln -s $EXEC_PATH $EXEC_PATH_LN
+fi
+
+# Write a blank config file if it doesn't exist.
+[ -f $config_path ] || echo "{}" > $config_path
+
+# Run the command in non-global mode.
+run_rootless()
+{
+
+    # Find locations of commands.
+    local cmd_rootlesskit=$(command -v rootlesskit)
+    local cmd_dockerd_rootless=$(command -v dockerd-rootless.sh)
+    local cmd_dockerd=$(command -v dockerd)
+    if [ -z cmd_rootlesskit ] || [ -z cmd_dockerd_rootless ] || [ -z cmd_dockerd ]; then
+        >&2 echo "Cannot find dockerd, rootlesskit or dockerd-rootless.sh on PATH."
+        exit 1
+    else
+        echo "Using commands:"
+        echo "  $cmd_dockerd"
+        echo "  $cmd_rootlesskit"
+        echo "  $cmd_dockerd_rootless"
+        echo
+    fi
+
+    # To run rootless we currently must use experimental mode.
+    local dockerd_flags="--experimental"
+
+    # The default storage driver is vfs. It is slow but it is the only one supported for rootless mode.
+    # For Ubuntu it is possible that overlay2 could be supported (which is much more performant).
+    local storage_driver="vfs"
+    local tmpdir=$(mktemp -d)
+    mkdir -p "$tmpdir/lower" "$tmpdir/upper" "$tmpdir/work" "$tmpdir/merged"
+    if cmd_rootlesskit mount -t overlay overlay -olowerdir=$tmpdir/lower,upperdir=$tmpdir/upper,workdir=$tmpdir/work $tmpdir/merged >/dev/null 2>&1; then
+        storage_driver="overlay2"
+    fi
+    rm -rf "$tmpdir"
+    dockerd_flags="$dockerd_flags --storage-driver=$storage_driver"
+
+    # Specify the data root path that stores the persistent state of the Docker daemon.
+    mkdir -p $DATA_PATH
+    dockerd_flags="$dockerd_flags --data-root=$DATA_PATH"
+
+    # We place the exec root in a uniquely-named directory under /var/run. Create a symlink so we can easily find it.
+    dockerd_flags="$dockerd_flags --exec-root=$EXEC_PATH"
+
+    # Save the PID file where we can easily find it, to be able to stop the process.
+    dockerd_flags="$dockerd_flags --pidfile=$EXEC_PATH/docker.pid"
+
+    # Keep the daemon config file where we can find it.
+    
+    dockerd_flags="$dockerd_flags --config-file=$config_path"
+
+    # The socket will be stored in the exec root as well.
+    docker_host=unix://$EXEC_PATH/docker.sock
+    dockerd_flags="$dockerd_flags --host=$docker_host"
+
+    # Export the relevant environment variables.
+    export DOCKER_HOST=$docker_host
+    export XDG_RUNTIME_DIR=$EXEC_PATH
+
+    # Show the final command.
+    echo "Running command:"
+    echo cmd_dockerd_rootless $dockerd_flags
+    # exec $cmd_dockerd_rootless $dockerd_flags 2>&1 | tee -a $dest_path/daemon.log &>/dev/null &
+    # disown -a
+
+    nohup $cmd_dockerd_rootless $dockerd_flags $arguments </dev/null >>$dest_path/daemon.log 2>&1 &
+}
+
+# Run the command in global mode.
+run_regular()
+{
+    # Find locations of commands.
+    local cmd_dockerd=$(command -v dockerd)
+    if [ -z cmd_dockerd ]; then
+        >&2 echo "Cannot find dockerd on PATH."
+        exit 1
+    else
+        echo "Using command:"
+        echo "  $cmd_dockerd"
+        echo
+    fi
+
+    dockerd_flags=
+
+    # Specify the data root path that stores the persistent state of the Docker daemon.
+    mkdir -p $DATA_PATH
+    dockerd_flags="$dockerd_flags --data-root=$DATA_PATH"
+
+    # We place the exec root in a uniquely-named directory under /var/run. Create a symlink so we can easily find it.
+    dockerd_flags="$dockerd_flags --exec-root=$EXEC_PATH"
+
+    # Save the PID file where we can easily find it, to be able to stop the process.
+    dockerd_flags="$dockerd_flags --pidfile=$EXEC_PATH/docker.pid"
+
+    # Keep the daemon config file where we can find it.
+    dockerd_flags="$dockerd_flags --config-file=$config_path"
+
+    # The socket will be stored in the exec root as well.
+    docker_host=unix://$EXEC_PATH/docker.sock
+    dockerd_flags="$dockerd_flags --host=$docker_host"
+
+    # exec $cmd_dockerd $dockerd_flags 2>&1 | tee -a $dest_path/daemon.log
+
+    nohup $cmd_dockerd $dockerd_flags $arguments </dev/null >>$dest_path/daemon.log 2>&1 &
+}
+
+# Run the actual command depending on the mode.
+if [ $is_rootless = 1 ]; then
+    run_rootless
+else
+    run_regular
+fi
