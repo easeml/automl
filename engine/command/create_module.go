@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ds3lab/easeml/client/go/easemlclient"
+	client "github.com/ds3lab/easeml/client/go/easemlclient"
 	"github.com/ds3lab/easeml/client/go/easemlclient/types"
 	"github.com/ds3lab/easeml/engine/modules"
 

@@ -24,6 +24,7 @@ import (
 
 	"github.com/ds3lab/easeml/engine/process"
 	"github.com/ds3lab/easeml/engine/process/controller"
+	"github.com/ds3lab/easeml/engine/process/daemon"
 	"github.com/ds3lab/easeml/engine/process/scheduler"
 	"github.com/ds3lab/easeml/engine/process/worker"
 
@@ -39,7 +40,7 @@ var startCmd = &cobra.Command{
 	Short:     "Starts an ease.ml service.",
 	Long:      ``,
 	Args:      cobra.OnlyValidArgs,
-	ValidArgs: []string{"controller", "scheduler", "worker"},
+	ValidArgs: []string{"controller", "scheduler", "worker", "docker", "mongo"},
 	Run: func(cmd *cobra.Command, args []string) {
 
 		printEasemlSign()
@@ -82,6 +83,18 @@ var startCmd = &cobra.Command{
 					go func() {
 						defer wg.Done()
 						worker.Start(processContext)
+					}()
+				case "docker":
+					wg.Add(1)
+					go func() {
+						defer wg.Done()
+						daemon.Start(processContext, "docker")
+					}()
+				case "mongo":
+					wg.Add(1)
+					go func() {
+						defer wg.Done()
+						daemon.Start(processContext, "mongo")
 					}()
 				}
 			}

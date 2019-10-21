@@ -1,4 +1,4 @@
-package command
+package command // import "github.com/ds3lab/easeml/engine/command"
 
 import (
 	"bufio"

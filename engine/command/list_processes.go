@@ -5,7 +5,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/ds3lab/easeml/client/go/easemlclient"
+	client "github.com/ds3lab/easeml/client/go/easemlclient"
 	"github.com/ds3lab/easeml/client/go/easemlclient/types"
 
 	"github.com/spf13/cobra"

@@ -13,6 +13,9 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+# The vendor directory.
+vendor/
+
 # Any built binaries in this directory.
 engine
 easeml
