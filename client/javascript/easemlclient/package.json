@@ -42,7 +42,7 @@
     "webpack-cli": "^3.3.2"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "decamelize-keys": "^1.1.0",
     "moment": "^2.24.0",
     "moment-duration-format": "^2.2.2",
