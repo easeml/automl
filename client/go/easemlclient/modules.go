@@ -203,6 +203,8 @@ func ModuleSourceAddressRequired(source string) bool {
 		return true
 	case types.ModuleDownload:
 		return true
+	case types.ModuleRegistry:
+		return true
 	default:
 		panic("unknown source")
 	}

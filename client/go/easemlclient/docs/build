@@ -1,0 +1,6 @@
+#!/bin/sh
+
+PROJ_ROOT=$(readlink -f ..)
+
+godocdown $PROJ_ROOT/types > $PROJ_ROOT/docs/types.md
+godocdown $PROJ_ROOT > $PROJ_ROOT/docs/client.md

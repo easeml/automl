@@ -19,3 +19,6 @@ vendor/
 # Any built binaries in this directory.
 engine
 easeml
+
+# Temporary.
+docs/**/*.md

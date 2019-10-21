@@ -22,7 +22,8 @@
     "test:browser": "karma start --single-run --browsers ChromeHeadless,FirefoxHeadless karma.config.js",
     "dev": "npm run build:node:watch",
     "lint": "eslint src/**/*.js test/**/*.js",
-    "lint-fix": "eslint --fix src/**/*.js test/**/*.js"
+    "lint-fix": "eslint --fix src/**/*.js test/**/*.js",
+    "doc" : "mkdir -p docs && doxdox 'src/**/*.js' --layout markdown --output docs/schema.md"
   },
   "author": "Bojan Karlas",
   "license": "MIT",

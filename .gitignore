@@ -19,3 +19,12 @@
 # IDEA gitignore.
 .idea/*
 
+# MyPy Cache
+.mypy_cache/*
+
+# Dist directory
+dist/*
+
+# Temporary
+opt/
+docs/usr/

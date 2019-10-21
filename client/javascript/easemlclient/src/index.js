@@ -15,6 +15,17 @@ function loadContext (input) {
   return new Context(input.serverAddress, input.userCredentials)
 }
 
+/**
+ * Creates a new instance of the client context. The client context holds all information that is needed
+ * to communicate with the server (server address and user credentials). All client methods need to be executed
+ * on a context instance.
+ *
+ * @param {string} serverAddress - The URL to the easeml server that is serving the REST API.
+ * @param {Object} userCredentials - Object containing either the API key or the username and password.
+ * @param {string} userCredentials.apiKey - The API key that is used to authenticate the user.
+ * @param {string} userCredentials.username - The username that identifies the user.
+ * @param {string} userCredentials.password - The password that is used to authenticate the user.
+ */
 function Context (serverAddress, userCredentials) {
   this.serverAddress = serverAddress
   this.userCredentials = userCredentials

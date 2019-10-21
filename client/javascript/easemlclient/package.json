@@ -17,7 +17,8 @@
     "build:browser": "webpack",
     "dev": "npm run build:node:watch",
     "lint": "eslint src/**/*.js",
-    "lint-fix": "eslint --fix src/**/*.js"
+    "lint-fix": "eslint --fix src/**/*.js",
+    "doc" : "mkdir -p docs && doxdox 'src/**/*.js' --layout markdown --output docs/client.md"
   },
   "keywords": [
     "easeml"

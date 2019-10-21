@@ -1,0 +1,6 @@
+#!/bin/sh
+
+PROJ_ROOT=$(readlink -f ..)
+
+godocdown $PROJ_ROOT/dataset > $PROJ_ROOT/docs/dataset.md
+godocdown $PROJ_ROOT/schema > $PROJ_ROOT/docs/schema.md

@@ -1,6 +1,6 @@
 # Ease.ml - A Scalable Auto-ML System
 
-![Logo](doc/img/logo-big.png?raw=true "Logo")
+![Logo](docs/img/logo-big.png?raw=true "Logo")
 
 Ease.ml is a declarative machine learning service platform. It enables users to upload their datasets and start model selection and tuning jobs. Given the schema of the dataset, ease.ml does an automatic search for applicable models and performs training, prediction and evaluation. All models are stored as Docker images which allows greater portability and reproducibility.
 
