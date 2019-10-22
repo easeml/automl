@@ -34,7 +34,7 @@ class ApiType(Generic[T]):
         resp = requests.get(url, auth=connection.auth)
         resp.raise_for_status()
         payload = resp.json()
-        return self.T(payload)
+        return self.T(payload["data"])
     
     def _download(self: T, connection: Connection, url: str) -> bytes:
         resp = requests.get(url, auth=connection.auth)

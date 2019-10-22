@@ -201,6 +201,7 @@ class JobQuery(ApiQuery['Job', 'JobQuery']):
                  order_by: Optional[str] = None, order: Optional[ApiQueryOrder] = None,
                  limit: Optional[int] = None, cursor: Optional[str] = None) -> None:
         super().__init__(order_by, order, limit, cursor)
+        self.T = Job
 
         if id is not None:
             self._query["id"] = id

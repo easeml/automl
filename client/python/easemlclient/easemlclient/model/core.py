@@ -17,7 +17,7 @@ class Connection:
             raise ValueError("A connection instance must be initialized with either an API " + \
                              "key or a user id and password.")
 
-        self.host = host
+        self.host = host.strip("/")
         self.api_key = api_key
 
         if api_key is not None:
@@ -30,10 +30,10 @@ class Connection:
 
     @property
     def url_base(self):
-        return urljoin(self.host, API_PREFIX)
+        return "http://" + self.host + "/" + API_PREFIX
 
     def url(self, endpoint: str) -> str:
-        return urljoin(self.url_base, endpoint)
+        return self.url_base + "/" + endpoint.lstrip("/")
 
     def login(self) -> 'Connection':
         url = self.url("users/login")
