@@ -23,6 +23,7 @@ class Connection:
         if api_key is not None:
             def api_key_auth(request):
                 request.headers[API_KEY_HEADER] = api_key
+                return request
             self.auth = api_key_auth
         else:
             self.auth = HTTPBasicAuth(user_id, user_password)

@@ -35,6 +35,11 @@ class ApiType(Generic[T]):
         resp.raise_for_status()
         payload = resp.json()
         return self.T(payload)
+    
+    def _download(self: T, connection: Connection, url: str) -> bytes:
+        resp = requests.get(url, auth=connection.auth)
+        resp.raise_for_status()
+        return resp.content
 
     @classmethod
     def from_dict(cls, input: Dict[str, Any]) -> 'ApiType':

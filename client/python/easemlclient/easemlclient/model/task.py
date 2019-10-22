@@ -246,6 +246,18 @@ class Task(ApiType['Task']):
     def patch(self, connection: Connection) -> 'Task':
         url = connection.url("tasks/" + self.id)
         return self._patch(connection, url)
+    
+    def get_predictions(self, connection: Connection) -> bytes:
+        url = connection.url("tasks/" + self.id + "/predictions.tar")
+        return self._download(connection, url)
+    
+    def get_parameters(self, connection: Connection) -> bytes:
+        url = connection.url("tasks/" + self.id + "/parameters.tar")
+        return self._download(connection, url)
+    
+    def get_image(self, connection: Connection) -> bytes:
+        url = connection.url("tasks/" + self.id + "/image/download")
+        return self._download(connection, url)
 
 
 class TaskQuery(ApiQuery['Task', 'TaskQuery']):
