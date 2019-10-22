@@ -235,7 +235,7 @@ func New(context api.Context) http.Handler {
 			Methods:  []string{"GET"},
 			Pattern:  "/tasks/{job-id}/{task-id}/parameters",
 			IsPrefix: true,
-			Handler:  commonMiddleware.ThenFunc(handlerContext.TaskDataDownloadHandler("/api/v1/tasks/{job-id}/{task-id}/predictions", "parameters")),
+			Handler:  commonMiddleware.ThenFunc(handlerContext.TaskDataDownloadHandler("/api/v1/tasks/{job-id}/{task-id}/parameters", "parameters")),
 		},
 		Route{
 			Name:    "GetUser",

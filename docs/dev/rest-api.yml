@@ -1610,6 +1610,112 @@ paths:
         - ApiKeyQuery: []
       summary: get log of specific task
       description: Returns the log of the specific task.
+  /tasks/{job-id}/{task-id}/predictions/{subpath}:
+    get:
+      parameters:
+        - name: job-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the job.
+        - name: task-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the task.
+        - name: subpath
+          in: path
+          required: false
+          schema:
+            type: string
+          description: |
+            Represents the subpath of the predictions directory. Empty string corresponds to the root directory of
+            predictions. If a subpath corresponds to a file, a file will be returned. If it corresponds to a directory,
+            a JSON result containing directory contents will be returned. If a directory name is appended with
+            `.tar`, `.tar.gz` or `.zip` then a corresponding directory will be packed as a given archive type and
+            returned.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: string
+                  links:
+                    type: object
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - tasks
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: get the predictions of the specific task
+      description: Gives access to the predictions of a given task.
+  /tasks/{job-id}/{task-id}/parameters/{subpath}:
+    get:
+      parameters:
+        - name: job-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the job.
+        - name: task-id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Identifier of the task.
+        - name: subpath
+          in: path
+          required: false
+          schema:
+            type: string
+          description: |
+            Represents the subpath of the parameters directory. Empty string corresponds to the root directory of
+            parameters. If a subpath corresponds to a file, a file will be returned. If it corresponds to a directory,
+            a JSON result containing directory contents will be returned. If a directory name is appended with
+            `.tar`, `.tar.gz` or `.zip` then a corresponding directory will be packed as a given archive type and
+            returned.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: string
+                  links:
+                    type: object
+        '401':
+          $ref: '#/components/responses/401BadAccessToken'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      tags:
+        - tasks
+      security:
+        - ApiKeyHeader: []
+        - ApiKeyQuery: []
+      summary: get the parameters of the specific task
+      description: Gives access to the parameters of a given task.
   /tasks/{job-id}/{task-id}/image/download:
     head:
       parameters:
