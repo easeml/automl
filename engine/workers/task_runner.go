@@ -491,7 +491,6 @@ func (context Context) runModelEvaluationAndGetQuality(task *types.Task, objecti
 	}
 
 	// Dump evaluation lines.
-	lines = lines[:len(lines)-1]
 	evalFileName := filepath.Join(paths.Evaluations, "evals."+subdir+".log")
 	evalLines := strings.Join(lines, "\n")
 	err = ioutil.WriteFile(evalFileName, []byte(evalLines), storage.DefaultFilePerm)
