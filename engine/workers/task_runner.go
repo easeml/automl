@@ -490,6 +490,15 @@ func (context Context) runModelEvaluationAndGetQuality(task *types.Task, objecti
 		lines = append(lines, scanner.Text())
 	}
 
+	// Dump evaluation lines.
+	lines = lines[:len(lines)-1]
+	evalFileName := filepath.Join(paths.Evaluations, "evals."+subdir+".log")
+	evalLines := strings.Join(lines, "\n")
+	err = ioutil.WriteFile(evalFileName, []byte(evalLines), storage.DefaultFilePerm)
+	if err != nil {
+		panic(err)
+	}
+
 	// The last line should contain the quality.
 	qualityString := strings.TrimSpace(lines[len(lines)-1])
 	quality, err := strconv.ParseFloat(qualityString, 64)
@@ -504,15 +513,6 @@ func (context Context) runModelEvaluationAndGetQuality(task *types.Task, objecti
 			return context.ModelContext.UpdateTaskStatus(task.ID, types.TaskError, err.Error())
 		})
 		return 0, err
-	}
-
-	// Dump evaluation lines.
-	lines = lines[:len(lines)-1]
-	evalFileName := filepath.Join(paths.Evaluations, "evals."+subdir+".log")
-	evalLines := strings.Join(lines, "\n")
-	err = ioutil.WriteFile(evalFileName, []byte(evalLines), storage.DefaultFilePerm)
-	if err != nil {
-		panic(err)
 	}
 
 	return quality, nil
