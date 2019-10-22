@@ -178,8 +178,8 @@ func (apiContext Context) TasksByIDGet(w http.ResponseWriter, r *http.Request) {
 	responses.RespondWithJSON(w, http.StatusOK, response)
 }
 
-// TaskPredictionsDownloadHandler handles all task prediction download requests.
-func (apiContext Context) TaskPredictionsDownloadHandler(basePath string) http.HandlerFunc {
+// TaskDataDownloadHandler handles all task prediction download requests.
+func (apiContext Context) TaskDataDownloadHandler(basePath string, dataSubdir string) http.HandlerFunc {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -231,7 +231,16 @@ func (apiContext Context) TaskPredictionsDownloadHandler(basePath string) http.H
 			responses.Context(apiContext).RespondWithError(w, r, http.StatusInternalServerError, "Something went wrong.", errors.WithStack(err))
 			return
 		}
-		apiContext.ServeLocalResource(taskPaths.Predictions, relativePath, task.StageTimes.Predicting.End, w, r)
+
+		// Select task path based on the input parameter.
+		targetTaskPath := ""
+		if dataSubdir == "predictions" {
+			targetTaskPath = taskPaths.Predictions
+		} else if dataSubdir == "parameters" {
+			targetTaskPath = taskPaths.Parameters
+		}
+
+		apiContext.ServeLocalResource(targetTaskPath, relativePath, task.StageTimes.Predicting.End, w, r)
 
 	})
 

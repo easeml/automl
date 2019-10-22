@@ -224,11 +224,18 @@ func New(context api.Context) http.Handler {
 			Handler: commonMiddleware.Append(middlewareContext.HideFromAnon).ThenFunc(handlerContext.TasksByIDGet),
 		},
 		Route{
-			Name:     "PatchUser",
+			Name:     "GetTaskPredictions",
 			Methods:  []string{"GET"},
 			Pattern:  "/tasks/{job-id}/{task-id}/predictions",
 			IsPrefix: true,
-			Handler:  commonMiddleware.ThenFunc(handlerContext.TaskPredictionsDownloadHandler("/api/v1/tasks/{job-id}/{task-id}/predictions")),
+			Handler:  commonMiddleware.ThenFunc(handlerContext.TaskDataDownloadHandler("/api/v1/tasks/{job-id}/{task-id}/predictions", "predictions")),
+		},
+		Route{
+			Name:     "GetTaskParameters",
+			Methods:  []string{"GET"},
+			Pattern:  "/tasks/{job-id}/{task-id}/parameters",
+			IsPrefix: true,
+			Handler:  commonMiddleware.ThenFunc(handlerContext.TaskDataDownloadHandler("/api/v1/tasks/{job-id}/{task-id}/predictions", "parameters")),
 		},
 		Route{
 			Name:    "GetUser",
