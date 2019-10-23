@@ -34,12 +34,14 @@ endif
 # Other config variables.
 PROJECT_NAME := easeml
 GO := $(shell which go)
-PACKR := $(shell which packr)
+PACKR := $(shell which packr2)
 GOLINT := $(shell which golint)
 GOFMT := $(shell which gofmt)
 VERSION := $(shell cat $(ROOT_DIR_PATH)/VERSION)
 RELEASE_TAR_NAME := $(PROJECT_NAME)-$(VERSION).tgz
-
+ifdef GOPATH
+INSTALL_PATH?=$(GOPATH)/bin
+endif
 
 # The show-help target which prints all targets in this file that have a doc help comment.
 include $(ROOT_DIR_PATH)/dev/makefiles/show-help.mk
@@ -75,8 +77,21 @@ clean:
 ## Compile the project code.
 build: $(WEB_UI_DIST_PATH)
 	$(call show-prompt,Compiling project code)
-	$(PACKR) build -o $(PROJECT_NAME)
+	$(PACKR)
+	$(GO) build -o $(PROJECT_NAME)
 
+.PHONY: install
+## Call build then move binary to INSTALL_PATH
+install: build
+	@if [ -n "$(INSTALL_PATH)" ]; then \
+		echo 'Installing to '$(INSTALL_PATH); \
+		mv $(PROJECT_NAME) $(PROJECT_NAME)_temp;\
+		mv $(PROJECT_NAME)_temp $(INSTALL_PATH)/$(PROJECT_NAME);\
+	else\
+		echo "Empty INSTALL_PATH and GOPATH";\
+		exit 1;\
+	fi && \
+	echo '$@: done'
 
 .PHONY: package
 ## Build the project and assemble a deployable package.
@@ -86,7 +101,8 @@ package: $(WEB_UI_DIST_PATH)
 	for arch in $(ARCH) ; do \
 		for os in $(OS) ; do \
 			[ $$os = windows ] && name=$(PROJECT_NAME).exe || name=$(PROJECT_NAME); \
-			GOOS=$$os $(PACKR) build -o $(DIST_PATH)/$$os-$$arch/$$name; \
+			$(PACKR); \
+			GOOS=$$os $(GO) build -o $(DIST_PATH)/$$os-$$arch/$$name; \
 		done; \
 	done
 

@@ -10,14 +10,13 @@ require (
 	// github.com/Sirupsen/logrus v1.1.1 // indirect
 	github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40 // indirect
 	github.com/cavaliercoder/grab v2.0.0+incompatible
-	github.com/cpuguy83/go-md2man v1.0.10 // indirect
 	github.com/docker/docker v0.7.3-0.20190121142752-69d9ff34556d
 	github.com/ds3lab/easeml/client/go/easemlclient v0.0.0
 	github.com/ds3lab/easeml/schema/go/easemlschema v0.0.0
 	github.com/emicklei/forest v1.1.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
-	github.com/gobuffalo/packr v1.25.0
+	github.com/gobuffalo/packr/v2 v2.7.1
 	github.com/golang/mock v1.3.0 // indirect
 	github.com/google/go-cmp v0.3.0 // indirect
 	github.com/gorilla/context v1.1.1
@@ -33,11 +32,11 @@ require (
 	github.com/rs/cors v1.6.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.4.2
-	github.com/spf13/cobra v0.0.3
+	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.3.2
-	github.com/stretchr/testify v1.3.0
+	github.com/stretchr/testify v1.4.0
 	github.com/tus/tusd v0.0.0-20190508030626-9d693c93a3ea
-	golang.org/x/net v0.0.0-20190503192946-f4e77d36d62c
+	golang.org/x/net v0.0.0-20190620200207-3b0461eec859
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
 	google.golang.org/grpc v1.20.1 // indirect
 	gopkg.in/Acconut/lockfile.v1 v1.1.0 // indirect

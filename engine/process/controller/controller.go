@@ -15,7 +15,7 @@ import (
 	"github.com/ds3lab/easeml/engine/storage"
 	"github.com/ds3lab/easeml/engine/workers"
 
-	"github.com/gobuffalo/packr"
+	"github.com/gobuffalo/packr/v2"
 )
 
 // Start is the entry point.
@@ -161,7 +161,7 @@ func Start(context process.Context) {
 	http.Handle("/api/v1/", apiRouter)
 
 	// Initialize the WEB router.
-	box := packr.NewBox("../../../web/dist")
+	box := packr.New("Frontend","../../../web/dist")
 	webRouter := http.FileServer(box)
 	http.Handle("/", webRouter)
 

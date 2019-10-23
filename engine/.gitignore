@@ -22,3 +22,6 @@ easeml
 
 # Temporary.
 docs/**/*.md
+
+# Packr files
+*-packr.go
