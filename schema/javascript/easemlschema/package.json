@@ -12,6 +12,7 @@
     "test/**/*"
   ],
   "scripts": {
+    "rimraf": "./node_modules/rimraf/bin.js",
     "clean": "rimraf dist && rimraf lib && rimraf docs",
     "build": "npm run build:node && npm run build:browser",
     "build:node": "babel src --out-dir ./lib --source-maps",
@@ -23,7 +24,7 @@
     "dev": "npm run build:node:watch",
     "lint": "eslint src/**/*.js test/**/*.js",
     "lint-fix": "eslint --fix src/**/*.js test/**/*.js",
-    "doc" : "mkdir -p docs && doxdox 'src/**/*.js' --layout markdown --output docs/schema.md"
+    "doc": "mkdir -p docs && doxdox 'src/**/*.js' --layout markdown --output docs/schema.md"
   },
   "author": "Bojan Karlas",
   "license": "MIT",

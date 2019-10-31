@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "rimraf": "./node_modules/rimraf/bin.js",
     "clean": "rimraf dist",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
