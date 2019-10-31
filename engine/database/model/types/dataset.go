@@ -16,6 +16,9 @@ const (
 	// DatasetDownload is a data set that has been downloaded from a remote location.
 	DatasetDownload = "download"
 
+	// DatasetGitLfs is a data set that has been fetched from a git repository
+	DatasetGit = "git"
+
 	// DatasetCreated is the status of a dataset when it is recorded in the system but the data is not yet transferred.
 	DatasetCreated = "created"
 

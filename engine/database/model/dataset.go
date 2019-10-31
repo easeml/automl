@@ -28,6 +28,7 @@ func (context Context) GetDatasetByID(id string) (result types.Dataset, err erro
 
 	// Only the root user can look up datasets other than their own.
 	if context.User.IsRoot() {
+		fmt.Println("### ROOT GETTING DATASETS ="+ id)
 		err = c.Find(bson.M{"id": id}).All(&allResults)
 	} else {
 		err = c.Find(bson.M{"id": id, "user": bson.M{"$in": []string{context.User.ID, types.UserRoot}}}).All(&allResults)
@@ -40,6 +41,7 @@ func (context Context) GetDatasetByID(id string) (result types.Dataset, err erro
 
 	if len(allResults) == 0 {
 		err = ErrNotFound
+		fmt.Println("### HERE3")
 		return
 	}
 
@@ -279,10 +281,10 @@ func (context Context) CreateDataset(dataset types.Dataset) (result types.Datase
 		err = errors.Wrap(ErrBadInput, "the id must be of the format dataset-id or user-id/dataset-id")
 		return
 	}
-	if dataset.Source != types.DatasetUpload && dataset.Source != types.DatasetLocal && dataset.Source != types.DatasetDownload {
+	if dataset.Source != types.DatasetUpload && dataset.Source != types.DatasetLocal && dataset.Source != types.DatasetDownload && dataset.Source != types.DatasetGit {
 		err = errors.Wrapf(ErrBadInput,
 			"value of source can be \"%s\", \"%s\" or \"%s\", but found \"%s\"",
-			types.DatasetUpload, types.DatasetLocal, types.DatasetDownload, dataset.Source)
+			types.DatasetUpload, types.DatasetLocal, types.DatasetDownload,types.DatasetGit, dataset.Source)
 		return
 	}
 	// Validate the schemas.

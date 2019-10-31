@@ -9,8 +9,9 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-
-	"github.com/ds3lab/easeml/client/go/easemlclient/types"
+	//TODO Should share the same types with the engine(?)
+	//"github.com/ds3lab/easeml/client/go/easemlclient/types"
+	"github.com/ds3lab/easeml/engine/database/model/types"
 
 	tus "github.com/eventials/go-tus"
 	"github.com/mholt/archiver"
@@ -158,6 +159,7 @@ var ValidDatasetSources = []string{
 	types.DatasetUpload,
 	types.DatasetDownload,
 	types.DatasetLocal,
+	types.DatasetGit,
 }
 
 // DatasetSourceValid checks if the provided dataset source is valid.
@@ -178,6 +180,8 @@ func DatasetSourceAddressRequired(source string) bool {
 	case types.DatasetLocal:
 		return true
 	case types.DatasetDownload:
+		return true
+	case types.DatasetGit:
 		return true
 	default:
 		panic("unknown source")

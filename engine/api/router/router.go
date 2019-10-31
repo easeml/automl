@@ -266,5 +266,5 @@ func New(context api.Context) http.Handler {
 
 // Index defines the response for the root GET request.
 func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World!")
+	fmt.Fprintf(w, "Easeml API v1 root")
 }
