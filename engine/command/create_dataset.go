@@ -15,7 +15,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var datasetID, datasetName, datasetDescription, datasetSchema, datasetSource, datasetSourceAddress string
+var datasetID, datasetName, datasetDescription, datasetSchema, datasetSource, datasetSourceAddress, datasetSecret string
 
 var createDatasetCmd = &cobra.Command{
 	Use:   "dataset",
@@ -135,12 +135,12 @@ var createDatasetCmd = &cobra.Command{
 				}
 			}
 
-			_, err := context.CreateDataset(datasetID, datasetName, descriptionString, datasetSource, datasetSourceAddress)
+			_, err := context.CreateDataset(datasetID, datasetName, descriptionString, datasetSource, datasetSourceAddress,datasetSecret)
 			if err != nil {
 				fmt.Println(err.Error())
 				return
 			}
-			fmt.Printf("SUCCESS: Dataset \"%s\" created.\n", datasetID)
+			fmt.Printf("SUCCESS: Dataset \"%s\" creation requested.\n", datasetID)
 
 		} else if dataset.Source != types.DatasetUpload || dataset.Status != types.DatasetCreated {
 			fmt.Printf("Error: Dataset \"%s\" already exists.\n", datasetID)
@@ -166,7 +166,7 @@ func init() {
 	createDatasetCmd.Flags().StringVar(&datasetName, "name", "", "Dataset full name.")
 	createDatasetCmd.Flags().StringVar(&datasetDescription, "description", "", "Dataset description. "+
 		"Can be a path to a text file or \"-\" in order to read the description from stdin.")
-	createDatasetCmd.Flags().StringVar(&datasetSource, "source", "", "Dataset source.")
+	createDatasetCmd.Flags().StringVar(&datasetSource, "source", "", fmt.Sprintf("Dataset source [choices: %s]",strings.Join(client.ValidDatasetSources, ", ")))
 	createDatasetCmd.Flags().StringVar(&datasetSourceAddress, "source-address", "", "Dataset source address.")
-
+	createDatasetCmd.Flags().StringVar(&datasetSecret, "dataset-secret", "", "Data-source specific secret, i.e. oauth token.")
 }

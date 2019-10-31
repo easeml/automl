@@ -72,7 +72,7 @@ var pushDatasetCmd = &cobra.Command{
 			}
 		}
 
-		result, err := context.CreateDataset(datasetID, datasetName, descriptionString, datasetSource, datasetSourceAddress)
+		result, err := context.CreateDataset(datasetID, datasetName, descriptionString, datasetSource, datasetSourceAddress,datasetSecret)
 		if err != nil {
 			fmt.Println(err.Error())
 			return

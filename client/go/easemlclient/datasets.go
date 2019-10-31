@@ -89,7 +89,7 @@ func (context Context) GetDatasetByID(id string) (result *types.Dataset, err err
 }
 
 // CreateDataset creates a new dataset given the provided parameters.
-func (context Context) CreateDataset(id, name, description, source, sourceAddress string) (string, error) {
+func (context Context) CreateDataset(id, name, description, source, sourceAddress,datasetSecret string) (string, error) {
 
 	if id == "" {
 		panic("id argument cannot be empty")
@@ -114,6 +114,7 @@ func (context Context) CreateDataset(id, name, description, source, sourceAddres
 		Description:   description,
 		Source:        source,
 		SourceAddress: sourceAddress,
+		Secret:		   datasetSecret,
 	}
 
 	datasetBytes, err := json.Marshal(&dataset)

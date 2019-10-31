@@ -138,7 +138,6 @@ func (context Context) DatasetGitWorker(dataset types.Dataset) {
 		"destination-dir", path,
 	).WriteInfo("DATASET GIT TRANSFER STARTED")
 
-
 	splitedAddress := strings.Split(dataset.SourceAddress, "::")
 	if len(splitedAddress) != 2{
 		context.Logger.WithFields(
@@ -147,11 +146,37 @@ func (context Context) DatasetGitWorker(dataset types.Dataset) {
 			"source-address", dataset.SourceAddress,
 		).WriteError("DATASET GIT ADDRESS::FILE ERROR")
 	}
+	if dataset.Secret == "" || dataset.Secret=="expired"{
+		context.Logger.WithFields(
+			"dataset-id", dataset.ID,
+			"source", dataset.Source,
+			"source-address", dataset.SourceAddress,
+			"destination-path", path,
+		).WriteInfo("DATASET GIT EMPTY Secret")
+	}else{
+		if !strings.Contains(splitedAddress[0], "https://"){
+			context.Logger.WithFields(
+				"dataset-id", dataset.ID,
+				"source", dataset.Source,
+				"source-address", splitedAddress[0],
+			).WriteError("DATASET GIT REPO ADDRESS ERROR")
+		}else{
+			splitedAddress[0]=strings.ReplaceAll(splitedAddress[0],"https://","")
+			splitedAddress[0]=strings.Join([]string{"https://",dataset.Secret,"@",splitedAddress[0]},"")
+		}
+	}
 
 	wdir:=filepath.Join(path, "temp.git")
 	ExecExternal("","git","clone", "--depth=1", "--no-checkout", "--filter=blob:none",splitedAddress[0], wdir)
 	ExecExternal(wdir,"git", "checkout", "master", "--", splitedAddress[1])
 	ExecExternal(wdir, "git", "lfs", "pull", "-I", splitedAddress[1])
+
+	//Flush used secret
+	context.repeatUntilSuccess(func() error {
+		return context.ModelContext.FlushDatasetSecret(dataset.ID)
+	})
+	dataset.Secret=""
+	splitedAddress[0]=""
 
 	// Copy the file.
 	err = copy.Copy(filepath.Join(wdir,splitedAddress[1]), filepath.Join(path, downloadFilename))
