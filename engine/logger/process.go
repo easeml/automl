@@ -1,6 +1,7 @@
 package logger
 
 import (
+	//"encoding/json"
 	"fmt"
 	"io"
 	"strings"
@@ -14,7 +15,6 @@ type ProcessLogger struct {
 	ProcessID  string
 	Prefix     string
 	stackTrace string
-	fields     map[string]interface{}
 	entry      []*logrus.Entry
 }
 
@@ -127,19 +127,17 @@ func (logger *ProcessLogger) WithFields(args ...interface{}) Logger {
 		fields[args[i].(string)] = args[i+1]
 	}
 
-	result := *logger
 
 	for i := range logger.entry {
-		result.entry[i] = logger.entry[i].WithFields(fields)
+		logger.entry[i].Data=logrus.Fields{}
+		logger.entry[i] = logger.entry[i].WithFields(fields)
 	}
 
-	return &result
+	return logger
 }
 
 // WithStack adds a stack trace from a given error.
 func (logger *ProcessLogger) WithStack(err error) Logger {
-
-	result := *logger
 
 	if err != nil {
 
@@ -153,20 +151,19 @@ func (logger *ProcessLogger) WithStack(err error) Logger {
 			builder.WriteString("\n")
 		}
 
-		result.stackTrace += builder.String()
+		logger.stackTrace += builder.String()
 	}
 
-	return &result
+	return logger
 }
 
 // WithError adds an error message from a given error.
 func (logger *ProcessLogger) WithError(err error) Logger {
-	result := *logger
 
 	if err != nil {
 		for i := range logger.entry {
-			result.entry[i] = (*logger.entry[i]).WithField("error", err.Error())
+			logger.entry[i] = (*logger.entry[i]).WithField("error", err.Error())
 		}
 	}
-	return &result
+	return logger
 }

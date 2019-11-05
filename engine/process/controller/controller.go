@@ -70,7 +70,7 @@ func Start(context process.Context) {
 	if err != nil {
 		log.WriteFatal(fmt.Sprintf("fatal: %+v", err))
 	}
-	log.WithFields("api-key", user.APIKey).WriteInfo("ROOT USER LOGGED IN")
+	log.WithFields("api-key", user.APIKey).WriteInfo("CONTROLLER ROOT USER LOGGED IN")
 
 	// Report the root API key to the API key channel.
 	context.RootAPIKey <- user.APIKey

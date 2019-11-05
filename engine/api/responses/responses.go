@@ -33,7 +33,11 @@ func (apiContext Context) RespondWithError(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Write error information to log (including the stack trace if available).
-	apiContext.Logger.WithFields("request-id", requestID, "user-id", userID).WithError(err).WithStack(err).WriteError(fmt.Sprintf("ERROR: %s", message))
+	apiContext.Logger.WithFields( "method",r.Method,
+										"request-id", requestID,
+										"user-id", userID,
+										"request-url",r.URL.Path,
+								).WithError(err).WithStack(err).WriteError(fmt.Sprintf("ERROR: %s", message))
 	/*if err != nil {
 		syslog.Printf("Error: %+v", err)
 	}*/

@@ -190,8 +190,8 @@ func (apiContext Context) DatasetsByIDGet(w http.ResponseWriter, r *http.Request
 	// Access model.
 	dataset, err := modelContext.GetDatasetByID(id)
 	if errors.Cause(err) == model.ErrNotFound {
-		//TODO should we show the error when the Dataset is not there?
-		responses.Context(apiContext).RespondWithError(w, r, http.StatusNotFound, http.StatusText(http.StatusNotFound), errors.WithStack(err))
+		//TODO It is common for clients to query if a dataset exists, this is not always an error, i.e. before adding a dataset
+		responses.Context(apiContext).RespondWithError(w, r, http.StatusNotFound, http.StatusText(http.StatusNotFound), err)
 		return
 	} else if err != nil {
 		responses.Context(apiContext).RespondWithError(w, r, http.StatusInternalServerError, "Something went wrong.", errors.WithStack(err))

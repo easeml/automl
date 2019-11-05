@@ -28,7 +28,6 @@ func (context Context) GetDatasetByID(id string) (result types.Dataset, err erro
 
 	// Only the root user can look up datasets other than their own.
 	if context.User.IsRoot() {
-		fmt.Println("### ROOT GETTING DATASETS ="+ id)
 		err = c.Find(bson.M{"id": id}).All(&allResults)
 	} else {
 		err = c.Find(bson.M{"id": id, "user": bson.M{"$in": []string{context.User.ID, types.UserRoot}}}).All(&allResults)
@@ -41,7 +40,6 @@ func (context Context) GetDatasetByID(id string) (result types.Dataset, err erro
 
 	if len(allResults) == 0 {
 		err = ErrNotFound
-		fmt.Println("### HERE3")
 		return
 	}
 
