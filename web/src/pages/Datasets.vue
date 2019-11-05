@@ -21,21 +21,38 @@
                 </thead>
 
                 <tbody>
-                    <tr v-for="item in items" :key="item.id">
+                    <tr  v-for="item in items" :key="item.id">
 
-                        <td><b>{{item.id}}</b></td>
 
-                        <td>{{item.name}}</td>
+                        <td><b>
+                            <span class="hinfo" data-toggle="tooltip" :title=item.name >
+                               {{item.id}}
+                            </span>
+                        </b></td>
 
-                        <td>{{item.user}}</td>
+                        <td><span class="hinfo" data-toggle="tooltip" :title=item.name >
+                            {{item.name}}
+                        </span></td>
 
-                        <td>{{item.source}}</td>
+                        <td><span class="hinfo" data-toggle="tooltip" :title=item.user >
+                            {{item.user}}
+                        </span></td>
 
-                        <td>{{item.sourceAddress}}</td>
+                        <td><span class="hinfo" data-toggle="tooltip" :title=item.source >
+                            {{item.source}}
+                       </span></td>
 
-                        <td>{{ item.creationTime.toLocaleString() }}</td>
+                        <td><span class="hinfo" data-toggle="tooltip" :title=item.sourceAddress >
+                            {{item.sourceAddress}}
+                        </span></td>
 
-                        <td>{{item.status}}</td>
+                        <td><span class="hinfo" data-toggle="tooltip" :title=item.creationTime.toLocaleString() >
+                            {{ item.creationTime.toLocaleString() }}
+                        </span></td>
+
+                        <td><span class="hinfo" data-toggle="tooltip" :title=item.status >
+                            {{item.status}}
+                        </span></td>
 
                         <td>
                             <button type="button" class="btn btn-icon waves-effect btn-light" v-show="item.status==='validated'" @click.prevent="downloadData(item.id)">
@@ -61,7 +78,6 @@ export default {
     },
     methods: {
         loadData: function() {
-
             let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
 
             context.getDatasets()
@@ -80,7 +96,6 @@ export default {
     mounted() {
 
         this.loadData();
-        
         // (function runForever(){
         //     this.loadData();
         //     setTimeout(runForever, 5000);
@@ -97,4 +112,22 @@ export default {
 };
 </script>
 <style>
+    table {
+        width: 100%;
+        table-layout: fixed;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    td{
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    th{
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
 </style>

@@ -1,7 +1,7 @@
 <template>
 <modal name="new-job" transition="pop-out" height="550" width="1000" @before-open="beforeOpen">
 
-        <button type="button" class="close" onclick="">
+        <button type="button" class="close"  @click.prevent="close()">
             <span>&times;</span><span class="sr-only">Close</span>
         </button>
         <h4 class="custom-modal-title">Start New Job</h4>
@@ -206,6 +206,9 @@ export default {
         }
     },
     methods : {
+        close() {
+            this.$modal.hide("new-job");
+        },
         prev() {
             if (this.step > 1) {
                 this.step--;

@@ -1,11 +1,10 @@
 <template>
 <modal name="new-dataset" transition="pop-out" height="auto" width="1000" @before-open="beforeOpen">
-
-        <button type="button" class="close" onclick="">
+        <button type="button" class="close"  @click.prevent="close()">
             <span>&times;</span><span class="sr-only">Close</span>
         </button>
         <h4 class="custom-modal-title">Add a New Dataset</h4>
-        <div class="custom-modal-text">
+        <div class="custom-modal-text" :key="componentKey">
             <form class="form-horizontal" action="#">
 
                 <div :class="wizContainerClasses">
@@ -18,7 +17,7 @@
                             
                                 <label class="col-2 col-form-label">Source</label>
                                 <div class="col-10">
-                                    <select class="form-control" v-model="datasetSource" >
+                                    <select class="form-control" v-model="datasetSource" @change="reload()">
                                         <option value="upload">Upload from the browser</option>
                                         <option value="download">Download from a remote location</option>
                                         <option value="local">Copy from a local directory</option>
@@ -234,6 +233,7 @@ export default {
             datasetSchemaOutDump: "",
             currentUserId: "",
             currentUploadProgress: 0,
+            componentKey: 0,
         }
     },
     computed: {
@@ -262,6 +262,12 @@ export default {
         }
     },
     methods : {
+        reload(){
+            this.componentKey += 1;
+        },
+        close() {
+            this.$modal.hide("new-dataset");
+        },
         prev() {
             this.switchStep(-1);
         },
