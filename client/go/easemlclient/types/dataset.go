@@ -52,4 +52,5 @@ type Dataset struct {
 	Status        string    `json:"status"`
 	StatusMessage string    `json:"status-message"`
 	Process       string    `json:"process"`
+	Secret		  string    `json:"dataset-secret"`
 }

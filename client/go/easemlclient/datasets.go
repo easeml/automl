@@ -4,14 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/ds3lab/easeml/client/go/easemlclient/types"
 	"io/ioutil"
 	"net/url"
 	"os"
 	"path"
 	"path/filepath"
-	//TODO Should share the same types with the engine(?)
-	//"github.com/ds3lab/easeml/client/go/easemlclient/types"
-	"github.com/ds3lab/easeml/engine/database/model/types"
 
 	tus "github.com/eventials/go-tus"
 	"github.com/mholt/archiver"
