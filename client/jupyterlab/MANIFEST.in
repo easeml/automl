@@ -1,0 +1,6 @@
+recursive-include jupyterlab_easeml *.*
+include lib/*.tgz
+include LICENSE
+include config/jupyterlab_easeml.json
+include requirements.txt
+include README.md
