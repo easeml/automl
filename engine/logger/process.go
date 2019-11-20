@@ -125,8 +125,8 @@ func SemiDeepCopy(a, b interface{}) {
 }
 
 func CopyLogger(logger ProcessLogger) ProcessLogger{
-	//SemiDeepCopy does not follow pointers or copy map elements
-	//Because of this we could manually copy the two fields but this is more resilient to changes
+	// SemiDeepCopy does not follow pointers or copy map elements
+	// Because of this we could manually copy the two fields but this is more resilient to changes
 	var result ProcessLogger
 	SemiDeepCopy(logger,result)
 	result.entry = make([]*logrus.Entry,len(logger.entry))
@@ -148,7 +148,7 @@ func (logger *ProcessLogger) WithFields(args ...interface{}) Logger {
 		fields[args[i].(string)] = args[i+1]
 	}
 
-	//Lighter than result:=CopyLogger(*logger)
+	// Lighter than result:=CopyLogger(*logger)
 	var result ProcessLogger
 	SemiDeepCopy(logger,result)
 	result.entry = make([]*logrus.Entry,len(logger.entry))
@@ -186,7 +186,7 @@ func (logger *ProcessLogger) WithStack(err error) Logger {
 // WithError adds an error message from a given error.
 func (logger *ProcessLogger) WithError(err error) Logger {
 
-	//Lighter than result:=CopyLogger(*logger)
+	// Lighter than result:=CopyLogger(*logger)
 	var result ProcessLogger
 	SemiDeepCopy(logger,result)
 	result.entry = make([]*logrus.Entry,len(logger.entry))

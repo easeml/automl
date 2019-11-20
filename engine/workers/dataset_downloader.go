@@ -1,15 +1,15 @@
 package workers
 
 import (
-	"bytes"
+	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/ds3lab/easeml/engine/database/model"
 	"github.com/ds3lab/easeml/engine/database/model/types"
+	"github.com/ds3lab/easeml/engine/utils"
 
 	"github.com/otiai10/copy"
 
@@ -106,21 +106,6 @@ func (context Context) DatasetDownloadWorker(dataset types.Dataset) {
 	).WriteInfo("DATASET TRANSFER COMPLETED")
 }
 
-func ExecExternal(dir string,name string, arg ...string)  (outStr string, errStr string, err error) {
-	cmd := exec.Command(name, arg...)
-	if dir != ""{
-		cmd.Dir = dir
-	}
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-	err = cmd.Run()
-	//Debug output
-	outStr, errStr = string(stdout.Bytes()), string(stderr.Bytes())
-	//log.Println("out:\n%s\nerr:\n%s\n", outStr, errStr)
-	return outStr, errStr, err
-}
-
 // DatasetGitWorker performs the actual dataset fetch from a git lfs repository.
 func (context Context) DatasetGitWorker(dataset types.Dataset) {
 
@@ -146,13 +131,13 @@ func (context Context) DatasetGitWorker(dataset types.Dataset) {
 			"source-address", dataset.SourceAddress,
 		).WriteError("DATASET GIT ADDRESS::FILE ERROR")
 	}
-	if dataset.Secret == "" || dataset.Secret=="expired"{
+	if dataset.AccessKey == "" || dataset.AccessKey=="expired"{
 		context.Logger.WithFields(
 			"dataset-id", dataset.ID,
 			"source", dataset.Source,
 			"source-address", dataset.SourceAddress,
 			"destination-path", path,
-		).WriteInfo("DATASET GIT EMPTY Secret")
+		).WriteInfo("DATASET GIT EMPTY AccessKey")
 	}else{
 		if !strings.Contains(splitedAddress[0], "https://"){
 			context.Logger.WithFields(
@@ -162,20 +147,47 @@ func (context Context) DatasetGitWorker(dataset types.Dataset) {
 			).WriteError("DATASET GIT REPO ADDRESS ERROR")
 		}else{
 			splitedAddress[0]=strings.ReplaceAll(splitedAddress[0],"https://","")
-			splitedAddress[0]=strings.Join([]string{"https://",dataset.Secret,"@",splitedAddress[0]},"")
+			splitedAddress[0]=strings.Join([]string{"https://",dataset.AccessKey,"@",splitedAddress[0]},"")
 		}
 	}
 
 	wdir:=filepath.Join(path, "temp.git")
-	ExecExternal("","git","clone", "--depth=1", "--no-checkout", "--filter=blob:none",splitedAddress[0], wdir)
-	ExecExternal(wdir,"git", "checkout", "master", "--", splitedAddress[1])
-	ExecExternal(wdir, "git", "lfs", "pull", "-I", splitedAddress[1])
 
-	//Flush used secret
+	outStr, errStr, execErr :=utils.ExecExternal("","git","clone", "--depth=1", "--no-checkout", "--filter=blob:none",splitedAddress[0], wdir)
+
+	if execErr != nil {
+		context.Logger.WithFields(
+			"dataset-id", dataset.ID,
+			"source", dataset.Source,
+			"source-address", dataset.SourceAddress,
+		).WriteError(fmt.Sprintf("External execution error:\n%s\nerr:\n%s\n", outStr, errStr))
+	}
+
+	outStr, errStr, execErr =utils.ExecExternal(wdir,"git", "checkout", "master", "--", splitedAddress[1])
+
+	if execErr != nil {
+		context.Logger.WithFields(
+			"dataset-id", dataset.ID,
+			"source", dataset.Source,
+			"source-address", dataset.SourceAddress,
+		).WriteError(fmt.Sprintf("External execution error:\n%s\nerr:\n%s\n", outStr, errStr))
+	}
+
+	outStr, errStr, execErr =utils.ExecExternal(wdir, "git", "lfs", "pull", "-I", splitedAddress[1])
+
+	if execErr != nil {
+		context.Logger.WithFields(
+			"dataset-id", dataset.ID,
+			"source", dataset.Source,
+			"source-address", dataset.SourceAddress,
+		).WriteError(fmt.Sprintf("External execution error:\n%s\nerr:\n%s\n", outStr, errStr))
+	}
+
+	//Flush used accessKey
 	context.repeatUntilSuccess(func() error {
-		return context.ModelContext.FlushDatasetSecret(dataset.ID)
+		return context.ModelContext.FlushDatasetAccessKey(dataset.ID)
 	})
-	dataset.Secret=""
+	dataset.AccessKey=""
 	splitedAddress[0]=""
 
 	// Copy the file.

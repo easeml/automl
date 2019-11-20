@@ -15,7 +15,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var datasetID, datasetName, datasetDescription, datasetSchema, datasetSource, datasetSourceAddress, datasetSecret string
+var datasetID, datasetName, datasetDescription, datasetSchema, datasetSource, datasetSourceAddress, accessKey string
 
 var createDatasetCmd = &cobra.Command{
 	Use:   "dataset",
@@ -135,7 +135,7 @@ var createDatasetCmd = &cobra.Command{
 				}
 			}
 
-			_, err := context.CreateDataset(datasetID, datasetName, descriptionString, datasetSource, datasetSourceAddress,datasetSecret)
+			_, err := context.CreateDataset(datasetID, datasetName, descriptionString, datasetSource, datasetSourceAddress,accessKey)
 			if err != nil {
 				fmt.Println(err.Error())
 				return
@@ -168,5 +168,5 @@ func init() {
 		"Can be a path to a text file or \"-\" in order to read the description from stdin.")
 	createDatasetCmd.Flags().StringVar(&datasetSource, "source", "", fmt.Sprintf("Dataset source [choices: %s]",strings.Join(client.ValidDatasetSources, ", ")))
 	createDatasetCmd.Flags().StringVar(&datasetSourceAddress, "source-address", "", "Dataset source address.")
-	createDatasetCmd.Flags().StringVar(&datasetSecret, "dataset-secret", "", "Data-source specific secret, i.e. oauth token.")
+	createDatasetCmd.Flags().StringVar(&accessKey, "access-key", "", "Data-source specific accessKey, i.e. oauth token.")
 }

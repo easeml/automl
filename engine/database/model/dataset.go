@@ -406,8 +406,8 @@ func (context Context) UpdateDataset(id string, updates map[string]interface{}) 
 			valueUpdates["status"] = status
 		case "status-message":
 			valueUpdates["status-message"] = v.(string)
-		case "dataset-secret":
-			valueUpdates["dataset-secret"]=v.(string)
+		case "accessKey":
+			valueUpdates["accessKey"]=v.(string)
 		default:
 			err = errors.Wrap(ErrBadInput, "invalid value of parameter updates")
 			return
@@ -539,9 +539,9 @@ func (context Context) UpdateDatasetStatus(id string, status string, statusMessa
 	return
 }
 
-// FlushDatasetSecret removes a used secret from the database.
-func (context Context) FlushDatasetSecret(id string) (err error) {
-	_, err = context.UpdateDataset(id, F{"dataset-secret": ""})
+// FlushDatasetAccessKey removes a used accessKey from the database.
+func (context Context) FlushDatasetAccessKey(id string) (err error) {
+	_, err = context.UpdateDataset(id, F{"accessKey": ""})
 	return
 }
 

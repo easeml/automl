@@ -112,22 +112,4 @@ export default {
 };
 </script>
 <style>
-    table {
-        width: 100%;
-        table-layout: fixed;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    td{
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    th{
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
 </style>

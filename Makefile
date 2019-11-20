@@ -57,7 +57,9 @@ ifneq ($(DIST_PATH),)
 	for component in $(COMPONENTS) ; do \
         rm -rf $(DIST_PATH)/$$component; \
     done
-	rm -rf $(DIST_PATH)
+	if [ -d $(DIST_PATH) ]; then \
+        rmdir $(DIST_PATH) --ignore-fail-on-non-empty; \
+    fi
 endif
 
 
