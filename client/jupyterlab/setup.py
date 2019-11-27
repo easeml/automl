@@ -2,6 +2,7 @@ from setuptools import setup, find_packages, Command
 from setuptools.command.sdist import sdist
 from setuptools.command.build_py import build_py
 from setuptools.command.egg_info import egg_info
+from distutils.command.clean import clean
 
 from subprocess import check_call
 from codecs import open
@@ -11,12 +12,11 @@ import os
 import glob
 import sys
 import copy
-
+import shutil
 
 from distutils import log
 
 here = os.path.dirname(os.path.abspath(__file__))
-is_repo = os.path.exists(pjoin(here, '.git'))
 default_included_files=[('etc/jupyter/jupyter_notebook_config.d', ['config/jupyterlab_easeml.json'])]
 
 log.info('setup.py entered')
@@ -32,19 +32,23 @@ def install_additional_NPM(command, strict=False):
     """decorator for and packing additional NPM packages"""
     class DecoratedCommand(command):
         def run(self):
+            # Installed NPM components need to be added to the cleanup script too
             self.includeNPMproject('npm_labextension',"js_extension","lib",["pack"],'share/jupyter/lab/extensions',["js_extension/*.tgz"])
-            self.includeNPMproject('npm_webui',"../../web/","jupyterlab_easeml/web",["run","build"],'share/jupyter/lab/extensions',["../../web/dist"])
+            self.includeNPMproject('npm_webui',"../../web/","jupyterlab_easeml/web",["run","build_standalone"],'share/jupyter/lab/extensions',["../../web/dist"])
             command.run(self)
             update_package_data(self.distribution)
         def includeNPMproject(self,cmd_name,rel_proj_path,temp_proj_path,npm_command,output_path,target):
             jsdeps = self.distribution.get_command_obj(cmd_name)
             jsdeps.set_npm_include_options(rel_proj_path,temp_proj_path,npm_command,output_path,target)
-            if not is_repo and os.path.exists(temp_proj_path):
+
+            using_pip = os.path.basename(os.path.dirname(__file__)).startswith('pip-')
+            if using_pip:
                 # sdist, nothing to do
-                log.info("# Nothing to do.. no targets provided")
+                log.info("# Calling from pip assuming everything is already packed ")
                 command.run(self)
                 return
             try:
+                log.info("# RUNNING ")
                 self.distribution.run_command(cmd_name)
 
             except Exception as e:
@@ -95,6 +99,7 @@ class NPM(Command):
             return False
 
     def should_run_npm_install(self):
+        log.info("# CHECKING "+str(self.node_modules))
         node_modules_exists = os.path.exists(self.node_modules)
         return self.has_npm() and not node_modules_exists
 
@@ -186,7 +191,27 @@ def update_package_data(distribution):
     # re-init build_py options which load package_data
     build_py.finalize_options()
 
-name = 'jupyterlab_easeml'
+class CleanAdditionalFiles(clean):
+    def run(self):
+        # Execute the classic clean command
+        super().run()
+        # Clean NPM packages
+        check_call(['npm','run','clean'], cwd=pjoin(here,"js_extension"), stdout=sys.stdout, stderr=sys.stderr)
+        check_call(['npm','run','clean'], cwd=pjoin(here,"../../web/"), stdout=sys.stdout, stderr=sys.stderr)
+
+        # Remove temp directiores
+        self.rmdir(pjoin(here,"jupyterlab_easeml/web"))
+        self.rmdir(pjoin(here,"lib"))
+        self.rmdir(pjoin(here,"dist"))
+        self.rmdir(pjoin(here,"jupyterlab_easeml.egg-info"))
+
+
+    def rmdir(self,file_path):
+        try:
+            shutil.rmtree(file_path)
+        except Exception as e:
+            print('Failed to delete %s. Reason: %s' % (file_path, e))
+
 here = os.path.abspath(os.path.dirname(__file__))
 
 setup(
@@ -196,10 +221,9 @@ setup(
      author_email="easeml@ease.ml",
      description="A Docker and AWS utility package",
      long_description=long_description,
-     long_description_content_type="Jupyter lab easeml extension", #long_description,
      url="https://github.com/DS3Lab/easeml",
      packages=find_packages(exclude=['tests']),
-    include_package_data=True,
+     include_package_data=True,
      install_requires=requires,
      keywords=[
         'jupyter',
@@ -224,7 +248,8 @@ setup(
         'egg_info': install_additional_NPM(egg_info),
         'sdist': install_additional_NPM(sdist, strict=True),
         'npm_labextension': NPM,
-        'npm_webui': NPM
+        'npm_webui': NPM,
+        'clean': CleanAdditionalFiles,
     },
     data_files=get_data_files(default_included_files+[('share/jupyter/lab/extensions',["lib"])])
  )

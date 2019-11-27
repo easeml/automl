@@ -25,7 +25,7 @@
                 <tbody>
                     <tr v-for="item in items" :key="item.id">
 
-                        <td><b><a :href="item.link">{{item.id}} </a></b></td>
+                        <td><b><router-link :to="item.link">{{item.id}} </router-link></b></td>
 
                         <td>{{item.user}}</td>
 

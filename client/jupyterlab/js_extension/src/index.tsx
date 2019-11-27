@@ -6,10 +6,12 @@ import Vue from 'vue';
 import EASEML_VUE from './Iframe.vue'
 import { ReactWidget } from "@jupyterlab/apputils";
 import * as React from "react";
-import { defaultIconRegistry } from '@jupyterlab/ui-components';
+//import { defaultIconRegistry } from '@jupyterlab/ui-components';
 //import iconSvg from './icon/icon.svg';
 import { ILauncher } from '@jupyterlab/launcher';
-import PropTypes from 'prop-types';
+//import PropTypes from 'prop-types';
+import Button from 'react-bootstrap/Button';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 class Easeml extends Widget {
     /**
@@ -35,6 +37,7 @@ class SidebarButton extends React.Component{
         return (
             <div
                 style={{
+                    marginTop: "25px",
                     background: "#FFFFFF",
                     color: "#000000",
                     fontFamily: "Helvetica",
@@ -43,9 +46,9 @@ class SidebarButton extends React.Component{
                     flexDirection: "column"
                 }}
             >
-                <div style={{ overflow: "auto"}}>
-                    <a href="#" data-commandlinker-command="easeml:openside">open easeml client</a>
-                </div>
+            <Button href="#" data-commandlinker-command="easeml:openside" variant="primary" size="sm" block>
+                open easeml client
+            </Button>
             </div>
         );
     }
@@ -100,7 +103,7 @@ function activate(  app: JupyterFrontEnd,
     });
 
     // Add an application command
-    const command2 = 'easeml:openside';
+    const command2: string = 'easeml:openside';
     app.commands.addCommand(command2, {
         label: 'Open easeml and close side',
         execute: () => {

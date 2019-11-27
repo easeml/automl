@@ -25,6 +25,9 @@
 # Dist directory
 dist/*
 
+# Python Virtual environment
+venv/
+
 # Temporary
 opt/
 docs/usr/

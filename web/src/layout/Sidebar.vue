@@ -20,15 +20,15 @@
                 <!--<li class="menu-title">Navigation</li>-->
 
                 <li>
-                    <a href="#/datasets" >
+                    <router-link to="/datasets" >
                         <i class="fa fa-database"></i><span> Datasets </span>
-                    </a>
+                    </router-link>
                 </li>
 
                 <li>
-                    <a href="#/jobs" aria-expanded="true">
+                    <router-link to="/jobs" aria-expanded="true">
                         <i class="fa fa-cogs"></i> <span> Jobs </span>
-                    </a>
+                    </router-link>
                     <!--<ul class="nav-second-level collapse in" aria-expanded="true">
                         <li><a href="javascript: void(0);">New Job</a></li>
                         <li><a href="javascript: void(0);">Running</a></li>
@@ -37,9 +37,9 @@
                 </li>
 
                 <li>
-                    <a href="#/models">
+                    <router-link to="/models">
                         <i class="fa fa-cube"></i><span> Models </span>
-                    </a>
+                    </router-link>
                     <!--<ul class="nav-second-level collapse in">
                         <li><a href="javascript: void(0);">Models</a></li>
                         <li><a href="javascript: void(0);">Objectives</a></li>

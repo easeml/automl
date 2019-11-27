@@ -19,7 +19,7 @@
             <li>
                 <div class="page-title-box">
                     <ol class="breadcrumb">
-                        <li v-for="b in breadcrumbs" class="breadcrumb-item" :key="b.name"><a :href="b.path">{{b.name}}</a></li>
+                        <li v-for="b in breadcrumbs" class="breadcrumb-item" :key="b.name"><router-link :to="b.path">{{b.name}}</router-link></li>
                         <li class="breadcrumb-item"><a href="#"></a></li>
                     </ol>
                     <h4 class="page-title">{{currentName}} </h4>
@@ -44,8 +44,12 @@ export default {
             for (let i = 0; i < this.$route.matched.length; i++) {
                 let item = {
                     name: this.capitalizeFirstLetter(this.$route.matched[i].name),
-                    path: "#" + this.$route.matched[i].path
+                    path: this.$route.matched[i].path
                 };
+                if(item.path==""){
+                    item.path="/";
+                }
+                
                 result.push(item);
             }
             return result;
