@@ -8,7 +8,7 @@ from datetime import datetime
 from enum import Enum
 from io import FileIO
 from tusclient import client as tus_client
-from typing import Dict, Optional, Any, Iterator, Tuple, List
+from typing import Dict, Optional, Any, Iterator, Tuple, List, IO
 
 from .core import Connection
 from .process import Process
@@ -56,7 +56,7 @@ class Dataset(ApiType['Dataset']):
                name: Optional[str] = None, description: Optional[str] = None) -> 'Dataset':
         init_dict: Dict[str, Any] = {"id": id}
         if source is not None:
-            init_dict["source"] = source
+            init_dict["source"] = source.value
         if source_address is not None:
             init_dict["source-address"] = source_address
         if name is not None:
@@ -80,27 +80,27 @@ class Dataset(ApiType['Dataset']):
 
     @property
     def name(self) -> Optional[str]:
-        value = self._dict.get("name")
+        value = self._updates.get("name") or self._dict.get("name")
         return str(value) if value is not None else None
 
     @name.setter
     def name(self, value: Optional[str] = None) -> None:
         if value is not None:
-            self._dict["name"] = value
+            self._updates["name"] = value
         else:
-            del self._dict["name"]
+            self._updates.pop("name")
 
     @property
     def description(self) -> Optional[str]:
-        value = self._dict.get("description")
+        value = self._updates.get("description") or self._dict.get("description")
         return str(value) if value is not None else None
 
     @description.setter
     def description(self, value: Optional[str] = None) -> None:
         if value is not None:
-            self._dict["description"] = value
+            self._updates["description"] = value
         else:
-            del self._dict["description"]
+            self._updates.pop("description")
 
     @property
     def schema_in(self) -> Optional[str]:
@@ -129,15 +129,15 @@ class Dataset(ApiType['Dataset']):
 
     @property
     def status(self) -> Optional[DatasetStatus]:
-        value = self._dict.get("status")
+        value = self._updates.get("status") or self._dict.get("status")
         return DatasetStatus(value) if value is not None else None
 
     @status.setter
     def status(self, value: Optional[DatasetStatus] = None) -> None:
         if value is not None:
-            self._dict["status"] = value
+            self._updates["status"] = value.value
         else:
-            del self._dict["status"]
+            self._updates.pop("status")
 
     @property
     def status_message(self) -> Optional[str]:
@@ -165,15 +165,15 @@ class Dataset(ApiType['Dataset']):
         url = connection.url("datasets/" + self.id)
         return self._get(connection, url)
     
-    def upload(self, connection: Connection, data: FileIO, file_name: Optional[str] = None) -> None:
+    def upload(self, connection: Connection, data: IO, file_name: Optional[str] = None) -> None:
         url = connection.url("datasets/%s/upload" % self.id)
-        metadata = {"filename" : file_name}
+        metadata = {"filename" : file_name} if file_name is not None else None
 
         # Initialize the client for the TUS upload protocol. Apply the authentication header.
         client = tus_client.TusClient(url)
         connection.auth(client)
 
-        uploader = client.uploader(file_stream=data, chunk_size=200)
+        uploader = client.uploader(file_stream=data, chunk_size=201800, metadata=metadata)
         uploader.upload()
 
 

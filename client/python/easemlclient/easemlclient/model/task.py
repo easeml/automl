@@ -200,15 +200,15 @@ class Task(ApiType['Task']):
 
     @property
     def status(self) -> Optional[TaskStatus]:
-        value = self._dict.get("status")
+        value = self._updates.get("status") or self._dict.get("status")
         return TaskStatus(value) if value is not None else None
 
     @status.setter
     def status(self, value: Optional[TaskStatus] = None) -> None:
         if value is not None:
-            self._dict["status"] = value
+            self._updates["status"] = value.value
         else:
-            del self._dict["status"]
+            self._updates.pop("status")
 
     @property
     def status_message(self) -> Optional[str]:

@@ -21,12 +21,12 @@ class ApiType(Generic[T]):
         self.T:Type[T] = type(self)
 
     def _post(self: T, connection: Connection, url: str) -> T:
-        resp = requests.post(url, auth=connection.auth, data={**self._dict, **self._updates})
+        resp = requests.post(url, auth=connection.auth, json={**self._dict, **self._updates})
         resp.raise_for_status()
         return self.T({**self._dict, **self._updates})
 
     def _patch(self: T, connection: Connection, url: str) -> T:
-        resp = requests.patch(url, auth=connection.auth, data=self._updates)
+        resp = requests.patch(url, auth=connection.auth, json=self._updates)
         resp.raise_for_status()
         return self.T({**self._dict, **self._updates})
 
