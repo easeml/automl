@@ -77,9 +77,9 @@ clean:
 ## Compile the project code.
 build: $(WEB_UI_DIST_PATH)
 	$(call show-prompt,Compiling project code)
-	$(PACKR) clean
 	$(PACKR)
 	$(GO) build -o $(PROJECT_NAME)
+	$(PACKR) clean
 
 .PHONY: install
 ## Call build then move binary to INSTALL_PATH
@@ -104,6 +104,7 @@ package: $(WEB_UI_DIST_PATH)
 			[ $$os = windows ] && name=$(PROJECT_NAME).exe || name=$(PROJECT_NAME); \
 			$(PACKR); \
 			GOOS=$$os $(GO) build -o $(DIST_PATH)/$$os-$$arch/$$name; \
+			$(PACKR) clean; \
 		done; \
 	done
 

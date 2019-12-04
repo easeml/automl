@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"strings"
@@ -118,27 +117,6 @@ func (logger *ProcessLogger) WriteFatal(message string) {
 	logger.writeFormattedLine(message, func(e *logrus.Entry, msg string) { e.Fatalln(msg) })
 }
 
-// DeepCopy deepcopies a to b using json marshaling
-func SemiDeepCopy(a, b interface{}) {
-	byt, _ := json.Marshal(a)
-	json.Unmarshal(byt, b)
-}
-
-func CopyLogger(logger ProcessLogger) ProcessLogger{
-	// SemiDeepCopy does not follow pointers or copy map elements
-	// Because of this we could manually copy the two fields but this is more resilient to changes
-	var result ProcessLogger
-	SemiDeepCopy(logger,result)
-	result.entry = make([]*logrus.Entry,len(logger.entry))
-
-	//Abuse of WithFields(nil) to make a copy of the entries
-	//They reference to the same Logger within the entry
-	for i := range logger.entry {
-		result.entry[i] = logger.entry[i].WithFields(nil)
-	}
-	return result
-}
-
 // WithFields adds fields to the next logged message.
 func (logger *ProcessLogger) WithFields(args ...interface{}) Logger {
 
@@ -148,9 +126,7 @@ func (logger *ProcessLogger) WithFields(args ...interface{}) Logger {
 		fields[args[i].(string)] = args[i+1]
 	}
 
-	// Lighter than result:=CopyLogger(*logger)
-	var result ProcessLogger
-	SemiDeepCopy(logger,result)
+	result := *logger
 	result.entry = make([]*logrus.Entry,len(logger.entry))
 
 	for i := range logger.entry {
@@ -163,7 +139,13 @@ func (logger *ProcessLogger) WithFields(args ...interface{}) Logger {
 // WithStack adds a stack trace from a given error.
 func (logger *ProcessLogger) WithStack(err error) Logger {
 
-	result:=CopyLogger(*logger)
+	result := *logger
+	result.entry = make([]*logrus.Entry,len(logger.entry))
+
+	// Make a copy of the entries
+	for i := range logger.entry {
+		result.entry[i] = logger.entry[i].WithFields(nil)
+	}
 	
 	if err != nil {
 
@@ -186,9 +168,7 @@ func (logger *ProcessLogger) WithStack(err error) Logger {
 // WithError adds an error message from a given error.
 func (logger *ProcessLogger) WithError(err error) Logger {
 
-	// Lighter than result:=CopyLogger(*logger)
-	var result ProcessLogger
-	SemiDeepCopy(logger,result)
+	result := *logger
 	result.entry = make([]*logrus.Entry,len(logger.entry))
 
 	if err != nil {

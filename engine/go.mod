@@ -36,8 +36,10 @@ require (
 	github.com/spf13/viper v1.3.2
 	github.com/stretchr/testify v1.4.0
 	github.com/tus/tusd v0.0.0-20190508030626-9d693c93a3ea
+	golang.org/x/lint v0.0.0-20191125180803-fdd1cda4f05f // indirect
 	golang.org/x/net v0.0.0-20190620200207-3b0461eec859
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
+	golang.org/x/tools v0.0.0-20191203134012-c197fd4bf371 // indirect
 	google.golang.org/grpc v1.20.1 // indirect
 	gopkg.in/Acconut/lockfile.v1 v1.1.0 // indirect
 	gotest.tools v2.2.0+incompatible // indirect

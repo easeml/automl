@@ -1,9 +1,14 @@
 #!/bin/bash
 
 exec >> $SNAP_DATA/hook.log 2>&1
-echo "$(date '+%Y-%m-%d %H:%M:%S') $0: Entering hook"
+echo "$(date '+%Y-%m-%d %H:%M:%S') $0: Entering install"
+
+set -x
 
 #mongodb socket dirs
 mkdir -p $SNAP_DATA/share
 mkdir -p $SNAP_DATA/shared
+
+#mongodb db dir
+mkdir -p $SNAP_COMMON/easemlmdb
 

@@ -77,6 +77,7 @@ var pushDatasetCmd = &cobra.Command{
 			fmt.Println(err.Error())
 			return
 		}
+		// TODO: Poll the dataset status until it becomes "ready", to enable the user to have feedback about the process
 		fmt.Printf("SUCCESS: Dataset \"%s\" created.\n", result)
 
 	},

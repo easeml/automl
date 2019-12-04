@@ -52,7 +52,7 @@ clean:
 
 .PHONY: build
 ## Build the web UI and place it in the "dist" directory. Does a clean build each time.
-build:
+build: init
 	$(call show-prompt,Compiling project code)
 	$(NPM_RUN) build
 

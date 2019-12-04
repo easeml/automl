@@ -5,6 +5,7 @@ import (
 	"os/exec"
 )
 
+// ExecExternal is a helper function to run an external command
 func ExecExternal(dir string,name string, arg ...string)  (outStr string, errStr string, err error) {
 	cmd := exec.Command(name, arg...)
 	if dir != ""{
