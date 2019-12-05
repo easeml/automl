@@ -18,7 +18,5 @@ func ExecExternal(dir string,name string, arg ...string)  (outStr string, errStr
 
 	outStr, errStr = string(stdout.Bytes()), string(stderr.Bytes())
 
-	// Debug output
-	// log.Println("out:\n%s\nerr:\n%s\n", outStr, errStr)
 	return outStr, errStr, err
 }

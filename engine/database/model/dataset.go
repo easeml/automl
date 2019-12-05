@@ -282,7 +282,7 @@ func (context Context) CreateDataset(dataset types.Dataset) (result types.Datase
 	if dataset.Source != types.DatasetUpload && dataset.Source != types.DatasetLocal && dataset.Source != types.DatasetDownload && dataset.Source != types.DatasetGit {
 		err = errors.Wrapf(ErrBadInput,
 			"value of source can be \"%s\", \"%s\" or \"%s\", but found \"%s\"",
-			types.DatasetUpload, types.DatasetLocal, types.DatasetDownload,types.DatasetGit, dataset.Source)
+			types.DatasetUpload, types.DatasetLocal, types.DatasetDownload, types.DatasetGit, dataset.Source)
 		return
 	}
 	// Validate the schemas.
