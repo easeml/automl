@@ -10,11 +10,11 @@ export default {
     name: "TableField",
     props: {
         itemTitle: {
-            type: String,
+            type: [Number, String],
             default: ""
         },
         itemValue: {
-            type: String,
+            type: [Number, String],
             default: ""
         }
     }
