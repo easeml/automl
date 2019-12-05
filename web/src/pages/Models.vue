@@ -7,36 +7,27 @@
                 <table class="table table-hover m-0 tickets-list table-actions-bar dt-responsive nowrap" cellspacing="0" width="100%" id="datatable">
                 <thead>
                 <tr>
-                    <th>
-                        ID
-                    </th>
-                    <th>Name</th>
-                    <th>Owner</th>
-                    <th>Source</th>
-                    <th>Source Address</th>
-                    <th>Creation Time</th>
-                    <th>Status</th>
-                    <th class="hidden-sm">Action</th>
+                    <table-field item-title="ID" item-value="ID" class="mainField"></table-field>
+                    <table-field item-title="Name" item-value="Name" class="mainField"></table-field>
+                    <table-field item-title="Owner" item-value="Owner" class="mainField"></table-field>
+                    <table-field item-title="Source" item-value="Source" class="mainField"></table-field>
+                    <table-field item-title="Source Address" item-value="Source Address" class="mainField"></table-field>
+                    <table-field item-title="Creation Time" item-value="Creation Time" class="mainField"></table-field>
+                    <table-field item-title="Status" item-value="Status" class="mainField"></table-field>
+                    <table-field item-title="Action" item-value="Action" class="hidden-sm mainField"></table-field>
                 </tr>
                 </thead>
 
                 <tbody>
                     <tr v-for="item in items" :key="item.id">
 
-                        <td><b>{{item.id}}</b></td>
-
-                        <td>{{item.name}}</td>
-
-                        <td>{{item.user}}</td>
-
-                        <td>{{item.source}}</td>
-
-                        <td>{{item.sourceAddress}}</td>
-
-                        <td>{{ item.creationTime.toLocaleString() }}</td>
-
-                        <td>{{item.status}}</td>
-
+                        <table-field :item-title=item.id :item-value=item.id class="mainField"></table-field>
+                        <table-field :item-title=item.name :item-value=item.name ></table-field>
+                        <table-field :item-title=item.user :item-value=item.user ></table-field>
+                        <table-field :item-title=item.source :item-value=item.source ></table-field>
+                        <table-field :item-title=item.sourceAddress :item-value=item.sourceAddress ></table-field>
+                        <table-field :item-title=item.creationTime.toLocaleString() :item-value=item.creationTime.toLocaleString() ></table-field>
+                        <table-field :item-title=item.status :item-value=item.status ></table-field>
                         <td>
                             <button type="button" class="btn btn-icon waves-effect btn-light">
                                 <i class="fa fa-cloud-download"></i>
@@ -52,12 +43,16 @@
 </template>
 <script>
 import client from "easemlclient"
+import TableField from "@/components/TableField.vue";
 
 export default {
     data() {
         return {
             items: []
         };
+    },
+    components: {
+        TableField
     },
     methods: {
         loadData: function() {

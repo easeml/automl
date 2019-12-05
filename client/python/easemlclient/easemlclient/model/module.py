@@ -101,27 +101,27 @@ class Module(ApiType['Module']):
 
     @property
     def name(self) -> Optional[str]:
-        value = self._dict.get("name")
+        value = self._updates.get("name") or self._dict.get("name")
         return str(value) if value is not None else None
 
     @name.setter
     def name(self, value: Optional[str] = None) -> None:
         if value is not None:
-            self._dict["name"] = value
+            self._updates["name"] = value
         else:
-            del self._dict["name"]
+            self._updates.pop("name")
 
     @property
     def description(self) -> Optional[str]:
-        value = self._dict.get("description")
+        value = self._updates.get("description") or self._dict.get("description")
         return str(value) if value is not None else None
 
     @description.setter
     def description(self, value: Optional[str] = None) -> None:
         if value is not None:
-            self._dict["description"] = value
+            self._updates["description"] = value
         else:
-            del self._dict["description"]
+            self._updates.pop("description")
 
     @property
     def schema_in(self) -> Optional[str]:
@@ -155,15 +155,15 @@ class Module(ApiType['Module']):
 
     @property
     def status(self) -> Optional[ModuleStatus]:
-        value = self._dict.get("status")
+        value = self._updates.get("status") or self._dict.get("status")
         return ModuleStatus(value) if value is not None else None
 
     @status.setter
     def status(self, value: Optional[ModuleStatus] = None) -> None:
         if value is not None:
-            self._dict["status"] = value
+            self._updates["status"] = value.value
         else:
-            del self._dict["status"]
+            self._updates.pop("status")
 
     @property
     def status_message(self) -> Optional[str]:

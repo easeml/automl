@@ -75,12 +75,19 @@ We have the ability to create certain objects, such as `Dataset`, `Module` and `
 
 ```python
 
-from easemlclient.model import Dataset, DataSource
+from easemlclient.model import Dataset, DatasetSource, DatasetStatus
 
-dataset = Dataset(id="test_dataset_1", source=DataSource.UPLOAD, name="Test Dataset 1").post(connection)
+dataset = Dataset.create(id="test_dataset_1", source=DatasetSource.UPLOAD, name="Test Dataset 1").post(connection)
 
-with open("test_dataset_1.tar", "r") as f:
+with open("test_dataset_1.tar", "rb") as f:
     dataset.upload(connection=connection, data=f)
+
+# Once the dataset upload finishes, we need to update the status of the dataset to "transferred".
+dataset.status = DatasetStatus.TRANSFERRED
+
+# Once we assign values to fields, we use the patch command
+# to apply updates to the dataset object on the server.
+dataset.patch(connection)
 ```
 
 ### Starting a new training Job and monitoring it

@@ -7,44 +7,31 @@
                 <table class="table table-hover m-0 tickets-list table-actions-bar dt-responsive nowrap" cellspacing="0" width="100%" id="datatable">
                 <thead>
                 <tr>
-                    <th>
-                        ID
-                    </th>
-                    <th>User</th>
-                    <th>Dataset</th>
-                    <th>Number of Models</th>
-                    <th>Objective</th>
-                    <th>Task Limit</th>
-                    <th>Creation Time</th>
-                    <th>Running Time</th>
-                    <th>Status</th>
-                    <th class="hidden-sm">Action</th>
+                    <table-field item-title="ID" item-value="ID" class="mainField"></table-field>
+                    <table-field item-title="User" item-value="User" class="mainField"></table-field>
+                    <table-field item-title="Dataset" item-value="Dataset" class="mainField"></table-field>
+                    <table-field item-title="Number of Models" item-value="Number of Models" class="mainField"></table-field>
+                    <table-field item-title="Objective" item-value="Objective" class="mainField"></table-field>
+                    <table-field item-title="Task Limit" item-value="Task Limit" class="mainField"></table-field>
+                    <table-field item-title="Creation Time" item-value="Creation Time" class="mainField"></table-field>
+                    <table-field item-title="Running Time" item-value="Running Time" class="mainField"></table-field>
+                    <table-field item-title="Status" item-value="Status" class="mainField"></table-field>
+                    <table-field item-title="Action" item-value="Action" class="hidden-sm mainField"></table-field>
                 </tr>
                 </thead>
 
                 <tbody>
                     <tr v-for="item in items" :key="item.id">
-
-                        <td><b><router-link :to="item.link">{{item.id}} </router-link></b></td>
-
-                        <td>{{item.user}}</td>
-
-                        <td>{{item.dataset}}</td>
-
-                        <td>{{item.models.length}}</td>
-
-                        <td>{{item.objective}}</td>
-
-                        <td>{{item.maxTasks}}</td>
-
-                        <td>{{ item.creationTimeString }}</td>
-
-                        <td>{{ item.runningDurationString }}</td>
-
-                        <td>{{item.status}}</td>
-
+                        <td><b><a :href="item.link">{{item.id}} </a></b></td>
+                        <table-field :item-title=item.user :item-value=item.user ></table-field>
+                        <table-field :item-title=item.dataset :item-value=item.dataset ></table-field>
+                        <table-field :item-title=item.models.length :item-value=item.models.length ></table-field>
+                        <table-field :item-title=item.objective :item-value=item.objective ></table-field>
+                        <table-field :item-title=item.maxTasks :item-value=item.maxTasks ></table-field>
+                        <table-field :item-title=item.creationTimeString :item-value=item.creationTimeString ></table-field>
+                        <table-field :item-title=item.runningDurationString :item-value=item.runningDurationString ></table-field>
+                        <table-field :item-title=item.status :item-value=item.status ></table-field>
                         <td></td>
-
                     </tr>
                 </tbody>
                 </table>
@@ -54,12 +41,16 @@
 </template>
 <script>
 import client from "easemlclient"
+import TableField from "@/components/TableField.vue";
 
 export default {
     data() {
         return {
             items: []
         };
+    },
+    components: {
+        TableField
     },
     methods: {
         loadData: function() {

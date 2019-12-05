@@ -52,7 +52,7 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^3.0.5",
     "mocha": "^5.2.0",
-    "rimraf": "^2.6.3",
+    "rimraf": "^2.7.1",
     "rollup": "^0.64.1",
     "webpack": "^4.31.0",
     "webpack-cli": "^3.3.2"

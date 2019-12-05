@@ -16,7 +16,7 @@ const (
 	// DatasetDownload is a data set that has been downloaded from a remote location.
 	DatasetDownload = "download"
 
-	// DatasetGitLfs is a data set that has been fetched from a git repository
+	// DatasetGit is a data set that has been fetched from a git repository
 	DatasetGit = "git"
 
 	// DatasetCreated is the status of a dataset when it is recorded in the system but the data is not yet transferred.
@@ -55,5 +55,5 @@ type Dataset struct {
 	Status        string        `bson:"status" json:"status"`
 	StatusMessage string        `bson:"status-message" json:"status-message"`
 	Process       bson.ObjectId `bson:"process,omitempty" json:"process"`
-	Secret		  string        `bson:"dataset-secret,omitempty" json:"dataset-secret"`
+	AccessKey	  string     	`bson:"access-key,omitempty" json:"access-key"`
 }

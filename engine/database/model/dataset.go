@@ -282,7 +282,7 @@ func (context Context) CreateDataset(dataset types.Dataset) (result types.Datase
 	if dataset.Source != types.DatasetUpload && dataset.Source != types.DatasetLocal && dataset.Source != types.DatasetDownload && dataset.Source != types.DatasetGit {
 		err = errors.Wrapf(ErrBadInput,
 			"value of source can be \"%s\", \"%s\" or \"%s\", but found \"%s\"",
-			types.DatasetUpload, types.DatasetLocal, types.DatasetDownload,types.DatasetGit, dataset.Source)
+			types.DatasetUpload, types.DatasetLocal, types.DatasetDownload, types.DatasetGit, dataset.Source)
 		return
 	}
 	// Validate the schemas.
@@ -406,8 +406,8 @@ func (context Context) UpdateDataset(id string, updates map[string]interface{}) 
 			valueUpdates["status"] = status
 		case "status-message":
 			valueUpdates["status-message"] = v.(string)
-		case "dataset-secret":
-			valueUpdates["dataset-secret"]=v.(string)
+		case "accessKey":
+			valueUpdates["accessKey"]=v.(string)
 		default:
 			err = errors.Wrap(ErrBadInput, "invalid value of parameter updates")
 			return
@@ -539,9 +539,9 @@ func (context Context) UpdateDatasetStatus(id string, status string, statusMessa
 	return
 }
 
-// FlushDatasetSecret removes a used secret from the database.
-func (context Context) FlushDatasetSecret(id string) (err error) {
-	_, err = context.UpdateDataset(id, F{"dataset-secret": ""})
+// FlushDatasetAccessKey removes a used accessKey from the database.
+func (context Context) FlushDatasetAccessKey(id string) (err error) {
+	_, err = context.UpdateDataset(id, F{"accessKey": ""})
 	return
 }
 

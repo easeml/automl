@@ -100,15 +100,15 @@ class Job(ApiType['Job']):
 
     @property
     def accept_new_models(self) -> Optional[bool]:
-        value = self._dict.get("accept-new-models")
+        value = self._updates.get("accept-new-models") or self._dict.get("accept-new-models")
         return bool(value) if value is not None else None
 
     @accept_new_models.setter
     def accept_new_models(self, value: Optional[bool] = None) -> None:
         if value is not None:
-            self._dict["accept-new-models"] = value
+            self._updates["accept-new-models"] = value
         else:
-            del self._dict["accept-new-models"]
+            self._updates.pop("accept-new-models")
 
     @property
     def objective(self) -> Optional[Module]:
@@ -122,15 +122,15 @@ class Job(ApiType['Job']):
 
     @property
     def max_tasks(self) -> Optional[int]:
-        value = self._dict.get("max-tasks")
+        value = self._updates.get("max-tasks") or self._dict.get("max-tasks")
         return int(value) if value is not None else None
 
     @max_tasks.setter
     def max_tasks(self, value: Optional[int] = None) -> None:
         if value is not None:
-            self._dict["max-tasks"] = value
+            self._updates["max-tasks"] = value
         else:
-            del self._dict["max-tasks"]
+            self._updates.pop("max-tasks")
 
     @property
     def creation_time(self) -> Optional[datetime]:
@@ -154,15 +154,15 @@ class Job(ApiType['Job']):
 
     @property
     def status(self) -> Optional[JobStatus]:
-        value = self._dict.get("status")
+        value = self._updates.get("status") or self._dict.get("status")
         return JobStatus(value) if value is not None else None
 
     @status.setter
     def status(self, value: Optional[JobStatus] = None) -> None:
         if value is not None:
-            self._dict["status"] = value
+            self._updates["status"] = value.value
         else:
-            del self._dict["status"]
+            self._updates.pop("status")
 
     @property
     def status_message(self) -> Optional[str]:

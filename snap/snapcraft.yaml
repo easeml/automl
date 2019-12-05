@@ -6,10 +6,10 @@ description: |
   It enables users to upload their datasets and start model selection and tuning jobs. 
   Given the schema of the dataset, ease.ml does an automatic search for applicable models and performs training, prediction and evaluation. 
 
-grade: stable
+#grade: stable
 confinement: strict
 #confinement: classic #strict
-#grade: devel
+grade: devel
 
 base: core18
 
@@ -21,7 +21,7 @@ plugs:
     interface: docker-support
   privileged:
     interface: docker-support
-    privileged-containers: true    
+    privileged-containers: true
   docker-cli:
     interface: docker
   docker-executables:
@@ -29,24 +29,21 @@ plugs:
     default-provider: docker
     interface: content
     target: docker-env
-
 hooks:
   configure:
     plugs:
       - network
       - network-bind
-
 slots:
   mongodb-slot:
     interface: content
     write:
       - $SNAP_DATA/share
 
-
 parts:
   buildenv:
     plugin: nil
-    override-build: |
+    override-pull: |
       echo "Preparing Build Environment"
       echo "Installing Make"
       apt install make
@@ -64,30 +61,18 @@ parts:
       snap install --classic go
       echo "Getting Packr2"
       go get -v -u github.com/gobuffalo/packr/v2/...
-    override-prime:
-      echo "Nothing to prime"
   easeml:
     plugin: dump
     source: .
-    after: [buildenv]
     override-build: |
       echo "Exporting Paths"
       export GOPATH=$HOME/go
       export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin:$HOME/temp_install/bin
-      echo "Moving Sources"
-      rm -rf $GOPATH/src/github.com/ds3lab/easeml
-      mkdir -p $GOPATH/src/github.com/ds3lab/easeml/
-      mv ./* $GOPATH/src/github.com/ds3lab/easeml/
-      echo "Building and Installing Easeml"
-      cd $GOPATH/src/github.com/ds3lab/easeml/engine/
-      make install
-      mkdir -p $HOME/parts/easeml/install/bin/
-      cp $GOPATH/bin/easeml $SNAPCRAFT_PART_INSTALL/bin/
-    override-prime: |
-      echo "Priming binary"
-      mkdir -p $SNAPCRAFT_PRIME/bin/
-      cp $SNAPCRAFT_STAGE/bin/easeml $SNAPCRAFT_PRIME/bin/
-  mongodb:
+      npm set unsafe-perm true
+      cd engine
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin/
+      make install INSTALL_PATH=$SNAPCRAFT_PART_INSTALL/bin/
+  mongod:
     source: http://downloads.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.0.tgz
     plugin: dump
     stage-packages:
@@ -113,19 +98,12 @@ parts:
             - bin
     stage:
         - $mongo
-    override-prime: |
-      mkdir -p $SNAPCRAFT_PRIME/bin/
-      cp -r $SNAPCRAFT_STAGE/bin $SNAPCRAFT_PRIME/
-      cp -r $SNAPCRAFT_STAGE/usr $SNAPCRAFT_PRIME/
-    
 apps:
   easeml:
     command: bin/easeml
-    plugs: [home,desktop,network, network-bind, docker-executables, docker-cli] 
-
-  mongodb:
-    command: bin/mongod --dbpath $SNAP_COMMON
+    plugs: [home,desktop,network, network-bind, docker-executables, docker-cli]
+  mongod:
+    command: bin/mongod --dbpath $SNAP_COMMON/easemlmdb
     daemon: simple
-    plugs: [network, network-bind]    
-    
+    plugs: [network, network-bind]
    
