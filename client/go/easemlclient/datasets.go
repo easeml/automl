@@ -4,13 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/ds3lab/easeml/client/go/easemlclient/types"
 	"io/ioutil"
 	"net/url"
 	"os"
 	"path"
 	"path/filepath"
-
-	"github.com/ds3lab/easeml/client/go/easemlclient/types"
 
 	tus "github.com/eventials/go-tus"
 	"github.com/mholt/archiver"
@@ -88,7 +87,7 @@ func (context Context) GetDatasetByID(id string) (result *types.Dataset, err err
 }
 
 // CreateDataset creates a new dataset given the provided parameters.
-func (context Context) CreateDataset(id, name, description, source, sourceAddress string) (string, error) {
+func (context Context) CreateDataset(id, name, description, source, sourceAddress,accessKey string) (string, error) {
 
 	if id == "" {
 		panic("id argument cannot be empty")
@@ -113,6 +112,7 @@ func (context Context) CreateDataset(id, name, description, source, sourceAddres
 		Description:   description,
 		Source:        source,
 		SourceAddress: sourceAddress,
+		AccessKey:	 accessKey,
 	}
 
 	datasetBytes, err := json.Marshal(&dataset)
@@ -158,6 +158,7 @@ var ValidDatasetSources = []string{
 	types.DatasetUpload,
 	types.DatasetDownload,
 	types.DatasetLocal,
+	types.DatasetGit,
 }
 
 // DatasetSourceValid checks if the provided dataset source is valid.
@@ -178,6 +179,8 @@ func DatasetSourceAddressRequired(source string) bool {
 	case types.DatasetLocal:
 		return true
 	case types.DatasetDownload:
+		return true
+	case types.DatasetGit:
 		return true
 	default:
 		panic("unknown source")

@@ -48,32 +48,24 @@
                 <table class="table table-hover m-0 tickets-list table-actions-bar dt-responsive nowrap" cellspacing="0" width="100%" id="datatable">
                 <thead>
                 <tr>
-                    <th>
-                        ID
-                    </th>
-                    <th>Model</th>
-                    <th>Status</th>
-                    <th>Stage</th>
-                    <th>Running Time</th>
-                    <th>Quality</th>
-                    <th class="hidden-sm">Action</th>
+                    <table-field item-title="ID" item-value="ID" class="mainField"></table-field>
+                    <table-field item-title="Model" item-value="Model" class="mainField"></table-field>
+                    <table-field item-title="Status" item-value="Status" class="mainField"></table-field>
+                    <table-field item-title="Stage" item-value="Stage" class="mainField"></table-field>
+                    <table-field item-title="Running Time" item-value="Running Time" class="mainField"></table-field>
+                    <table-field item-title="Quality" item-value="Quality" class="mainField"></table-field>
+                    <table-field item-title="Action" item-value="Action" class="hidden-sm mainField"></table-field>
                 </tr>
                 </thead>
 
                 <tbody>
                     <tr v-for="item in items" :key="item.intId">
-
-                        <td><b>{{item.intId}}</b></td>
-
-                        <td>{{item.model}}</td>
-
-                        <td>{{item.status}}</td>
-
-                        <td>{{item.stage}}</td>
-
-                        <td>{{ item.runningDurationString }}</td>
-
-                        <td>{{item.quality}}</td>
+                        <table-field :item-title=item.intId :item-value=item.intId class="mainField"></table-field>
+                        <table-field :item-title=item.model :item-value=item.model ></table-field>
+                        <table-field :item-title=item.status :item-value=item.status ></table-field>
+                        <table-field :item-title=item.stage :item-value=item.stage ></table-field>
+                        <table-field :item-title=item.runningDurationString :item-value=item.runningDurationString ></table-field>
+                        <table-field :item-title=item.quality :item-value=item.quality ></table-field>
                         <td>
                             <button type="button" class="btn btn-icon waves-effect btn-light" v-show="item.status==='completed'" @click.prevent="downloadPredictions(item.id)">
                                 <i class="fa fa-cloud-download"></i>
@@ -92,6 +84,7 @@
 </template>
 <script>
 import client from "easemlclient"
+import TableField from "@/components/TableField.vue";
 
 export default {
     data() {
@@ -101,6 +94,9 @@ export default {
             job: {},
             jobModels: null
         };
+    },
+    components: {
+        TableField
     },
     computed: {
         pauseLabel() {

@@ -72,11 +72,12 @@ var pushDatasetCmd = &cobra.Command{
 			}
 		}
 
-		result, err := context.CreateDataset(datasetID, datasetName, descriptionString, datasetSource, datasetSourceAddress)
+		result, err := context.CreateDataset(datasetID, datasetName, descriptionString, datasetSource, datasetSourceAddress,accessKey)
 		if err != nil {
 			fmt.Println(err.Error())
 			return
 		}
+		// TODO: Poll the dataset status until it becomes "ready", to enable the user to have feedback about the process
 		fmt.Printf("SUCCESS: Dataset \"%s\" created.\n", result)
 
 	},

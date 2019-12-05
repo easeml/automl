@@ -2,7 +2,7 @@
 
 package command
 
-import "github.com/gobuffalo/packr"
+import "github.com/gobuffalo/packr/v2"
 
 // Initialize a packr box which will cotain all scripts.
 var scriptBox = packr.Box{}

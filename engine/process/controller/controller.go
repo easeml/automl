@@ -15,7 +15,7 @@ import (
 	"github.com/ds3lab/easeml/engine/storage"
 	"github.com/ds3lab/easeml/engine/workers"
 
-	"github.com/gobuffalo/packr"
+	"github.com/gobuffalo/packr/v2"
 )
 
 // Start is the entry point.
@@ -47,7 +47,7 @@ func Start(context process.Context) {
 		log.WriteFatal(fmt.Sprintf("fatal: %+v", err))
 	}
 	defer modelContext.SetProcessStatus(process.ID, types.ProcTerminated)
-	log.WithFields("process-id", process.ID.Hex(), "PID", process.ProcessID).WriteInfo("CONTROLLER PROCESS STARTED")
+	log.WithFields("process-id", process.ID.Hex(), "PID", process.ProcessID,"process-type",process.Type).WriteInfo("PROCESS STARTED")
 	log.ProcessID = process.ID.Hex()
 	//log.Prefix = fmt.Sprintf("CTL%02d", process.RunningOrinal)
 
@@ -70,7 +70,7 @@ func Start(context process.Context) {
 	if err != nil {
 		log.WriteFatal(fmt.Sprintf("fatal: %+v", err))
 	}
-	log.WithFields("api-key", user.APIKey).WriteInfo("ROOT USER LOGGED IN")
+	log.WithFields("api-key", user.APIKey,"process-type",process.Type).WriteInfo("ROOT USER LOGGED IN")
 
 	// Report the root API key to the API key channel.
 	context.RootAPIKey <- user.APIKey
@@ -161,7 +161,7 @@ func Start(context process.Context) {
 	http.Handle("/api/v1/", apiRouter)
 
 	// Initialize the WEB router.
-	box := packr.NewBox("../../../web/dist")
+	box := packr.New("Frontend","../../../web/dist")
 	webRouter := http.FileServer(box)
 	http.Handle("/", webRouter)
 

@@ -5,8 +5,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/sirupsen/logrus"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 // ProcessLogger is a logger that is owned by a process.
@@ -14,7 +14,6 @@ type ProcessLogger struct {
 	ProcessID  string
 	Prefix     string
 	stackTrace string
-	fields     map[string]interface{}
 	entry      []*logrus.Entry
 }
 
@@ -128,6 +127,7 @@ func (logger *ProcessLogger) WithFields(args ...interface{}) Logger {
 	}
 
 	result := *logger
+	result.entry = make([]*logrus.Entry,len(logger.entry))
 
 	for i := range logger.entry {
 		result.entry[i] = logger.entry[i].WithFields(fields)
@@ -140,7 +140,13 @@ func (logger *ProcessLogger) WithFields(args ...interface{}) Logger {
 func (logger *ProcessLogger) WithStack(err error) Logger {
 
 	result := *logger
+	result.entry = make([]*logrus.Entry,len(logger.entry))
 
+	// Make a copy of the entries
+	for i := range logger.entry {
+		result.entry[i] = logger.entry[i].WithFields(nil)
+	}
+	
 	if err != nil {
 
 		var builder strings.Builder
@@ -161,7 +167,9 @@ func (logger *ProcessLogger) WithStack(err error) Logger {
 
 // WithError adds an error message from a given error.
 func (logger *ProcessLogger) WithError(err error) Logger {
+
 	result := *logger
+	result.entry = make([]*logrus.Entry,len(logger.entry))
 
 	if err != nil {
 		for i := range logger.entry {
