@@ -182,7 +182,7 @@ class DatasetQuery(ApiQuery['Dataset', 'DatasetQuery']):
     VALID_SORTING_FIELDS = ["id", "user", "source", "source-address", "creation-time", "status"]
 
     def __init__(self, id: Optional[List[str]] = None, user: Optional[User] = None,
-                 status: Optional[DatasetStatus] = None, source: Optional[str] = None,
+                 status: Optional[DatasetStatus] = None, source: Optional[DatasetSource] = None,
                  source_address: Optional[str] = None,
                  schema_in: Optional[str] = None, schema_out: Optional[str] = None,                 
                  order_by: Optional[str] = None, order: Optional[ApiQueryOrder] = None,
@@ -195,9 +195,9 @@ class DatasetQuery(ApiQuery['Dataset', 'DatasetQuery']):
         if user is not None:
             self._query["user"] = user.id
         if status is not None:
-            self._query["status"] = status
+            self._query["status"] = status.value
         if source is not None:
-            self._query["source"] = source
+            self._query["source"] = source.value
         if source_address is not None:
             self._query["source-address"] = source_address
         if schema_in is not None:

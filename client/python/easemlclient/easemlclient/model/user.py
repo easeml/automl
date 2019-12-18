@@ -110,7 +110,7 @@ class UserQuery(ApiQuery['User', 'UserQuery']):
 
     VALID_SORTING_FIELDS = ["id", "name", "status"]
 
-    def __init__(self, id: Optional[List[str]] = None, status: Optional[str] = None,
+    def __init__(self, id: Optional[List[str]] = None, status: Optional[UserStatus] = None,
                  order_by: Optional[str] = None, order: Optional[ApiQueryOrder] = None,
                  limit: Optional[int] = None, cursor: Optional[str] = None) -> None:
         super().__init__(order_by, order, limit, cursor)
@@ -119,7 +119,7 @@ class UserQuery(ApiQuery['User', 'UserQuery']):
         if id is not None:
             self._query["id"] = id
         if status is not None:
-            self._query["status"] = status
+            self._query["status"] = status.value
 
     def run(self, connection: Connection) -> Tuple[List[User], Optional['UserQuery']]:
         url = connection.url("users")

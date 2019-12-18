@@ -127,11 +127,11 @@ class ProcessQuery(ApiQuery['Process', 'ProcessQuery']):
         if host_address is not None:
             self._query["host-address"] = host_address
         if type is not None:
-            self._query["type"] = type
+            self._query["type"] = type.value
         if resource is not None:
             self._query["resource"] = resource
         if status is not None:
-            self._query["status"] = status
+            self._query["status"] = status.value
 
     def run(self, connection: Connection) -> Tuple[List[Process], Optional['ProcessQuery']]:
         url = connection.url("processes")
