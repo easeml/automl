@@ -279,10 +279,10 @@ func (context Context) CreateDataset(dataset types.Dataset) (result types.Datase
 		err = errors.Wrap(ErrBadInput, "the id must be of the format dataset-id or user-id/dataset-id")
 		return
 	}
-	if dataset.Source != types.DatasetUpload && dataset.Source != types.DatasetLocal && dataset.Source != types.DatasetDownload {
+	if dataset.Source != types.DatasetUpload && dataset.Source != types.DatasetLocal && dataset.Source != types.DatasetDownload && dataset.Source != types.DatasetGit {
 		err = errors.Wrapf(ErrBadInput,
 			"value of source can be \"%s\", \"%s\" or \"%s\", but found \"%s\"",
-			types.DatasetUpload, types.DatasetLocal, types.DatasetDownload, dataset.Source)
+			types.DatasetUpload, types.DatasetLocal, types.DatasetDownload, types.DatasetGit, dataset.Source)
 		return
 	}
 	// Validate the schemas.
@@ -406,6 +406,8 @@ func (context Context) UpdateDataset(id string, updates map[string]interface{}) 
 			valueUpdates["status"] = status
 		case "status-message":
 			valueUpdates["status-message"] = v.(string)
+		case "accessKey":
+			valueUpdates["accessKey"]=v.(string)
 		default:
 			err = errors.Wrap(ErrBadInput, "invalid value of parameter updates")
 			return
@@ -534,6 +536,12 @@ func (context Context) UnlockDataset(id string, processID bson.ObjectId) (err er
 // UpdateDatasetStatus sets the status of the dataset and assigns the given status message.
 func (context Context) UpdateDatasetStatus(id string, status string, statusMessage string) (err error) {
 	_, err = context.UpdateDataset(id, F{"status": status, "status-message": statusMessage})
+	return
+}
+
+// FlushDatasetAccessKey removes a used accessKey from the database.
+func (context Context) FlushDatasetAccessKey(id string) (err error) {
+	_, err = context.UpdateDataset(id, F{"accessKey": ""})
 	return
 }
 

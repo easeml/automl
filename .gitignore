@@ -28,3 +28,4 @@ dist/*
 # Temporary
 opt/
 docs/usr/
+*.snap

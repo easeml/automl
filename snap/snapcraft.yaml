@@ -1,0 +1,109 @@
+name: easeml
+version: git
+summary: Ease.ml is a declarative machine learning service platform.
+description: |
+  Ease.ml is a declarative machine learning service platform. 
+  It enables users to upload their datasets and start model selection and tuning jobs. 
+  Given the schema of the dataset, ease.ml does an automatic search for applicable models and performs training, prediction and evaluation. 
+
+#grade: stable
+confinement: strict
+#confinement: classic #strict
+grade: devel
+
+base: core18
+
+plugs:
+  mongodb-plug:
+    interface: content
+    target: $SNAP_DATA/shared
+  support:
+    interface: docker-support
+  privileged:
+    interface: docker-support
+    privileged-containers: true
+  docker-cli:
+    interface: docker
+  docker-executables:
+    content: docker-executables
+    default-provider: docker
+    interface: content
+    target: docker-env
+hooks:
+  configure:
+    plugs:
+      - network
+      - network-bind
+slots:
+  mongodb-slot:
+    interface: content
+    write:
+      - $SNAP_DATA/share
+
+parts:
+  buildenv:
+    plugin: nil
+    override-pull: |
+      echo "Preparing Build Environment"
+      echo "Installing Make"
+      apt install make
+      echo "Getting NodeJS"
+      export VERSION='12.8.0'
+      export ARCH='x64'
+      export NBASE="node-v$VERSION-linux-$ARCH"
+      wget https://nodejs.org/dist/v$VERSION/$NBASE.tar.gz
+      tar xvzf $NBASE.tar.gz -C .
+      mkdir -p $HOME/temp_install
+      mv $NBASE/* $HOME/temp_install
+      echo "Cleaning"
+      rm $NBASE.tar.gz
+      echo "Installing go"
+      snap install --classic go
+      echo "Getting Packr2"
+      go get -v -u github.com/gobuffalo/packr/v2/...
+  easeml:
+    plugin: dump
+    source: .
+    override-build: |
+      echo "Exporting Paths"
+      export GOPATH=$HOME/go
+      export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin:$HOME/temp_install/bin
+      npm set unsafe-perm true
+      cd engine
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin/
+      make install INSTALL_PATH=$SNAPCRAFT_PART_INSTALL/bin/
+  mongod:
+    source: http://downloads.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.0.tgz
+    plugin: dump
+    stage-packages:
+        - libssl1.0.0
+        - libasn1-8-heimdal
+        - libcurl4
+        - libgssapi3-heimdal
+        - libhcrypto4-heimdal
+        - libheimbase1-heimdal
+        - libheimntlm0-heimdal
+        - libhx509-5-heimdal
+        - libkrb5-26-heimdal
+        - libldap-2.4-2
+        - libnghttp2-14
+        - libpsl5
+        - libroken18-heimdal
+        - librtmp1
+        - libsasl2-2
+        - libwind0-heimdal
+    filesets:
+        mongo:
+            - usr
+            - bin
+    stage:
+        - $mongo
+apps:
+  easeml:
+    command: bin/easeml
+    plugs: [home,desktop,network, network-bind, docker-executables, docker-cli]
+  mongod:
+    command: bin/mongod --dbpath $SNAP_COMMON/easemlmdb
+    daemon: simple
+    plugs: [network, network-bind]
+   

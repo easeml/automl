@@ -127,6 +127,7 @@ var createJobCmd = &cobra.Command{
 			fmt.Println(err.Error())
 			return
 		}
+		// TODO: Poll the job status until it becomes "ready", to enable the user to have feedback about the process
 		fmt.Printf("SUCCESS: Job \"%s\" created.\n", result)
 
 	},

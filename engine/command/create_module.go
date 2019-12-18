@@ -146,6 +146,7 @@ var createModuleCmd = &cobra.Command{
 				fmt.Println(err.Error())
 				return
 			}
+			// TODO: Poll the module status until it becomes "ready", to enable the user to have feedback about the process
 			fmt.Printf("SUCCESS: Module \"%s\" created.\n", moduleID)
 
 		} else if module.Source != types.ModuleUpload || module.Status != types.ModuleCreated {

@@ -45,7 +45,8 @@ func (context Context) DatasetUnpackWorker(dataset types.Dataset) {
 	sourceFilePaths := []string{}
 	destinationFilePaths := []string{}
 
-	if dataset.Source == types.DatasetDownload {
+	//TODO Check if it is dangerous to share the same folder by Gitlfs
+	if dataset.Source == types.DatasetDownload || dataset.Source == types.DatasetGit{
 
 		// Build the downloaded file path and unpack destination.
 		sourceFilePaths = []string{filepath.Join(datasetPath, ".download", downloadFilename)}
@@ -120,7 +121,8 @@ func (context Context) DatasetUnpackWorker(dataset types.Dataset) {
 	}
 
 	// Delete the temp directories.
-	if dataset.Source == types.DatasetDownload {
+	//TODO Check if it is dangerous to share the same folder by Gitlfs
+	if dataset.Source == types.DatasetDownload || dataset.Source == types.DatasetGit {
 		err = os.RemoveAll(filepath.Join(datasetPath, ".download"))
 		if err != nil {
 			panic(err)

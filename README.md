@@ -14,6 +14,12 @@ The project is being developed by the [DS3 Lab](https://ds3lab.org/) at ETH Zuri
 
 ## Build ease.ml from source (Linux)
 
+## Prerequisites
+- go and packr2
+- nodejs and npm
+- Mongo DB
+- Docker
+
 ### Install go
 
 ```bash
@@ -27,10 +33,10 @@ export GOPATH=$HOME/go
 export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
 ```
 
-Install packr which we will be using to bundle the web UI files into the go binary:
+Install packr2 which we will be using to bundle the web UI files into the go binary:
 
 ```bash
-go get -u github.com/gobuffalo/packr/...
+go get -v -u github.com/gobuffalo/packr/v2/...
 ```
 
 ### Install node and npm
@@ -39,20 +45,6 @@ go get -u github.com/gobuffalo/packr/...
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 sudo apt-get install -y nodejs
 sudo apt-get install -y npm
-```
-
-### Get the code
-
-```bash
-go get github.com/ds3lab/easeml
-```
-
-### Initialize the web directory and build the web UI
-
-```bash
-cd $GOPATH/src/github.com/ds3lab/easeml/web
-npm install
-npm run build
 ```
 
 ### Install Mongo DB
@@ -99,11 +91,49 @@ sudo usermod -aG docker ${USER}
 su - ${USER}
 ```
 
-### Build ease.ml
+
+## Ease.ml
+
+### Get the source code
 
 ```bash
-packr install github.com/ds3lab/easeml
+go get -v github.com/ds3lab/easeml
 ```
+
+### Build and Install binary from source
+
+```bash
+cd $GOPATH/src/github.com/ds3lab/easeml/engine
+
+#Install in GOPATH/bin
+make install
+```
+\# Alternative:
+```bash
+# Install in ALT_PATH
+# ALT_PATH should be added to PATH
+make install INSTALL_PATH=ALT_PATH
+```
+
+<!---
+### Initialize the web directory and build the web UI
+
+```bash
+cd $GOPATH/src/github.com/ds3lab/easeml/web
+npm install
+npm run build
+```
+
+### Build and install Ease.ml
+
+```bash
+cd $GOPATH/src/github.com/ds3lab/easeml/engine
+
+packr2 -v
+
+go install
+```
+-->
 
 ### Run ease.ml
 
