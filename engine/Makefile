@@ -89,7 +89,7 @@ install: build
 		mv $(PROJECT_NAME) $(PROJECT_NAME)_temp;\
 		mv $(PROJECT_NAME)_temp $(INSTALL_PATH)/$(PROJECT_NAME);\
 	else\
-		echo "Empty INSTALL_PATH and GOPATH. Please set the env variable INSTALL_PATH or GOPATH to a valid directory so that the output binary can be placed there. Preferably this directory is included in your \$PATH environmental variable";\
+		echo "Empty INSTALL_PATH and GOPATH. Please set the env variable INSTALL_PATH or GOPATH to a valid directory so that the output binary can be placed there. Preferably this directory is included in your PATH environmental variable";\
 		exit 1;\
 	fi && \
 	echo '$@: done'

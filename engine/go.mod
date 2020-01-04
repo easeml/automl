@@ -10,7 +10,8 @@ require (
 	// github.com/Sirupsen/logrus v1.1.1 // indirect
 	github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40 // indirect
 	github.com/cavaliercoder/grab v2.0.0+incompatible
-	github.com/docker/docker v0.7.3-0.20190121142752-69d9ff34556d
+	github.com/containerd/containerd v1.3.2 // indirect
+	github.com/docker/docker v1.4.2-0.20200103225628-a9507c6f7662
 	github.com/ds3lab/easeml/client/go/easemlclient v0.0.0
 	github.com/ds3lab/easeml/schema/go/easemlschema v0.0.0
 	github.com/emicklei/forest v1.1.0

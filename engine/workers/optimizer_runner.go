@@ -128,7 +128,7 @@ func (context Context) OptimizerRunWorker(optimizerID string, numProcesses, numT
 		"--history", modules.MntPrefix + histPath,
 		"--num-tasks", strconv.Itoa(numNewTasks),
 	}
-	outReader, err := modules.RunContainerAndCollectOutput(imageName, nil, command)
+	outReader, err := modules.RunContainerAndCollectOutput(imageName, nil, command, nil)
 	if err != nil {
 		err = errors.Wrap(err, "docker container start error")
 		context.Logger.WithFields(

@@ -12,6 +12,7 @@ import (
 )
 
 var runPredictData, runPredictMemory, runPredictOutput string
+var runPredictGpuDevices []string
 
 const defaultMemory = "/memory"
 
@@ -62,7 +63,7 @@ var runPredictCmd = &cobra.Command{
 			"--memory", modules.MntPrefix + runPredictMemory,
 			"--output", modules.MntPrefix + runPredictOutput,
 		}
-		outReader, err := modules.RunContainerAndCollectOutput(modelImageName, nil, command)
+		outReader, err := modules.RunContainerAndCollectOutput(modelImageName, nil, command, runPredictGpuDevices)
 		if err != nil {
 			fmt.Println("Error while running the container: ")
 			fmt.Print(err)
@@ -84,6 +85,11 @@ func init() {
 	runPredictCmd.Flags().StringVarP(&runPredictData, "data", "d", "", "Directory containing the input data.")
 	runPredictCmd.Flags().StringVarP(&runPredictMemory, "memory", "m", "", "Model memory.")
 	runPredictCmd.Flags().StringVarP(&runPredictOutput, "output", "o", "", "Directory where the model will output its predictions.")
+	runPredictCmd.Flags().StringSliceVar(&runPredictGpuDevices, "gpu", []string{}, "List of integer GPU device identifiers "+
+		"(zero based) that specified which GPU devices to make available to each module executed by a worker "+
+		"process. If -1 is specified, then all GPU devices are made available. If empty, then only CPU is used. "+
+		"For example --gpu 0,2 means that GPU0 and GPU2 will be made available to the module. "+
+		"NVidia Docker runtime needs to be installed to use this feature (https://github.com/NVIDIA/nvidia-docker).")
 
 	viper.BindPFlags(runPredictCmd.PersistentFlags())
 
