@@ -27,6 +27,7 @@ do
 	cmd="easeml create module --type $t --source upload --source-address $d --id opt-$d --label opt-$d --name opt-$d --config $config_file" 
 	echo $cmd
 	eval $cmd
+	#read -p "Press enter to continue"
 	cd ../..
     done
 done
@@ -44,6 +45,7 @@ do
         cmd="easeml create module --type $t --source upload --source-address $d --id $d --label label-$d --name $d --config $config_file"
         echo $cmd
         eval $cmd
+        #read -p "Press enter to continue"
         cd ../..
     done
 done

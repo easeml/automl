@@ -1,0 +1,29 @@
+{
+  "jupyter.lab.setting-icon-class": "jp-TextEditorIcon",
+  "jupyter.lab.setting-icon-label": "Easeml",
+  "title": "Easeml",
+  "description": "Easeml settings.",
+  "definitions": {
+    "easemlConfig": {
+      "properties": {
+        "easemlServer": {
+          "type": ["string", "null"]
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    }
+  },
+  "properties": {
+    "easemlConfig": {
+      "title": "Easml Configuration",
+      "description": "Easeml settings",
+      "$ref": "#/definitions/easemlConfig",
+      "default": {
+        "easemlServer": "null"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "type": "object"
+}

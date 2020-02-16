@@ -14,7 +14,6 @@ function transformDataItem (input) {
 
   return {
     id: input.id,
-    link: '#/jobs/' + input.id, // TODO: Move this elsewhere.
     user: input.user,
     dataset: input.dataset,
     models: input.models,

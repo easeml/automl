@@ -5,11 +5,11 @@
 
         <!-- LOGO -->
         <div class="topbar-left">
-            <a href="index.html" class="logo" style="margin-top: 18px; margin-left: 5px">
+            <router-link to="/" class="logo" style="margin-top: 18px; margin-left: 5px">
                 <span>
                     <img src="../assets/images/logo-new.png" alt="" height="60">
                 </span>
-            </a>
+            </router-link>
         </div>
 
         <!--- Sidemenu -->

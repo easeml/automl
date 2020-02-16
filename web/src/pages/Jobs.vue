@@ -16,13 +16,12 @@
                     <table-field item-title="Creation Time" item-value="Creation Time" class="mainField"></table-field>
                     <table-field item-title="Running Time" item-value="Running Time" class="mainField"></table-field>
                     <table-field item-title="Status" item-value="Status" class="mainField"></table-field>
-                    <table-field item-title="Action" item-value="Action" class="hidden-sm mainField"></table-field>
                 </tr>
                 </thead>
 
                 <tbody>
                     <tr v-for="item in items" :key="item.id">
-                        <td><b><a :href="item.link">{{item.id}} </a></b></td>
+                        <td><b><router-link :to="'/jobs/'+item.id">{{item.id}} </router-link></b></td>
                         <table-field :item-title=item.user :item-value=item.user ></table-field>
                         <table-field :item-title=item.dataset :item-value=item.dataset ></table-field>
                         <table-field :item-title=item.models.length :item-value=item.models.length ></table-field>
@@ -31,7 +30,6 @@
                         <table-field :item-title=item.creationTimeString :item-value=item.creationTimeString ></table-field>
                         <table-field :item-title=item.runningDurationString :item-value=item.runningDurationString ></table-field>
                         <table-field :item-title=item.status :item-value=item.status ></table-field>
-                        <td></td>
                     </tr>
                 </tbody>
                 </table>
