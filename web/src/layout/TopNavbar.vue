@@ -60,7 +60,7 @@ export default {
         logout() {
             localStorage.removeItem("user");
             localStorage.removeItem("context");
-            this.$router.push({name: "home"});
+            this.$router.push({name: "login"});
         }
     },
     mounted() {

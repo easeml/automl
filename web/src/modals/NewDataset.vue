@@ -20,6 +20,7 @@
                                     <select class="form-control" v-model="datasetSource" @change="reload()">
                                         <option value="upload">Upload from the browser</option>
                                         <option value="download">Download from a remote location</option>
+                                        <option value="git">Pull from GIT repository</option>
                                         <option value="local">Copy from a local directory</option>
                                     </select>
                                 </div>
@@ -52,6 +53,36 @@
                                         <input type="text" class="form-control" v-model="datasetSourceAddress">
                                         <span class="help-block">
                                             <small>Note: This path must be accessible by the ease.ml controller service.</small>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div v-if="datasetSource === 'git'">
+                                <div class="form-group row">
+                                    <label class="col-2 col-form-label">GIT repo address</label>
+                                    <div class="col-10">
+                                        <input type="text" class="form-control" v-model="datasetSourceAddress">
+                                        <span class="help-block">
+                                            <small>Note: This must point to the GIT repository to be pulled</small>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-2 col-form-label">Dataset path</label>
+                                    <div class="col-10">
+                                        <input type="text" class="form-control" v-model="datasetPath">
+                                        <span class="help-block">
+                                            <small>Note: Path of the dataset within the GIT repository</small>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-2 col-form-label">Dataset Access key</label>
+                                    <div class="col-10">
+                                        <input type="text" class="form-control" v-model="datasetAccessKey">
+                                        <span class="help-block">
+                                            <small>Note: Empty if not needed. Data-source specific accessKey, i.e. oauth token.</small>
                                         </span>
                                     </div>
                                 </div>
@@ -222,6 +253,8 @@ export default {
             step: 1,
             datasetSource: "upload",
             datasetSourceAddress: "",
+            datasetPath: "",
+            datasetAccessKey: "",
             datasetId: "",
             datasetName: "",
             datasetDescription: "",
@@ -286,13 +319,18 @@ export default {
         finish() {
 
             let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
+
+            if (this.datasetSource === "git"){
+                this.datasetSourceAddress=this.datasetSourceAddress+"::"+this.datasetPath
+            }
             
             let dataset = {
                 id: this.currentUserId + "/" + this.datasetId,
                 source: this.datasetSource,
                 sourceAddress: this.datasetSourceAddress,
                 name: this.datasetName,
-                description: this.datasetDescription
+                description: this.datasetDescription,
+                accessKey: this.datasetAccessKey
             }
             context.createDataset(dataset)
             .then(id => {
