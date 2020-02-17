@@ -69,7 +69,7 @@ module.exports = {
         ]
     },
     plugins: [
-        // make sure to include the plugin for the magic
+        // VueLoaderPlugin
         new VueLoaderPlugin()
     ],
     resolve: {

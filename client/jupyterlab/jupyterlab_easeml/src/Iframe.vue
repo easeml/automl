@@ -9,7 +9,7 @@
   </ul>
     easemlServer variable currently set to: {{ url }}
     <br>
-    Is server alive: {{IsAlive}}
+    Is server live?: {{IsAlive}}
     <br>
     Checking for API at: {{url}}/api/v1/
     <br>

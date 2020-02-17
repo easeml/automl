@@ -6,6 +6,11 @@ Provides the widgets necessary to access easeml webui from the jupyter lab envir
 
 * JupyterLab
 
+## Installation
+
+* Jupyter lab: Settings > Enable Extension Manager
+* Extension Manager: Search @easeml/jupyterlab_easeml
+
 ## Development
 
 For a development install (requires npm version 4 or later), do the following in this repository directory:

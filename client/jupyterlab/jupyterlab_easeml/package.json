@@ -1,6 +1,6 @@
 {
   "name": "@easeml/jupyterlab_easeml",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "easeml client for jupyterlab",
   "keywords": [
     "jupyter",
@@ -23,7 +23,8 @@
     "build": "webpack",
     "clean": "rimraf lib && rimraf tsconfig.tsbuildinfo && rimraf ds3-jupyterlab_easeml*.tgz",
     "prepare": "npm run clean && npm run build",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "lint": "tslint --project ./ && vue-cli-service lint"
   },
   "dependencies": {
     "@babel/core": "^7.5.5",
@@ -34,11 +35,16 @@
     "@phosphor/messaging": "^1.2.3",
     "@phosphor/widgets": "^1.8.1",
     "@types/node": "^12.12.14",
-    "axios": "^0.18.1",
+    "@vue/cli": "^4.2.2",
+    "@vue/cli-plugin-eslint": "^4.2.2",
+    "@vue/cli-service": "^4.2.2",
     "autoprefixer": "^9.6.1",
+    "axios": "^0.18.1",
     "babel-loader": "^8.0.6",
     "bootstrap": "^4.3.1",
     "css-loader": "^3.1.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-vue": "^6.2.1",
     "file-loader": "^1.1.11",
     "node-static": "^0.7.11",
     "postcss-loader": "^3.0.0",
@@ -47,8 +53,9 @@
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
     "ts-loader": "^6.0.4",
+    "tslint": "^6.0.0",
     "ttf-loader": "^1.0.2",
-    "typescript": "~3.5.2",
+    "typescript": "^3.5.3",
     "vue": "^2.6.10",
     "vue-loader": "^15.7.1",
     "vue-template-compiler": "^2.6.10",

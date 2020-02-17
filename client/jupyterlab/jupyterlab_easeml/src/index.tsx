@@ -6,16 +6,16 @@ import Vue from 'vue';
 import EASEML_VUE from './Iframe.vue'
 import { ReactWidget } from "@jupyterlab/apputils";
 import * as React from "react";
-//import { defaultIconRegistry } from '@jupyterlab/ui-components';
-//import iconSvg from './icon/icon.svg';
 import { ILauncher } from '@jupyterlab/launcher';
-//import PropTypes from 'prop-types';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ISettingRegistry } from '@jupyterlab/coreutils';
 
 const iframeSettings = {easemlServer: ""}
 
+/**
+ * Easeml main window widget.
+ */
 class Easeml extends Widget {
     /**
      * Construct a new Easeml widget.
@@ -30,11 +30,7 @@ class Easeml extends Widget {
     async onUpdateRequest(msg: Message): Promise<void> {
         new Vue({
             el: this.node,
-            //render: h => h(EASEML_VUE)
             render(h){
-                console.log("Updating Widget")
-                console.log(msg)
-                console.log(iframeSettings.easemlServer)
                 return h(EASEML_VUE, {
                     props: {
                         url: iframeSettings.easemlServer
@@ -45,6 +41,9 @@ class Easeml extends Widget {
     }
 }
 
+/**
+ * Easeml side bar widget.
+ */
 class SidebarButton extends React.Component{
     render() {
         return (
@@ -69,15 +68,15 @@ class SidebarButton extends React.Component{
 
 
 /**
- * Activate the jupyterlab_easml widget extension.
+ * Activate the jupyterlab_easml widget extensions and and commands.
  */
-function activate(  app: JupyterFrontEnd, 
-                    palette: ICommandPalette, 
+function activate(  app: JupyterFrontEnd,
+                    palette: ICommandPalette,
                     restorer: ILayoutRestorer,
                     labShell: ILabShell,
                     launcher: ILauncher | null
                      ) {
-    console.log('JupyterLab extension jupyterlab_easml extension is activated!');
+    // console.log('JupyterLab extension jupyterlab_easml extension is activated!');
 
     function easmlOpen(){
         // Declare a widget variable
@@ -123,34 +122,33 @@ function activate(  app: JupyterFrontEnd,
         }
     });
 
-    
-    if (launcher) { 
-       launcher.add({ 
-         command: "easeml:open", 
-         category: 'Other', 
-         rank: 0 
-       }); 
+    if (launcher) {
+       launcher.add({
+         command: "easeml:open",
+         category: 'Other',
+         rank: 0
+       });
     }
 
-    const side_widget = ReactWidget.create(
+    const sideWidget = ReactWidget.create(
         <SidebarButton/>
       );
 
-    console.log(app.commands.listCommands())
+    // console.log(app.commands.listCommands())
 
-    side_widget.id = "easeml-sidebar";
-    side_widget.title.iconClass = "jp-SpreadsheetIcon jp-SideBar-tabIcon";
-    side_widget.title.caption = "Easeml Sidebar";
-    side_widget.title.closable = true;
+    sideWidget.id = "easeml-sidebar";
+    sideWidget.title.iconClass = "jp-SpreadsheetIcon jp-SideBar-tabIcon";
+    sideWidget.title.caption = "Easeml Sidebar";
+    sideWidget.title.closable = true;
 
-    restorer.add(side_widget, side_widget.id);
-    labShell.add(side_widget, "left");
-            
+    restorer.add(sideWidget, sideWidget.id);
+    labShell.add(sideWidget, "left");
+
     // Add the command to the palette.
     palette.addItem({command, category: 'START EASEML'});
 
     // Track and restore the widget state
-    let tracker = new WidgetTracker<MainAreaWidget<Easeml>>({
+    const tracker = new WidgetTracker<MainAreaWidget<Easeml>>({
         namespace: 'vue'
     });
     restorer.restore(tracker, {
@@ -159,25 +157,27 @@ function activate(  app: JupyterFrontEnd,
     });
 }
 
+/**
+ * Reads jupyterlab_easml settings from the Settings Registry
+ */
 async function loadSettings(app: JupyterFrontEnd, registry: ISettingRegistry){
     try {
         registry.load(plugin.id)
-            .then(easemlSettings => console.log('easemlConfig: ', easemlSettings));
+            // .then(easemlSettings => console.log('easemlConfig: ', easemlSettings));
 
-        let reg = await registry.get(plugin.id,"easemlConfig")
-            .then(function loadEasemlReg(reg: any){
-                return reg.composite['easemlServer']
+        const reg = await registry.get(plugin.id,"easemlConfig")
+            .then(function loadEasemlReg(regVar: any){
+                return regVar.composite.easemlServer
             })
         iframeSettings.easemlServer=reg
     } catch (error) {
-        console.error(`Loading ${plugin.id} failed.`, error);
+        // console.error(`Loading ${plugin.id} failed.`, error);
     }
 }
 
 /**
  * Initialization data for the jupyterlab_vue extension.
  */
-
 const plugin: JupyterFrontEndPlugin<void> = {
     id: '@easeml/jupyterlab_easeml:plugin',
     requires: [ISettingRegistry,ICommandPalette, ILayoutRestorer,ILabShell],

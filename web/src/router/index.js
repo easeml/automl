@@ -6,7 +6,7 @@ Vue.use(VueRouter);
 // configure router
 const router = new VueRouter({
   routes, // short for routes: routes
-  mode: 'abstract',
+  mode: 'abstract', //available values: "hash" | "history" | "abstract"
   linkActiveClass: "active"
 });
 
