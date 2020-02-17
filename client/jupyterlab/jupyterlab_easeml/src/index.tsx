@@ -14,7 +14,7 @@ import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ISettingRegistry } from '@jupyterlab/coreutils';
 
-const iframeSettings = {easemlServer: "https://vuejs.org"}
+const iframeSettings = {easemlServer: ""}
 
 class Easeml extends Widget {
     /**
@@ -177,23 +177,24 @@ async function loadSettings(app: JupyterFrontEnd, registry: ISettingRegistry){
 /**
  * Initialization data for the jupyterlab_vue extension.
  */
-const extension: JupyterFrontEndPlugin<void> = {
-    id: '@ds3/jupyterlab_easeml:extension',
-    autoStart: true,
-    requires: [ICommandPalette, ILayoutRestorer,ILabShell],
-    optional: [ILauncher],
-    activate: activate
-};
 
 const plugin: JupyterFrontEndPlugin<void> = {
-    id: '@ds3/jupyterlab_easeml:plugin',
-    requires: [ISettingRegistry],
-    activate: async (app: JupyterFrontEnd, registry: ISettingRegistry) => {
-        loadSettings(app,registry)
+    id: '@easeml/jupyterlab_easeml:plugin',
+    requires: [ISettingRegistry,ICommandPalette, ILayoutRestorer,ILabShell],
+    optional: [ILauncher],
+    activate: async (app: JupyterFrontEnd,
+                     registry: ISettingRegistry,
+                     palette: ICommandPalette,
+                     restorer: ILayoutRestorer,
+                     labShell: ILabShell,
+                     launcher: ILauncher | null
+    ) => {
+        await loadSettings(app,registry);
+        activate(app,palette,restorer,labShell,launcher);
     },
     autoStart: true
 };
 
-const plugins: JupyterFrontEndPlugin<any>[] = [plugin, extension];
+const plugins: JupyterFrontEndPlugin<any>[] = [plugin];
 
 export default plugins;

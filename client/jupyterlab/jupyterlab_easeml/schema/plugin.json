@@ -20,7 +20,7 @@
       "description": "Easeml settings",
       "$ref": "#/definitions/easemlConfig",
       "default": {
-        "easemlServer": "null"
+        "easemlServer": "easeml.datascience.ch"
       }
     }
   },

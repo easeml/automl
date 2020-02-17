@@ -1,6 +1,6 @@
 {
-  "name": "@ds3/jupyterlab_easeml",
-  "version": "0.1.0",
+  "name": "@easeml/jupyterlab_easeml",
+  "version": "0.1.1",
   "description": "easeml client for jupyterlab",
   "keywords": [
     "jupyter",
