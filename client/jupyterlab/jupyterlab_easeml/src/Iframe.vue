@@ -3,9 +3,9 @@
   <iframe :src=url></iframe>
   </div>
   <div v-else class="ErrorMessage">
-  Make sure to set Easeml server address correctly in:
+  Make sure to set Ease.ml server address correctly in:
   <ul>
-    <li> Settings > Advanced Settings Editor > Easeml > easemlServer </li>
+    <li> Settings > Advanced Settings Editor > Ease.ml > easemlServer </li>
   </ul>
     easemlServer variable currently set to: {{ url }}
     <br>
@@ -73,6 +73,6 @@ export default {
     padding: 0;
   }
   div.ErrorMessage{
-    padding:30px 20px 10px 25px;
+    margin:30px 20px 10px 25px;
   }
 </style>

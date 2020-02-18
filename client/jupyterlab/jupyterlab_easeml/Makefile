@@ -63,12 +63,17 @@ package: build
 	@echo
 
 
-.PHONY: serve
+.PHONY: publish
 ## Serves the web UI in a standalone server. Triggers build on each source file update. Used for rapid development.
 publish:
 	$(call show-prompt,Publishing the jupyterlab web UI access plugin)
 	$(NPM) publish --access=public
 
+.PHONY: labinstall
+## Serves the web UI in a standalone server. Triggers build on each source file update. Used for rapid development.
+labinstall:
+	$(call show-prompt,Installing the extension in the jupyter lab in PATH)
+	jupyter labextension install .
 
 .PHONY: test
 ## Run all tests. Currently does nothing as there are no UI tests at the moment.

@@ -1,6 +1,6 @@
-# Easeml JupyterLab extension
+# Ease.ml JupyterLab extension
 
-Provides the widgets necessary to access easeml webui from the jupyter lab environment
+Provides the widgets necessary to access ease.ml webui from the jupyter lab environment
 
 ## Prerequisites
 
@@ -21,7 +21,7 @@ npm run build
 jupyter labextension install .
 ```
 
-To rebuild the package and the easeml jupyterlab extension:
+To rebuild the package and the ease.ml jupyterlab extension:
 
 ```bash
 npm run build
