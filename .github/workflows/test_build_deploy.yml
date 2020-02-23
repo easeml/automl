@@ -58,11 +58,6 @@ jobs:
               
             - name: Test
               run: |
-                ls
-                pwd
-                cd $GOPATH/src/github.com/ds3lab/easeml/engine
-                ls
-                pwd
                 make test
                 echo ::set-output name=status::success
               continue-on-error: true
