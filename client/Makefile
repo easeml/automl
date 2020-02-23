@@ -17,7 +17,7 @@ include $(ROOT_DIR_PATH)/dev/makefiles/show-prompt.mk
 
 
 # All available language versions.
-LANGUAGES := go javascript python
+LANGUAGES := jupyterlab go javascript python
 
 
 # Other config variables.
