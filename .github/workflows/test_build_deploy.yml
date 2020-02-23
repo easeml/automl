@@ -2,7 +2,7 @@ name: TestBuildPublish
 on: 
     push:
       branches:
-            - master
+            - workflow
 env:
     CI: true
 jobs:
