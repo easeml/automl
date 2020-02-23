@@ -55,8 +55,9 @@ jobs:
                 go-version: 1.13
             - working-directory: ~/go/src/github.com/ds3lab/easeml
               run: |
-                make test
+                ls
                 pwd
+                make test
                 echo ::set-output name=status::success
               continue-on-error: true
 
