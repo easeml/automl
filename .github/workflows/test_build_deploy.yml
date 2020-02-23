@@ -49,11 +49,11 @@ jobs:
         runs-on: ubuntu-latest
         needs: prepare
         steps:
-            - name: Test
+            - name: Prepare Test Env
               uses: actions/setup-go@v1
               with:
                 go-version: 1.13
-            - working-directory: ~/go/src/github.com/ds3lab/easeml
+            - name: Test
               run: |
                 ls
                 pwd
