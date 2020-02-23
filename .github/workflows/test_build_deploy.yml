@@ -28,11 +28,22 @@ jobs:
             - name: Check out code into the Go module directory
               uses: actions/checkout@v2
 
-  
+            - name: Get dependencies (gobuffalo)
+              run: |
+                go get -v -u github.com/gobuffalo/packr/v2/... 
+                echo ::set-output name=status::success
+              continue-on-error: true
+
             - name: Get dependencies
               run: |
-                go get -v -u github.com/gobuffalo/packr/v2/...
                 go get -v -t -d ./...
+                echo ::set-output name=status::success
+              continue-on-error: true
+              
+            - name: Dump steps context
+              env:
+                STEPS_CONTEXT: ${{ toJson(steps) }}
+              run: echo "$STEPS_CONTEXT
 
     test:
         runs-on: ubuntu-latest
