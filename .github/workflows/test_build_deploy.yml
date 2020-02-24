@@ -5,6 +5,7 @@ on:
             - workflow
 env:
     CI: true
+    TERM: xterm
 
 
 
@@ -45,16 +46,19 @@ jobs:
                 go get -v -u github.com/gobuffalo/packr/v2/... 
                 echo ::set-output name=status::success
               continue-on-error: true
-           
-            - name: Export Xterm
-              run: export TERM=xterm
-              
+                        
             - name: Other Dependencies
               run: |
                   python -m pip install --upgrade pip setuptools wheel
                   pip install pipenv
                   sudo npm install rimraf -g
-                         
+  
+            - name: Init
+              run: |
+                make init
+                echo ::set-output name=status::success
+              continue-on-error: true
+  
             - name: Test
               run: |
                 make test
