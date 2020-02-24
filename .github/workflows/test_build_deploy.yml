@@ -51,7 +51,7 @@ jobs:
               run: |
                   python -m pip install --upgrade pip setuptools wheel
                   pip install pipenv
-                  sudo npm install rimraf -g
+                  sudo npm install rimraf babel mocha -g
   
             - name: Init
               run: |
