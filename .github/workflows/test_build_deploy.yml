@@ -51,8 +51,9 @@ jobs:
               
             - name: Other Dependencies
               run: |
-                sudo python3 -m pip install pipenv
-                sudo npm install rimraf -g
+                  python -m pip install --upgrade pip setuptools wheel
+                  pip install pipenv
+                  sudo npm install rimraf -g
                          
             - name: Test
               run: |
