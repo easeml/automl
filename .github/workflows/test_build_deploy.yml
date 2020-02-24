@@ -33,52 +33,25 @@ jobs:
                 go get -v -u github.com/gobuffalo/packr/v2/... 
                 echo ::set-output name=status::success
               continue-on-error: true
-
-            - name: Get dependencies
+           
+            - name: Export Xterm
+              run: export TERM=xterm
+              
+            - name: Other Dependencies
               run: |
-                go get -v -t -d ./...
-                echo ::set-output name=status::success
-              continue-on-error: true
-              
-            - name: Dump steps context
-              env:
-                STEPS_CONTEXT: ${{ toJson(steps) }}
-              run: echo "$STEPS_CONTEXT"
-
-    test:
-        runs-on: ubuntu-latest
-        needs: prepare
-        steps:
-            - name: Prepare Test Env
-              uses: actions/setup-go@v1
-              with:
-                go-version: 1.13
-            - name: Check out code into the Go module directory
-              uses: actions/checkout@v2
-              
+                sudo apt-get install -y mongodb-org
+                sudo python3 -m pip install pipenv
+                sudo npm install rimraf -g
+                         
             - name: Test
               run: |
                 make test
                 echo ::set-output name=status::success
               continue-on-error: true
 
-    build:
-        runs-on: ubuntu-latest
-        needs: test
-        name: Build
-        steps:
             - name: Build
               run: make build
 
-    publish:             
-        runs-on: ubuntu-latest
-        needs: build
-
-        steps:
-            - uses: actions/setup-node@v1
-              with:
-                node-version: 12
-                registry-url: https://registry.npmjs.org/
             - name: Publish
               run: make test
       
