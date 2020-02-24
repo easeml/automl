@@ -51,7 +51,7 @@ jobs:
               run: |
                   python -m pip install --upgrade pip setuptools wheel
                   pip install pipenv numpy
-                  sudo npm install rimraf babel-cli mocha -g
+                  sudo npm install rimraf babel-cli babel-core mocha -g
   
             - name: Test
               run: |
