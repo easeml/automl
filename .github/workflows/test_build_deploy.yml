@@ -6,9 +6,6 @@ on:
 env:
     CI: true
     TERM: xterm
-
-
-
 jobs:
     prepare:
         services:
@@ -20,7 +17,6 @@ jobs:
         strategy:
           matrix:
             node-version: [12.x]
-
         steps:
             - name: Set up Go 1.13
               uses: actions/setup-go@v1
@@ -40,13 +36,7 @@ jobs:
 
             - name: Check out code into the Go module directory
               uses: actions/checkout@v2
-
-            - name: Get dependencies (gobuffalo)
-              run: |
-                go get -v -u github.com/gobuffalo/packr/v2/... 
-                echo ::set-output name=status::success
-              continue-on-error: true
-                        
+                                    
             - name: Init 
               run: |
                 make init
