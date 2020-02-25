@@ -47,11 +47,9 @@ jobs:
                 echo ::set-output name=status::success
               continue-on-error: true
                         
-            - name: Other Dependencies
+            - name: Init 
               run: |
-                  python -m pip install --upgrade pip setuptools wheel
-                  pip install pipenv numpy
-                  sudo npm install rimraf babel-cli babel-core babel-preset-env mocha -g
+                make init
   
             - name: Test
               run: |
