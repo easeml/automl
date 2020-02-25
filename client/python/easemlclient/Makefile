@@ -37,7 +37,8 @@ include $(ROOT_DIR_PATH)/dev/makefiles/show-prompt.mk
 ## Initialize the development environment to enable running of build and test.
 init:
 	$(call show-prompt,Installing development dependencies)
-	$(PIPENV) install -e . --dev
+	pip install pipenv
+	pipenv install -e . --dev
 
 
 .PHONY: clean
