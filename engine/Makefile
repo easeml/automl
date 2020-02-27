@@ -78,6 +78,9 @@ clean:
 ## Compile the project code.
 build: $(WEB_UI_DIST_PATH)
 	$(call show-prompt,Compiling project code)
+	ls /opt/hostedtoolcache/go/1.13.8/x64/bin/
+	ls ./
+	which packr2
 	$(PACKR)
 	$(GO) build -o $(PROJECT_NAME)
 	$(PACKR) clean
