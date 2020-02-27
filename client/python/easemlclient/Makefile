@@ -39,8 +39,8 @@ init:
 	$(call show-prompt,Installing development dependencies)
 ifeq ($(strip $(PIPENV)),)
 	pip install pipenv
-	PIPENV := $(shell which pipenv)
-	PIPENV_RUN := $(PIPENV) run
+	$(eval PIPENV := $(shell which pipenv))
+	$(eval PIPENV_RUN := $(PIPENV) run)
 endif
 	$(PIPENV) install -e . --dev
 
