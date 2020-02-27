@@ -8,6 +8,8 @@ pylint = "*"
 autopep8 = "*"
 setuptools = "*"
 wheel = "*"
+e1839a8 = {editable = true,path = "."}
+easemlschema = {editable = true,path = "."}
 
 [packages]
 easemlschema = {editable = true,path = "."}

@@ -6,6 +6,8 @@ verify_ssl = true
 [dev-packages]
 pydoc-markdown = "*"
 mypy = "*"
+e1839a8 = {editable = true,path = "."}
+easemlclient = {editable = true,path = "."}
 
 [packages]
 requests = "*"
