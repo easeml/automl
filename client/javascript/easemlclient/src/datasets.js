@@ -37,7 +37,7 @@ function getDatasets (query) {
   return new Promise((resolve, reject) => {
     common.runGetQuery(this.axiosInstance, '/datasets', query)
       .then(data => {
-        let items = []
+        const items = []
 
         if (data) {
           for (let i = 0; i < data.length; i++) {
@@ -58,7 +58,7 @@ function getDatasetById (id) {
   return new Promise((resolve, reject) => {
     this.axiosInstance.get('/datasets/' + id)
       .then(response => {
-        let result = transformDataItem(response.data.data)
+        const result = transformDataItem(response.data.data)
         resolve(result)
       })
       .catch(e => {
@@ -69,18 +69,18 @@ function getDatasetById (id) {
 
 function validateDatasetFields (input) {
   input = decamelizeKeys(input, '-')
-  let errors = {}
+  const errors = {}
 
   if (!input.id) {
-    errors['id'] = 'The id must be specified.'
+    errors.id = 'The id must be specified.'
   } else if (!common.ID_FORMAT.test(input.id)) {
-    errors['id'] = 'The id can contain only letters, numbers and underscores.'
+    errors.id = 'The id can contain only letters, numbers and underscores.'
   }
 
   if (!input.source) {
-    errors['source'] = 'The source must be specified.'
+    errors.source = 'The source must be specified.'
   } else if (!['upload', 'download', 'local'].includes(input.source)) {
-    errors['source'] = 'The source must be either "upload", "download" or "local".'
+    errors.source = 'The source must be either "upload", "download" or "local".'
   }
 
   if (!input['source-address'] && input.source !== 'upload') {
@@ -88,7 +88,7 @@ function validateDatasetFields (input) {
   }
 
   if (input.name && !common.NAME_FORMAT.test(input.name)) {
-    errors['name'] = 'The name can contain only printable ASCII characters.'
+    errors.name = 'The name can contain only printable ASCII characters.'
   }
 
   return errors
@@ -97,12 +97,12 @@ function validateDatasetFields (input) {
 function createDataset (input) {
   // Collect fields of interest.
   input = decamelizeKeys(input, '-')
-  let data = {
-    'id': input['id'],
-    'source': input['source'],
+  const data = {
+    id: input.id,
+    source: input.source,
     'source-address': input['source-address'],
-    'name': input['name'] || '',
-    'description': input['description'] || '',
+    name: input.name || '',
+    description: input.description || '',
     'access-key': input['access-key'] || ''
   }
 
@@ -125,15 +125,15 @@ function createDataset (input) {
 function updateDataset (id, updates) {
   // Collect fields of interest.
   updates = decamelizeKeys(updates, '-')
-  let data = {}
+  const data = {}
   if ('name' in updates) {
-    data['name'] = updates['name']
+    data.name = updates.name
   }
   if ('description' in updates) {
-    data['description'] = updates['description']
+    data.description = updates.description
   }
   if ('status' in updates) {
-    data['status'] = updates['status']
+    data.status = updates.status
   }
 
   // Run patch request as a promise.
@@ -174,7 +174,7 @@ function listDatasetDirectoryByPath (id, relPath) {
   return new Promise((resolve, reject) => {
     this.axiosInstance.get('/datasets/' + id + '/data' + relPath)
       .then(response => {
-        let result = response.data
+        const result = response.data
         resolve(result)
       })
       .catch(e => {
@@ -196,8 +196,8 @@ function downloadDatasetByPath (id, relPath, inBrowser = false) {
     return new Promise((resolve, reject) => {
       this.axiosInstance.get('/datasets/' + id + '/data' + relPath)
         .then(response => {
-          let contentType = response.headers['Content-Type'] || ''
-          let result = new Blob([response.data], { type: contentType })
+          const contentType = response.headers['Content-Type'] || ''
+          const result = new Blob([response.data], { type: contentType })
           resolve(result)
         })
         .catch(e => {

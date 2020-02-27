@@ -12,8 +12,8 @@ function transformDataItem (input) {
     hostAddress: input['host-address'],
     startTime: new Date(input['start-time']),
     lastKeepalive: new Date(input['last-keepalive']),
-    type: input['type'],
-    status: input['status']
+    type: input.type,
+    status: input.status
   }
 }
 
@@ -25,7 +25,7 @@ function getProcesses (query) {
   return new Promise((resolve, reject) => {
     common.runGetQuery(this.axiosInstance, '/processes', query)
       .then(data => {
-        let items = []
+        const items = []
 
         if (data) {
           for (let i = 0; i < data.length; i++) {

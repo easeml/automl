@@ -20,7 +20,7 @@ function getUsers (query) {
   return new Promise((resolve, reject) => {
     common.runGetQuery(this.axiosInstance, '/users', query)
       .then(data => {
-        let items = []
+        const items = []
 
         if (data) {
           for (let i = 0; i < data.length; i++) {
@@ -41,7 +41,7 @@ function getUserById (id) {
   return new Promise((resolve, reject) => {
     this.axiosInstance.get('/users/' + id)
       .then(response => {
-        let result = transformDataItem(response.data.data)
+        const result = transformDataItem(response.data.data)
         resolve(result)
       })
       .catch(e => {

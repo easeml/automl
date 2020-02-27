@@ -9,13 +9,13 @@ function runGetQuery (axiosInstance, url, query) {
   return new Promise((resolve, reject) => {
     axiosInstance.get(url, { params: query })
       .then(response => {
-        let cursor = response.data.metadata['next-page-cursor']
+        const cursor = response.data.metadata['next-page-cursor']
 
         if (cursor === '') {
-          let data = response.data.data || []
+          const data = response.data.data || []
           resolve(data)
         } else {
-          query['cursor'] = cursor
+          query.cursor = cursor
           runGetQuery(axiosInstance, url, query)
             .then(data => {
               resolve(response.data.data.concat(data))
