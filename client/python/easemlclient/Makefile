@@ -38,7 +38,7 @@ include $(ROOT_DIR_PATH)/dev/makefiles/show-prompt.mk
 init:
 	@if [ -z "${PIPENV}" ]; then \
 		echo 'Installing pipenv'; \
-		pip install pipenv --user; \
+		pip install pipenv; \
 		PIPENV=$$(which pipenv); \
         $$PIPENV install -e . --dev; \
     else \
