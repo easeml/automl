@@ -58,6 +58,8 @@ $(WEB_UI_DIST_PATH):
 init:
 	$(call show-prompt,Installing module dependencies)
 	$(GO) mod download
+	echo "Installing PACKR2 binary"
+	$(GO) go get -v -u github.com/gobuffalo/packr/v2/packr2
 
 
 .PHONY: clean
@@ -78,9 +80,6 @@ clean:
 ## Compile the project code.
 build: $(WEB_UI_DIST_PATH)
 	$(call show-prompt,Compiling project code)
-	ls /opt/hostedtoolcache/go/1.13.8/x64/bin/
-	ls ./
-	which packr2
 	$(PACKR)
 	$(GO) build -o $(PROJECT_NAME)
 	$(PACKR) clean
