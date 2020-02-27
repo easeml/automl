@@ -80,11 +80,11 @@ clean:
 build: $(WEB_UI_DIST_PATH)
 	$(call show-prompt,Compiling project code)
 	echo $(GOPATH)
-	which packr2
 	ls /opt/hostedtoolcache/go/1.13.8/x64/bin/
 	$(PACKR)
 	$(GO) build -o $(PROJECT_NAME)
 	$(PACKR) clean
+	which packr2
 
 .PHONY: install
 ## Call build then move binary to INSTALL_PATH
