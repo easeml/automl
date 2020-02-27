@@ -34,14 +34,17 @@ include $(ROOT_DIR_PATH)/dev/makefiles/show-prompt.mk
 
 
 .PHONY: init
-## Initialize the development environment to enable running of build and test.
+## Initialize the development environment to enable running of build and test rules.
 init:
-	$(call show-prompt,Installing development dependencies)
-ifeq ($(strip $(PIPENV)),)
-	$(eval PIPENV := $(shell pip install pipenv --user >/dev/null 2>&1 && which pipenv))
-	$(eval PIPENV_RUN := $(PIPENV) run)
-endif
-	$(PIPENV) install -e . --dev
+	@if [ -z "${PIPENV}" ]; then \
+		echo 'Installing pipenv'; \
+		pip install pipenv --user; \
+		PIPENV=$$(which pipenv); \
+        $$PIPENV install -e . --dev; \
+    else \
+        ${PIPENV} install -e . --dev; \
+	fi ; \
+	echo '$@: done'
 
 
 .PHONY: clean
