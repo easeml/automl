@@ -40,6 +40,9 @@ jobs:
             - name: Init 
               run: |
                 make init
+              env:
+                GOPATH: /opt/hostedtoolcache/go/1.13.8/x64/bin/go
+                GOROOT: /opt/hostedtoolcache/go/1.13.8/x64
 
             - name: Test
               run: |
