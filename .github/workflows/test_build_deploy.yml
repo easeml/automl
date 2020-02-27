@@ -40,9 +40,7 @@ jobs:
             - name: Init 
               run: |
                 make init
-                echo ::set-output name=status::success
-              continue-on-error: true
-  
+
             - name: Test
               run: |
                 make test
