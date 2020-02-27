@@ -58,15 +58,14 @@ $(WEB_UI_DIST_PATH):
 init:
 	$(call show-prompt,Installing module dependencies)
 	$(GO) mod download
-	echo "Installing PACKR2 binary "
-	$(GO) go get -v -u github.com/gobuffalo/packr/v2/packr2
+	echo "Installing PACKR2 binary"
+	$(GO) get -v -u github.com/gobuffalo/packr/v2/packr2
 
 
 .PHONY: clean
 ## Clean all the files resulting from building and testing.
 clean:
 	$(call show-prompt,Cleaning the build files)
-	echo $(GO) clean
 	$(GO) clean
 	-for arch in $(ARCH) ; do \
 		for os in $(OS) ; do \
