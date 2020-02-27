@@ -38,8 +38,7 @@ include $(ROOT_DIR_PATH)/dev/makefiles/show-prompt.mk
 init:
 	$(call show-prompt,Installing development dependencies)
 ifeq ($(strip $(PIPENV)),)
-	pip install pipenv
-	$(eval PIPENV := $(shell which pipenv))
+	$(eval PIPENV := $(shell pip install pipenv --user >/dev/null 2>&1 && which pipenv))
 	$(eval PIPENV_RUN := $(PIPENV) run)
 endif
 	$(PIPENV) install -e . --dev
