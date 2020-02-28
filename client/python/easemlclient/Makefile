@@ -99,6 +99,11 @@ lint-fix:
 	$(PIPENV_RUN) pipenv run autopep8 --in-place --aggressive --aggressive --aggressive \
 				  --max-line-length 120 --recursive $(PROJECT_NAME) test
 
+.PHONY: publish
+## Publish to the respective indexing service
+publish:
+	$(call show-prompt,Running all publishing scripts)
+	$(call repeat-for-all,$@)
 
 .PHONY: version
 ## Set the version of this package according to version file found in the repo root.

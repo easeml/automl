@@ -79,7 +79,13 @@ lint:
 .PHONY: init
 ## Run initialization script in all Makefiles
 init:
-	$(call show-prompt,Running all linting checks)
+	$(call show-prompt,Running all init scripts)
+	$(call repeat-for-all,$@)
+
+.PHONY: publish
+## Publish to the respective indexing service
+publish:
+	$(call show-prompt,Running all publishing scripts)
 	$(call repeat-for-all,$@)
 
 .PHONY: version

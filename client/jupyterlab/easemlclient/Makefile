@@ -62,13 +62,6 @@ build: init
 package: build
 	@echo
 
-
-.PHONY: publish
-## Serves the web UI in a standalone server. Triggers build on each source file update. Used for rapid development.
-publish:
-	$(call show-prompt,Publishing the jupyterlab web UI access plugin)
-	$(NPM) publish --access=public
-
 .PHONY: labinstall
 ## Serves the web UI in a standalone server. Triggers build on each source file update. Used for rapid development.
 labinstall:
@@ -94,6 +87,11 @@ lint-fix:
 	$(call show-prompt,Fixing coding style violations)
 	$(NPM_RUN) lint fix
 
+.PHONY: publish
+## Serves the web UI in a standalone server. Triggers build on each source file update. Used for rapid development.
+publish:
+	$(call show-prompt,Publishing the jupyterlab web UI access plugin)
+	$(NPM) publish --access=public
 
 .PHONY: version
 ## Set the version of this package according to version file found in the repo root.

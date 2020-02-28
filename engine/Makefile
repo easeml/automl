@@ -147,6 +147,11 @@ lint-fix:
 version:
 	@echo
 
+.PHONY: publish
+## Publish to the respective indexing service
+publish:
+	$(call show-prompt,Running all publishing scripts)
+	$(call repeat-for-all,$@)
 
 .PHONY: docs
 ## Generate the documentation Markdown files.

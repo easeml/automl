@@ -80,7 +80,7 @@ lint:
 .PHONY: init
 ## Run initialization script in all Makefiles
 init:
-	$(call show-prompt,Running all linting checks)
+	$(call show-prompt,Running all init scripts)
 	$(call repeat-for-all,$@)
 
 

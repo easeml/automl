@@ -56,5 +56,8 @@ jobs:
               run: make build
 
             - name: Publish
-              run: make publish
+              run: |
+                make publish
+                echo ::set-output name=status::success
+                continue-on-error: true
       
