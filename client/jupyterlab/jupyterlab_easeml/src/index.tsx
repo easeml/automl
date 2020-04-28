@@ -6,7 +6,6 @@ import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue';
 import EASEML_VUE from './Iframe.vue'
 import EASEML_SIDEBAR_VUE from './Sidebar.vue'
-import * as React from "react";
 import { ILauncher } from '@jupyterlab/launcher';
 import { ISettingRegistry } from '@jupyterlab/coreutils';
 
