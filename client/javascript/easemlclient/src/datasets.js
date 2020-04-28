@@ -102,7 +102,8 @@ function createDataset (input) {
     'source': input['source'],
     'source-address': input['source-address'],
     'name': input['name'] || '',
-    'description': input['description'] || ''
+    'description': input['description'] || '',
+    'access-key': input['access-key'] || ''
   }
 
   // Run post request as a promise.

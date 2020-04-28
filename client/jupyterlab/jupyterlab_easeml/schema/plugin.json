@@ -1,0 +1,29 @@
+{
+  "jupyter.lab.setting-icon-class": "jp-TextEditorIcon",
+  "jupyter.lab.setting-icon-label": "Ease.ml",
+  "title": "Ease.ml",
+  "description": "Ease.ml settings.",
+  "definitions": {
+    "easemlConfig": {
+      "properties": {
+        "easemlServer": {
+          "type": ["string", "null"]
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    }
+  },
+  "properties": {
+    "easemlConfig": {
+      "title": "Ease.ml Configuration",
+      "description": "Ease.ml settings",
+      "$ref": "#/definitions/easemlConfig",
+      "default": {
+        "easemlServer": "https://easeml.datascience.ch"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "type": "object"
+}

@@ -19,8 +19,7 @@
             <li>
                 <div class="page-title-box">
                     <ol class="breadcrumb">
-                        <li v-for="b in breadcrumbs" class="breadcrumb-item" :key="b.name"><a :href="b.path">{{b.name}}</a></li>
-                        <li class="breadcrumb-item"><a href="#"></a></li>
+                        <li v-for="b in breadcrumbs" class="breadcrumb-item" :key="b.cname"><router-link :to="{ name: b.name}">{{b.cname}}</router-link></li>
                     </ol>
                     <h4 class="page-title">{{currentName}} </h4>
                 </div>
@@ -43,8 +42,8 @@ export default {
             let result = [];
             for (let i = 0; i < this.$route.matched.length; i++) {
                 let item = {
-                    name: this.capitalizeFirstLetter(this.$route.matched[i].name),
-                    path: "#" + this.$route.matched[i].path
+                    cname: this.capitalizeFirstLetter(this.$route.matched[i].name),
+                    name: this.$route.matched[i].name,
                 };
                 result.push(item);
             }
@@ -61,7 +60,7 @@ export default {
         logout() {
             localStorage.removeItem("user");
             localStorage.removeItem("context");
-            this.$router.push({name: "home"});
+            this.$router.push({name: "login"});
         }
     },
     mounted() {

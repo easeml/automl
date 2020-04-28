@@ -6,10 +6,10 @@ description: |
   It enables users to upload their datasets and start model selection and tuning jobs. 
   Given the schema of the dataset, ease.ml does an automatic search for applicable models and performs training, prediction and evaluation. 
 
-#grade: stable
 confinement: strict
 #confinement: classic #strict
 grade: devel
+#grade: stable
 
 base: core18
 
@@ -17,11 +17,6 @@ plugs:
   mongodb-plug:
     interface: content
     target: $SNAP_DATA/shared
-  support:
-    interface: docker-support
-  privileged:
-    interface: docker-support
-    privileged-containers: true
   docker-cli:
     interface: docker
   docker-executables:

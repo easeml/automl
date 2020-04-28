@@ -7,6 +7,7 @@
     "clean": "rimraf dist",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "build_standalone": "vue-cli-service build --mode standalone",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

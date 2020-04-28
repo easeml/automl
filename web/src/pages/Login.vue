@@ -13,11 +13,11 @@
                         <div class="card-box p-5">
                             <h2 class="text-uppercase text-center pb-4">
                                 <div class="topbar-left">
-                                    <a href="index.html" class="logo">
+                                    <router-link to="/" class="logo">
                                         <span>
                                             <img src="../assets/images/logo-below.png" alt="" height="150">
                                         </span>
-                                    </a>
+                                    </router-link>
                                 </div>
                             </h2>
 
