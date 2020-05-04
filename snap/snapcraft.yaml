@@ -96,7 +96,7 @@ parts:
 apps:
   easeml:
     command: bin/easeml
-    plugs: [home,desktop,network, network-bind, docker-executables, docker-cli]
+    plugs: [home,desktop,removable-media,network, network-bind, docker-executables, docker-cli]
   mongod:
     command: bin/mongod --dbpath $SNAP_COMMON/easemlmdb
     daemon: simple
