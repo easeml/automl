@@ -2,21 +2,24 @@ package test
 
 import (
 	"crypto/sha256"
-	"github.com/ds3lab/easeml/engine/database/model"
 	"encoding/hex"
 	"fmt"
 	"net/http"
 	"testing"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/ds3lab/easeml/engine/database/model"
+	"github.com/ds3lab/easeml/engine/database/model/types"
+	"github.com/ds3lab/easeml/engine/logger"
+
 	"github.com/emicklei/forest"
 	"github.com/stretchr/testify/assert"
 )
 
-func createProcess(process model.Process) (result model.Process, err error) {
+func createProcess(process types.Process) (result types.Process, err error) {
 	context, err := model.Connect(testDbAddr, testDbName, false)
+	log := logger.NewProcessLogger(true)
 	if err != nil {
-		log.Fatalf("fatal: %+v", err)
+		log.WriteFatal(fmt.Sprintf("fatal: %+v", err))
 	}
 	defer context.Session.Close()
 	context.User.APIKey = rootAPIKey
@@ -34,14 +37,14 @@ func TestProcessesGet(t *testing.T) {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	passwordHash := hex.EncodeToString(hasher.Sum(nil))
-	_, err = createUser(model.User{ID: "user_pg_1", PasswordHash: passwordHash, Status: "active"})
+	_, err = createUser(types.User{ID: "user_pg_1", PasswordHash: passwordHash, Status: "active"})
 	assert.Nil(t, err)
 
 	// Create processes.
-	var processes = []model.Process{
-		model.Process{ProcessID: 1, HostID: "localhost", HostAddress: "1.1.1.1", Type: "controller"},
-		model.Process{ProcessID: 2, HostID: "localhost", HostAddress: "2.2.2.2", Type: "controller"},
-		model.Process{ProcessID: 2, HostID: "localhost", HostAddress: "0.0.0.0", Type: "worker"},
+	var processes = []types.Process{
+		types.Process{ProcessID: 1, HostID: "localhost", HostAddress: "1.1.1.1", Type: "controller"},
+		types.Process{ProcessID: 2, HostID: "localhost", HostAddress: "2.2.2.2", Type: "controller"},
+		types.Process{ProcessID: 2, HostID: "localhost", HostAddress: "0.0.0.0", Type: "worker"},
 	}
 	for i := range processes {
 		processes[i], err = createProcess(processes[i])
@@ -138,10 +141,10 @@ func TestProcessesGetById(t *testing.T) {
 	var config *forest.RequestConfig
 	var r *http.Response
 	var err error
-	var process model.Process
+	var process types.Process
 
 	// Create the process which we will use in the test.
-	process, err = createProcess(model.Process{ProcessID: 1, HostID: "localhost", HostAddress: "1.1.1.1", Type: "controller"})
+	process, err = createProcess(types.Process{ProcessID: 1, HostID: "localhost", HostAddress: "1.1.1.1", Type: "controller"})
 	assert.Nil(t, err)
 
 	// Create user_pbid_1.
@@ -149,7 +152,7 @@ func TestProcessesGetById(t *testing.T) {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	passwordHash := hex.EncodeToString(hasher.Sum(nil))
-	_, err = createUser(model.User{ID: "user_pbid_1", PasswordHash: passwordHash, Status: "active"})
+	_, err = createUser(types.User{ID: "user_pbid_1", PasswordHash: passwordHash, Status: "active"})
 	assert.Nil(t, err)
 
 	// Don't authenticate. Get root process. Should return 404.

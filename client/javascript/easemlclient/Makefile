@@ -24,6 +24,7 @@ PROJECT_NAME := easemlclient
 NPM := $(shell which npm)
 NPM_RUN := $(NPM) run
 VERSION := $(shell cat $(ROOT_DIR_PATH)/VERSION)
+TESTS_PATH:= test
 
 
 # Include common make functions.
@@ -67,8 +68,12 @@ endif
 .PHONY: test
 ## Run all tests.
 test:
-	$(call show-prompt,Running all tests)
-	$(NPM_RUN) test
+	@$(call show-prompt,Running all tests) &&\
+    if [ -d "$(TESTS_PATH)" ]; then \
+        $(NPM_RUN) test; \
+    else\
+        echo 'No tests found in '$(TESTS_PATH);\
+    fi \
 
 
 .PHONY: lint

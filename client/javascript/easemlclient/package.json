@@ -16,6 +16,8 @@
     "build:node": "babel src --out-dir ./lib --source-maps",
     "build:node:watch": "babel src --out-dir ./lib --source-maps --watch",
     "build:browser": "webpack",
+    "test": "npm run test:node",
+    "test:node": "echo 'Add Unit Tests'",
     "dev": "npm run build:node:watch",
     "lint": "eslint src/**/*.js",
     "lint-fix": "eslint --fix src/**/*.js",
@@ -45,9 +47,11 @@
     "webpack-cli": "^3.3.9"
   },
   "dependencies": {
-    "axios": "^0.19.0",
     "@babel/cli": "^7.6.4",
+    "@babel/register": "^7.9.0",
+    "axios": "^0.19.0",
     "decamelize-keys": "^1.1.0",
+    "mocha": "^7.1.2",
     "moment": "^2.24.0",
     "moment-duration-format": "^2.3.2",
     "tus-js-client": "^1.8.0",

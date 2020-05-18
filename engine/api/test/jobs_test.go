@@ -2,7 +2,6 @@ package test
 
 import (
 	"crypto/sha256"
-	"github.com/ds3lab/easeml/engine/database/model"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -10,15 +9,20 @@ import (
 	"net/url"
 	"testing"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/ds3lab/easeml/engine/database/model"
+	"github.com/ds3lab/easeml/engine/database/model/types"
+	"github.com/ds3lab/easeml/engine/logger"
+
 	"github.com/emicklei/forest"
 	"github.com/stretchr/testify/assert"
 )
 
-func createJob(job model.Job, status string) (result model.Job, err error) {
+func createJob(job types.Job, status string) (result types.Job, err error) {
+
 	context, err := model.Connect(testDbAddr, testDbName, false)
+	log := logger.NewProcessLogger(true)
 	if err != nil {
-		log.Fatalf("fatal: %+v", err)
+		log.WriteFatal(fmt.Sprintf("fatal: %+v", err))
 	}
 	defer context.Session.Close()
 	context.User.ID = job.User
@@ -41,14 +45,14 @@ func TestJobsGet(t *testing.T) {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	passwordHash := hex.EncodeToString(hasher.Sum(nil))
-	_, err = createUser(model.User{ID: "user_jg_1", PasswordHash: passwordHash, Status: "active"})
+	_, err = createUser(types.User{ID: "user_jg_1", PasswordHash: passwordHash, Status: "active"})
 	assert.Nil(t, err)
 
 	// Create jobs.
-	var jobs = []model.Job{
-		model.Job{User: "root", Dataset: "root/dataset1", Models: []string{"root/model1"}, Objective: "root/objective1"},
-		model.Job{User: "root", Dataset: "root/dataset3", Models: []string{"root/model1"}, Objective: "root/objective1"},
-		model.Job{User: "user1", Dataset: "root/dataset2", Models: []string{"root/model1"}, Objective: "root/objective1"},
+	var jobs = []types.Job{
+		types.Job{User: "root", Dataset: "root/dataset1", Models: []string{"root/model1"}, Objective: "root/objective1"},
+		types.Job{User: "root", Dataset: "root/dataset3", Models: []string{"root/model1"}, Objective: "root/objective1"},
+		types.Job{User: "user1", Dataset: "root/dataset2", Models: []string{"root/model1"}, Objective: "root/objective1"},
 	}
 	for i := range jobs {
 		jobs[i], err = createJob(jobs[i], "running")
@@ -154,7 +158,7 @@ func TestJobsPost(t *testing.T) {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	passwordHash := hex.EncodeToString(hasher.Sum(nil))
-	_, err = createUser(model.User{ID: "user_jp_1", PasswordHash: passwordHash, Status: "active"})
+	_, err = createUser(types.User{ID: "user_jp_1", PasswordHash: passwordHash, Status: "active"})
 	assert.Nil(t, err)
 
 	// Don't authenticate. Post job. Should return 403.
@@ -203,10 +207,10 @@ func TestJobsGetById(t *testing.T) {
 	var config *forest.RequestConfig
 	var r *http.Response
 	var err error
-	var job model.Job
+	var job types.Job
 
 	// Create the job which we will use in the test.
-	job, err = createJob(model.Job{User: "user1", Dataset: "root/dataset1", Models: []string{"root/model1"}, Objective: "root/objective1"}, "running")
+	job, err = createJob(types.Job{User: "user1", Dataset: "root/dataset1", Models: []string{"root/model1"}, Objective: "root/objective1"}, "running")
 	assert.Nil(t, err)
 
 	// Create user_jbid_1.
@@ -214,7 +218,7 @@ func TestJobsGetById(t *testing.T) {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	passwordHash := hex.EncodeToString(hasher.Sum(nil))
-	_, err = createUser(model.User{ID: "user_jbid_1", PasswordHash: passwordHash, Status: "active"})
+	_, err = createUser(types.User{ID: "user_jbid_1", PasswordHash: passwordHash, Status: "active"})
 	assert.Nil(t, err)
 
 	// Don't authenticate. Get root job. Should return 404.
@@ -246,9 +250,9 @@ func TestJobsPatch(t *testing.T) {
 	var err error
 
 	// Create jobs.
-	var jobs = []model.Job{
-		model.Job{User: "root", Dataset: "root/dataset1", Models: []string{"root/model1"}, Objective: "root/objective1"},
-		model.Job{User: "user_ju_1", Dataset: "root/dataset1", Models: []string{"root/model1"}, Objective: "root/objective1"},
+	var jobs = []types.Job{
+		types.Job{User: "root", Dataset: "root/dataset1", Models: []string{"root/model1"}, Objective: "root/objective1"},
+		types.Job{User: "user_ju_1", Dataset: "root/dataset1", Models: []string{"root/model1"}, Objective: "root/objective1"},
 	}
 	for i := range jobs {
 		jobs[i], err = createJob(jobs[i], "running")
@@ -260,7 +264,7 @@ func TestJobsPatch(t *testing.T) {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	passwordHash := hex.EncodeToString(hasher.Sum(nil))
-	_, err = createUser(model.User{ID: "user_ju_1", PasswordHash: passwordHash, Status: "active"})
+	_, err = createUser(types.User{ID: "user_ju_1", PasswordHash: passwordHash, Status: "active"})
 	assert.Nil(t, err)
 
 	// Authenticate as root. Patch job name. Should return 200.
@@ -289,8 +293,8 @@ func TestJobsPatch(t *testing.T) {
 }
 
 type jobsResponse struct {
-	Data     []model.Job              `json:"data"`
-	Metadata model.CollectionMetadata `json:"metadata"`
+	Data     []types.Job              `json:"data"`
+	Metadata types.CollectionMetadata `json:"metadata"`
 }
 
 func BenchmarkJobsGet1000(b *testing.B) {
@@ -299,13 +303,13 @@ func BenchmarkJobsGet1000(b *testing.B) {
 	var err error
 
 	// Temporarily turn off logging.
-	level := log.GetLevel()
-	log.SetLevel(log.PanicLevel)
-	defer log.SetLevel(level)
+	// level := log.GetLevel()
+	// log.SetLevel(log.PanicLevel)
+	// defer log.SetLevel(level)
 
 	// Create a 1000 users.
 	for n := 0; n < 1000; n++ {
-		_, err = createJob(model.Job{User: "root", Dataset: "root/dataset1", Models: []string{"root/model1"}, Objective: "root/objective1"}, "running")
+		_, err = createJob(types.Job{User: "root", Dataset: "root/dataset1", Models: []string{"root/model1"}, Objective: "root/objective1"}, "running")
 
 		if err != nil {
 			panic(err)
@@ -318,7 +322,7 @@ func BenchmarkJobsGet1000(b *testing.B) {
 		// Empty cursor will return the first page of results.
 		cursor := ""
 
-		for result := []model.Job{}; len(result) < 1000; {
+		for result := []types.Job{}; len(result) < 1000; {
 
 			// Execute a GET response with a cursor and limit.
 			config = forest.NewConfig("/jobs").Header("X-API-KEY", rootAPIKey)

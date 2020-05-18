@@ -44,8 +44,9 @@ class Job(ApiType['Job']):
     """
 
     def __init__(self, input: Dict[str, Any]) -> None:
-        if "id" not in input:
-            raise ValueError("Invalid input dictionary: It must contain an 'id' key.")
+        # TODO proper input validation
+        #if "id" not in input:
+        #    raise ValueError("Invalid input dictionary: It must contain an 'id' key.")
 
         super().__init__(input)
 

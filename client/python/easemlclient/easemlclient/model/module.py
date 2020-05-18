@@ -91,7 +91,7 @@ class Module(ApiType['Module']):
 
     @property
     def type(self) -> Optional[ModuleType]:
-        value = self._dict.get("user")
+        value = self._dict.get("type")
         return ModuleType(value) if value is not None else None
 
     @property

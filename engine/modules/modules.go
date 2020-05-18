@@ -37,7 +37,7 @@ func InferModuleProperties(sourcePath string) (id, name, description, schemaIn, 
 
 	// Extract all filenames from the image working dir.
 	var outReader io.ReadCloser
-	outReader, err = RunContainerAndCollectOutput(sourcePath, []string{"ls"}, []string{"."}, nil)
+	outReader, err = RunContainerAndCollectOutput(sourcePath, []string{"ls"}, []string{"--color=never ."}, nil)
 	if err != nil {
 		err = errors.Wrap(err, "docker container start error")
 		return

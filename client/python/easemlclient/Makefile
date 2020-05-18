@@ -26,6 +26,7 @@ PIP := $(shell which pip)
 PIPENV := $(shell which pipenv)
 PIPENV_RUN := $(PIPENV) run
 VERSION := $(shell cat $(ROOT_DIR_PATH)/VERSION)
+TESTS_PATH:= test
 
 
 # Include common make functions.
@@ -79,9 +80,12 @@ package:
 .PHONY: test
 ## Run all tests.
 test:
-	$(call show-prompt,Running all tests)
-	$(PIPENV_RUN) python -m unittest discover ./test
-
+	@$(call show-prompt,Running all tests) && \
+    if [ -d "$(TESTS_PATH)" ]; then \
+        $(PIPENV_RUN) python -m unittest discover ./test; \
+    else\
+        echo 'No tests found in '$(TESTS_PATH);\
+    fi \
 
 .PHONY: lint
 ## Run the linting checks.

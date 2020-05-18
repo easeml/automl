@@ -2,21 +2,24 @@ package test
 
 import (
 	"crypto/sha256"
-	"github.com/ds3lab/easeml/engine/database/model"
 	"encoding/hex"
 	"fmt"
 	"net/http"
 	"testing"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/ds3lab/easeml/engine/database/model"
+	"github.com/ds3lab/easeml/engine/database/model/types"
+	"github.com/ds3lab/easeml/engine/logger"
+
 	"github.com/emicklei/forest"
 	"github.com/stretchr/testify/assert"
 )
 
-func createTask(task model.Task) (result model.Task, err error) {
+func createTask(task types.Task) (result types.Task, err error) {
 	context, err := model.Connect(testDbAddr, testDbName, false)
+	log := logger.NewProcessLogger(true)
 	if err != nil {
-		log.Fatalf("fatal: %+v", err)
+		log.WriteFatal(fmt.Sprintf("fatal: %+v", err))
 	}
 	defer context.Session.Close()
 	context.User.ID = task.User
@@ -34,11 +37,11 @@ func TestTasksGet(t *testing.T) {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	passwordHash := hex.EncodeToString(hasher.Sum(nil))
-	_, err = createUser(model.User{ID: "user_tg_1", PasswordHash: passwordHash, Status: "active"})
+	_, err = createUser(types.User{ID: "user_tg_1", PasswordHash: passwordHash, Status: "active"})
 	assert.Nil(t, err)
 
-	var job model.Job
-	job, err = createJob(model.Job{
+	var job types.Job
+	job, err = createJob(types.Job{
 		User:      "user1",
 		Dataset:   "root/dataset1",
 		Models:    []string{"root/model1", "root/model2", "root/model3"},
@@ -47,10 +50,10 @@ func TestTasksGet(t *testing.T) {
 	assert.Nil(t, err)
 
 	// Create tasks.
-	var tasks = []model.Task{
-		model.Task{Job: job.ID, Model: "root/model1"},
-		model.Task{Job: job.ID, Model: "root/model3"},
-		model.Task{Job: job.ID, Model: "root/model2"},
+	var tasks = []types.Task{
+		types.Task{Job: job.ID, Model: "root/model1"},
+		types.Task{Job: job.ID, Model: "root/model3"},
+		types.Task{Job: job.ID, Model: "root/model2"},
 	}
 	for i := range tasks {
 		tasks[i], err = createTask(tasks[i])
@@ -148,18 +151,18 @@ func TestTasksGetById(t *testing.T) {
 	var config *forest.RequestConfig
 	var r *http.Response
 	var err error
-	var task model.Task
+	var task types.Task
 
 	// Create the task which we will use in the test.
-	var job model.Job
-	job, err = createJob(model.Job{
+	var job types.Job
+	job, err = createJob(types.Job{
 		User:      "user1",
 		Dataset:   "root/dataset1",
 		Models:    []string{"root/model1", "root/model2", "root/model3"},
 		Objective: "root/objective1",
 	}, "running")
 	assert.Nil(t, err)
-	task, err = createTask(model.Task{Job: job.ID, Model: "root/model1"})
+	task, err = createTask(types.Task{Job: job.ID, Model: "root/model1"})
 	assert.Nil(t, err)
 
 	// Create user_tbid_1.
@@ -167,7 +170,7 @@ func TestTasksGetById(t *testing.T) {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	passwordHash := hex.EncodeToString(hasher.Sum(nil))
-	_, err = createUser(model.User{ID: "user_tbid_1", PasswordHash: passwordHash, Status: "active"})
+	_, err = createUser(types.User{ID: "user_tbid_1", PasswordHash: passwordHash, Status: "active"})
 	assert.Nil(t, err)
 
 	// Don't authenticate. Get root task. Should return 404.

@@ -49,8 +49,6 @@ jobs:
             - name: Test
               run: |
                 make test
-                echo ::set-output name=status::success
-              continue-on-error: true
 
             - name: Build
               run: make build

@@ -4,7 +4,8 @@ summary: Ease.ml is a declarative machine learning service platform.
 description: |
   Ease.ml is a declarative machine learning service platform. 
   It enables users to upload their datasets and start model selection and tuning jobs. 
-  Given the schema of the dataset, ease.ml does an automatic search for applicable models and performs training, prediction and evaluation. 
+  Given the schema of the dataset, ease.ml does an automatic search for applicable models and performs training, prediction and evaluation.
+  All models are stored as Docker images which allows greater portability and reproducibility.
 
 confinement: strict
 #confinement: classic #strict
@@ -42,10 +43,10 @@ parts:
       echo "Preparing Build Environment"
       echo "Installing Make"
       apt install make
+      apt install -y wget
       echo "Getting NodeJS"
       export VERSION='12.8.0'
-      export ARCH='x64'
-      export NBASE="node-v$VERSION-linux-$ARCH"
+      export NBASE="node-v$VERSION-linux-$SNAP_ARCH"
       wget https://nodejs.org/dist/v$VERSION/$NBASE.tar.gz
       tar xvzf $NBASE.tar.gz -C .
       mkdir -p $HOME/temp_install
