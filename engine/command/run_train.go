@@ -1,16 +1,18 @@
 package command
 
 import (
-	"github.com/ds3lab/easeml/engine/modules"
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	"github.com/ds3lab/easeml/engine/modules"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var runTrainData, runTrainConfig, runTrainOutput string
+var runTrainGpuDevices []string
 
 var runTrainCmd = &cobra.Command{
 	Use:   "train [image]",
@@ -41,7 +43,7 @@ var runTrainCmd = &cobra.Command{
 			"--conf", modules.MntPrefix + runTrainConfig,
 			"--output", modules.MntPrefix + runTrainOutput,
 		}
-		outReader, err := modules.RunContainerAndCollectOutput(modelImageName, nil, command)
+		outReader, err := modules.RunContainerAndCollectOutput(modelImageName, nil, command, runTrainGpuDevices)
 		if err != nil {
 			fmt.Println("Error while running the container: ")
 			fmt.Print(err)
@@ -63,6 +65,11 @@ func init() {
 	runTrainCmd.Flags().StringVarP(&runTrainData, "data", "d", "", "Directory containing the training data.")
 	runTrainCmd.Flags().StringVarP(&runTrainConfig, "conf", "c", "", "Model configuration.")
 	runTrainCmd.Flags().StringVarP(&runTrainOutput, "output", "o", "", "Directory where the model will output its parameters.")
+	runTrainCmd.Flags().StringSliceVar(&runTrainGpuDevices, "gpu", []string{}, "List of integer GPU device identifiers "+
+		"(zero based) that specified which GPU devices to make available to each module executed by a worker "+
+		"process. If -1 is specified, then all GPU devices are made available. If empty, then only CPU is used. "+
+		"For example --gpu 0,2 means that GPU0 and GPU2 will be made available to the module. "+
+		"NVidia Docker runtime needs to be installed to use this feature (https://github.com/NVIDIA/nvidia-docker).")
 
 	viper.BindPFlags(runTrainCmd.PersistentFlags())
 

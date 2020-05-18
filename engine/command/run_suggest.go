@@ -1,11 +1,12 @@
 package command
 
 import (
-	"github.com/ds3lab/easeml/engine/modules"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
+
+	"github.com/ds3lab/easeml/engine/modules"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -39,7 +40,7 @@ var runSuggestCmd = &cobra.Command{
 			"--history", modules.MntPrefix + runSuggestHistory,
 			"--num-tasks", strconv.Itoa(runSuggestNumTasks),
 		}
-		outReader, err := modules.RunContainerAndCollectOutput(modelImageName, nil, command)
+		outReader, err := modules.RunContainerAndCollectOutput(modelImageName, nil, command, nil)
 		if err != nil {
 			fmt.Println("Error while running the container: ")
 			fmt.Print(err)

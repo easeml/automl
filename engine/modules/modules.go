@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/ds3lab/easeml/engine/storage"
 	"github.com/ds3lab/easeml/schema/go/easemlschema/dataset"
 	"github.com/ds3lab/easeml/schema/go/easemlschema/schema"
-	"github.com/ds3lab/easeml/engine/storage"
 
 	"golang.org/x/net/context"
 
@@ -37,7 +37,7 @@ func InferModuleProperties(sourcePath string) (id, name, description, schemaIn, 
 
 	// Extract all filenames from the image working dir.
 	var outReader io.ReadCloser
-	outReader, err = RunContainerAndCollectOutput(sourcePath, []string{"ls"}, []string{"."})
+	outReader, err = RunContainerAndCollectOutput(sourcePath, []string{"ls"}, []string{"."}, nil)
 	if err != nil {
 		err = errors.Wrap(err, "docker container start error")
 		return
@@ -95,7 +95,7 @@ func InferModuleProperties(sourcePath string) (id, name, description, schemaIn, 
 
 	// If a README file was found, read it.
 	if readmeFileName != "" {
-		outReader, err = RunContainerAndCollectOutput(sourcePath, []string{"cat"}, []string{readmeFileName})
+		outReader, err = RunContainerAndCollectOutput(sourcePath, []string{"cat"}, []string{readmeFileName}, nil)
 		if err != nil {
 			err = errors.Wrap(err, "docker container start error")
 			return
@@ -106,7 +106,7 @@ func InferModuleProperties(sourcePath string) (id, name, description, schemaIn, 
 
 	// Look for the schema file.
 	if schemaInFileName != "" {
-		outReader, err = RunContainerAndCollectOutput(sourcePath, []string{"cat"}, []string{schemaInFileName})
+		outReader, err = RunContainerAndCollectOutput(sourcePath, []string{"cat"}, []string{schemaInFileName}, nil)
 		if err != nil {
 			err = errors.Wrap(err, "docker container start error")
 			return
@@ -118,7 +118,7 @@ func InferModuleProperties(sourcePath string) (id, name, description, schemaIn, 
 		}
 	}
 	if schemaOutFileName != "" {
-		outReader, err = RunContainerAndCollectOutput(sourcePath, []string{"cat"}, []string{schemaOutFileName})
+		outReader, err = RunContainerAndCollectOutput(sourcePath, []string{"cat"}, []string{schemaOutFileName}, nil)
 		if err != nil {
 			err = errors.Wrap(err, "docker container start error")
 			return
@@ -139,7 +139,7 @@ func InferModuleProperties(sourcePath string) (id, name, description, schemaIn, 
 
 	// Look for the config space file.
 	if configSpaceFilename != "" {
-		outReader, err = RunContainerAndCollectOutput(sourcePath, []string{"cat"}, []string{configSpaceFilename})
+		outReader, err = RunContainerAndCollectOutput(sourcePath, []string{"cat"}, []string{configSpaceFilename}, nil)
 		if err != nil {
 			err = errors.Wrap(err, "docker container start error")
 			return
@@ -207,7 +207,7 @@ func GetDockerClient() *client.Client {
 const MntPrefix = "^^^"
 
 // RunContainerAndCollectOutput runs a given image name and returns the standard output reader.
-func RunContainerAndCollectOutput(imageName string, entrypoint, command []string) (io.ReadCloser, error) {
+func RunContainerAndCollectOutput(imageName string, entrypoint, command []string, gpuDevices []string) (io.ReadCloser, error) {
 
 	// Go through all commands and see if any of them correspond to a file. If yes, mount it to
 	// the container and remap the command argument.
@@ -286,6 +286,43 @@ func RunContainerAndCollectOutput(imageName string, entrypoint, command []string
 
 	}
 
+	// Assemble the host config with appropriate binds.
+	hostConfig := container.HostConfig{
+		Binds: binds,
+	}
+
+	// If GPU devices were specified, we need to add the appropriate device requests to the host config.
+	if gpuDevices != nil && len(gpuDevices) > 0 {
+
+		// We will convert the input slice to a map to prevent duplicates.
+		gpuDevicesMap := make(map[string]struct{}, len(gpuDevices))
+		for _, s := range gpuDevices {
+			gpuDevicesMap[s] = struct{}{}
+		}
+
+		// Check if -1 is in the list, which maps to all devices. Otherwise we list the specific device IDs.
+		_, ok := gpuDevicesMap["-1"]
+		var deviceRequest container.DeviceRequest
+		if ok {
+			deviceRequest = container.DeviceRequest{
+				Count:        -1,
+				Capabilities: [][]string{[]string{"gpu"}},
+			}
+		} else {
+			deviceIDs := make([]string, 0, len(gpuDevicesMap))
+			for id := range gpuDevicesMap {
+				deviceIDs = append(deviceIDs, id)
+			}
+			deviceRequest = container.DeviceRequest{
+				DeviceIDs:    deviceIDs,
+				Capabilities: [][]string{[]string{"gpu"}},
+			}
+		}
+
+		// Add the device requests to the host config.
+		hostConfig.Resources = container.Resources{DeviceRequests: []container.DeviceRequest{deviceRequest}}
+	}
+
 	ctx := context.Background()
 	cli := GetDockerClient()
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
@@ -293,9 +330,7 @@ func RunContainerAndCollectOutput(imageName string, entrypoint, command []string
 		Entrypoint: entrypoint,
 		Cmd:        remappedCommand,
 		Tty:        true,
-	}, &container.HostConfig{
-		Binds: binds,
-	}, nil, "")
+	}, &hostConfig, nil, "")
 	if err != nil {
 		panic(err)
 	}
@@ -472,7 +507,7 @@ func ValidateModel(modelImageName string, schemaStringIn, schemaStringOut, confi
 		"--conf", MntPrefix + filepath.Join(tempDirName, "config.json"),
 		"--output", MntPrefix + filepath.Join(tempDirName, "memory"),
 	}
-	outReader, err := RunContainerAndCollectOutput(modelImageName, nil, command)
+	outReader, err := RunContainerAndCollectOutput(modelImageName, nil, command, nil)
 	defer outReader.Close()
 	if err != nil {
 		err = errors.Wrap(err, "failed to run train")
@@ -486,7 +521,7 @@ func ValidateModel(modelImageName string, schemaStringIn, schemaStringOut, confi
 		"--memory", MntPrefix + filepath.Join(tempDirName, "memory"),
 		"--output", MntPrefix + filepath.Join(tempDirName, "data", "predictions"),
 	}
-	outReader, err = RunContainerAndCollectOutput(modelImageName, nil, command)
+	outReader, err = RunContainerAndCollectOutput(modelImageName, nil, command, nil)
 	defer outReader.Close()
 	if err != nil {
 		err = errors.Wrap(err, "failed to run train")

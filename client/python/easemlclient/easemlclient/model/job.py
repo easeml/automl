@@ -197,7 +197,7 @@ class JobQuery(ApiQuery['Job', 'JobQuery']):
     def __init__(self, id: Optional[List[str]] = None, user: Optional[User] = None,
                  dataset: Optional[Dataset] = None, model: Optional[Module] = None,
                  objective: Optional[Module] = None, alt_objective: Optional[Module] = None,
-                 status: Optional[JobStatus] = None, accept_new_models: Optional[ApiQueryOrder] = None,                
+                 status: Optional[JobStatus] = None, accept_new_models: Optional[bool] = None,                
                  order_by: Optional[str] = None, order: Optional[ApiQueryOrder] = None,
                  limit: Optional[int] = None, cursor: Optional[str] = None) -> None:
         super().__init__(order_by, order, limit, cursor)
@@ -216,7 +216,7 @@ class JobQuery(ApiQuery['Job', 'JobQuery']):
         if alt_objective is not None:
             self._query["alt-objective"] = alt_objective.id
         if status is not None:
-            self._query["status"] = status
+            self._query["status"] = status.value
         if accept_new_models is not None:
             self._query["accept-new-models"] = accept_new_models
 

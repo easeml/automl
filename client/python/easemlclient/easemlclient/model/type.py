@@ -87,8 +87,9 @@ class ApiQuery(Generic[T, Q]):
         resp.raise_for_status()
 
         payload = resp.json()
+        payload_data = payload["data"] or []
 
-        result = [self.T(x) for x in payload["data"]]
+        result = [self.T(x) for x in payload_data]
 
         next_query: Optional[Q] = None
         next_cursor = payload.get("metadata", {}).get("next-page-cursor", "")

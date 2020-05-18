@@ -15,6 +15,7 @@ type Context struct {
 	OptimizerID     string
 	RootAPIKey      chan string
 	DebugLog        bool
+	GpuDevices      []string
 }
 
 const (

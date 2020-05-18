@@ -209,7 +209,7 @@ class ModuleQuery(ApiQuery['Module', 'ModuleQuery']):
 
     def __init__(self, id: Optional[List[str]] = None, user: Optional[User] = None,
                  type: Optional[ModuleType] = None, label: Optional[str] = None,
-                 status: Optional[ModuleStatus] = None, source: Optional[str] = None,
+                 status: Optional[ModuleStatus] = None, source: Optional[ModuleSource] = None,
                  source_address: Optional[str] = None,
                  schema_in: Optional[str] = None, schema_out: Optional[str] = None,                 
                  order_by: Optional[str] = None, order: Optional[ApiQueryOrder] = None,
@@ -222,13 +222,13 @@ class ModuleQuery(ApiQuery['Module', 'ModuleQuery']):
         if user is not None:
             self._query["user"] = user.id
         if type is not None:
-            self._query["type"] = type
+            self._query["type"] = type.value
         if label is not None:
             self._query["label"] = label
         if status is not None:
-            self._query["status"] = status
+            self._query["status"] = status.value
         if source is not None:
-            self._query["source"] = source
+            self._query["source"] = source.value
         if source_address is not None:
             self._query["source-address"] = source_address
         if schema_in is not None:

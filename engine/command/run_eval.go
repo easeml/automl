@@ -1,11 +1,11 @@
 package command
 
 import (
-	"github.com/ds3lab/easeml/engine/modules"
 	"fmt"
 	"io/ioutil"
 	"os"
 
+	"github.com/ds3lab/easeml/engine/modules"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -36,7 +36,7 @@ var runEvalCmd = &cobra.Command{
 			"--actual", modules.MntPrefix + runEvalActual,
 			"--predicted", modules.MntPrefix + runEvalPredicted,
 		}
-		outReader, err := modules.RunContainerAndCollectOutput(modelImageName, nil, command)
+		outReader, err := modules.RunContainerAndCollectOutput(modelImageName, nil, command, nil)
 		if err != nil {
 			fmt.Println("Error while running the container: ")
 			fmt.Print(err)

@@ -291,9 +291,9 @@ class TaskQuery(ApiQuery['Task', 'TaskQuery']):
         if job is not None:
             self._query["job"] = job.id
         if status is not None:
-            self._query["status"] = status
+            self._query["status"] = status.value
         if stage is not None:
-            self._query["stage"] = stage
+            self._query["stage"] = stage.value
 
     def run(self, connection: Connection) -> Tuple[List[Task], Optional['TaskQuery']]:
         url = connection.url("tasks")

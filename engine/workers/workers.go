@@ -23,6 +23,7 @@ type Context struct {
 	ProcessID      bson.ObjectId
 	Period         time.Duration
 	Logger         logger.Logger
+	GpuDevices     []string
 }
 
 // Clone makes a copy of the mongo session.

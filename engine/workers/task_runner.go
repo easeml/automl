@@ -379,7 +379,7 @@ func (context Context) runModelTraining(task *types.Task, modelImageName string,
 		"--conf", modules.MntPrefix + configFilePath,
 		"--output", modules.MntPrefix + paths.Parameters,
 	}
-	outReader, err := modules.RunContainerAndCollectOutput(modelImageName, nil, command)
+	outReader, err := modules.RunContainerAndCollectOutput(modelImageName, nil, command, context.GpuDevices)
 	if err != nil {
 		err = errors.WithStack(err)
 		context.Logger.WithFields(
@@ -424,7 +424,7 @@ func (context Context) runModelPrediction(task *types.Task, modelImageName strin
 		"--memory", modules.MntPrefix + paths.Parameters,
 		"--output", modules.MntPrefix + valOutputPath,
 	}
-	outReader, err := modules.RunContainerAndCollectOutput(modelImageName, nil, command)
+	outReader, err := modules.RunContainerAndCollectOutput(modelImageName, nil, command, context.GpuDevices)
 	if err != nil {
 		err = errors.WithStack(err)
 		context.Logger.WithFields(
@@ -468,7 +468,7 @@ func (context Context) runModelEvaluationAndGetQuality(task *types.Task, objecti
 		"--actual", modules.MntPrefix + valDatasetPath,
 		"--predicted", modules.MntPrefix + valOutputPath,
 	}
-	outReader, err := modules.RunContainerAndCollectOutput(objectiveImageName, nil, command)
+	outReader, err := modules.RunContainerAndCollectOutput(objectiveImageName, nil, command, context.GpuDevices)
 	if err != nil {
 		err = errors.WithStack(err)
 		context.Logger.WithFields(

@@ -33,6 +33,7 @@ import (
 )
 
 var startLogin, openInBrowser, debugLog bool
+var startGpuDevices []string
 
 // startCmd represents the start command
 var startCmd = &cobra.Command{
@@ -59,6 +60,7 @@ var startCmd = &cobra.Command{
 			OptimizerID:     "root/opt-rand-search",
 			RootAPIKey:      make(chan string, 1),
 			DebugLog:        debugLog,
+			GpuDevices:      startGpuDevices,
 		}
 
 		var wg sync.WaitGroup
@@ -175,6 +177,11 @@ func init() {
 	startCmd.Flags().BoolVar(&startLogin, "login", false, "Add root API key to the config so that it can be used for CLI access.")
 	startCmd.Flags().BoolVar(&openInBrowser, "browser", false, "Open browser window with the web UI.")
 	startCmd.Flags().BoolVar(&debugLog, "debug", false, "Write debug trace.")
+	startCmd.Flags().StringSliceVar(&startGpuDevices, "gpu", []string{}, "List of integer GPU device identifiers "+
+		"(zero based) that specified which GPU devices to make available to each module executed by a worker "+
+		"process. If -1 is specified, then all GPU devices are made available. If empty, then only CPU is used. "+
+		"For example --gpu 0,2 means that GPU0 and GPU2 will be made available to the module. "+
+		"NVidia Docker runtime needs to be installed to use this feature (https://github.com/NVIDIA/nvidia-docker).")
 
 	// Bind with viper config.
 	viper.BindPFlags(startCmd.PersistentFlags())
