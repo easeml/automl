@@ -30,7 +30,7 @@ class Connection:
 
     @property
     def url_base(self):
-        return "http://" + self.host + "/" + API_PREFIX
+        return self.host + "/" + API_PREFIX
 
     def url(self, endpoint: str) -> str:
         return self.url_base + "/" + endpoint.lstrip("/")

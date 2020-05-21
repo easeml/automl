@@ -44,17 +44,16 @@ class Job(ApiType['Job']):
     """
 
     def __init__(self, input: Dict[str, Any]) -> None:
-        # TODO proper input validation
-        #if "id" not in input:
-        #    raise ValueError("Invalid input dictionary: It must contain an 'id' key.")
+        if "id" not in input:
+            raise ValueError("Invalid input dictionary: It must contain an 'id' key.")
 
         super().__init__(input)
 
     @classmethod
-    def create(cls, id: str, dataset: Dataset, objective: Module, models: List[Module],
+    def create(cls, dataset: Dataset, objective: Module, models: List[Module],
                accept_new_models: bool = True, max_tasks: int = 100,
                alt_objectives: Optional[List[Module]] = None, config_space: Optional[Dict[str, Any]] = None) -> 'Job':
-        init_dict: Dict[str, Any] = {"id": id}
+        init_dict: Dict[str, Any] = {"id": None}
         if dataset is not None:
             init_dict["dataset"] = dataset.id
         if objective is not None:
