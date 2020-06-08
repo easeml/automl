@@ -46,7 +46,16 @@ parts:
       apt install -y wget
       echo "Getting NodeJS"
       export VERSION='12.8.0'
-      export NBASE="node-v$VERSION-linux-$SNAP_ARCH"
+
+      case "$SNAP_ARCH" in
+        "amd64")
+            export NBASE="node-v$VERSION-linux-x64"
+            ;;
+        *)
+            echo "Unsupported Architecture "$SNAP_ARCH
+            exit 1
+      esac
+
       wget https://nodejs.org/dist/v$VERSION/$NBASE.tar.gz
       tar xvzf $NBASE.tar.gz -C .
       mkdir -p $HOME/temp_install
