@@ -84,7 +84,8 @@ jobs:
                 echo "##COMMITING"
                 git commit -m "Bumped Version"
                 echo "##PUSHING"
-                git push $remote_repo 
+                git push $remote_repo
+                echo "##PUSHING TAG" 
                 git push $remote_repo_trigger --tag
 
             - name: ECHO TAG
