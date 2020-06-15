@@ -77,7 +77,7 @@ jobs:
                 echo $TAG
                 echo ${{ env.TAG }}
                 echo $PUBLISH
-                echo ${{ env.$PUBLISH }}
+                echo ${{ env.PUBLISH }}
 
             - name: Publish
               if: ${{ env.PUBLISH == 'true' }}
