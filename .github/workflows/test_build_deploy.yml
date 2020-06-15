@@ -72,6 +72,7 @@ jobs:
                 VERSION=`cat VERSION`
                 echo "USING GIT"
                 remote_repo="https://${GITHUB_ACTOR}:${{ secrets.ACTION_PAT }}@github.com/${GITHUB_REPOSITORY}.git"
+                git config commit.gpgsign true
                 git config user.name "leaguilar"
                 git config user.email "leonel.aguilar.m@gmail.com"
                 echo "##CREATING TAG"
