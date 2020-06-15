@@ -72,8 +72,8 @@ jobs:
                 VERSION=`cat VERSION`
                 echo "USING GIT"
                 remote_repo="https://${GITHUB_ACTOR}:${{ secrets.ACTION_PAT }}@github.com/${GITHUB_REPOSITORY}.git"
-                git config user.name "Automated Publisher"
-                git config user.email "actions@users.noreply.github.com"
+                git config user.name "leaguilar"
+                git config user.email "leonel.aguilar.m@gmail.com"
                 echo "##CREATING TAG"
                 git tag -a v$VERSION -m "Test tag."
                 echo "##Adding VERSION FILE"
