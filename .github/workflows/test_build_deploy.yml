@@ -18,7 +18,8 @@ jobs:
           matrix:
             node-version: [12.x]
         steps:
-          - name: Extract Info
+            - name: Extract Info
+              id: branch_info
               run: |
                 echo ::set-env name=NAME::${GITHUB_REF#refs/*/}
                 echo ::set-env name=BRANCH::${GITHUB_REF#refs/heads/}
