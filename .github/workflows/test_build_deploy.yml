@@ -75,7 +75,7 @@ jobs:
                 VERSION=`cat VERSION`
                 echo ::set-env name=RELESE_VERSION::$VERSION
                 echo "Creating Tag $VERSION"
-                echo ${{ env.RELESE_VERSION }}
+                echo "${{ env.RELESE_VERSION }}"
                 curl --request POST \
                     --url https://api.github.com/repos/${{ github.repository }}/git/tags \
                     --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
@@ -98,17 +98,18 @@ jobs:
                       "type": "commit" \
                       }'
                   echo TEST2
-                  VAR="curl --request POST \
+                  CURL_ARGS="--request POST \
                     --url https://api.github.com/repos/${{ github.repository }}/git/tags \
-                    --header \'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}\' \
-                    --header \'content-type: application/json\' \
-                    --data \'{ \
+                    --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+                    --header 'content-type: application/json' \
+                    --data '{ \
                       \"tag\": \"v${VERSION}\", \
                       \"message\": \"Automated release tag\", \
                       \"object\": \"${{ github.sha }}\", \
                       \"type\": \"commit\" \
-                      }\'"
-                  echo $VAR
+                      }'"
+                  echo $CURL_ARGS
+                  curl $CURL_ARGS
 
             - name: ECHO TAG
               if: ${{ startsWith(github.ref, 'refs/tags') }}
