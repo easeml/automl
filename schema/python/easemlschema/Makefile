@@ -61,9 +61,9 @@ clean:
 	-rm -f ./$(DIST_PATH)/$(PROJECT_NAME)-$(VERSION)*.tar.gz
 	-rm -rf ./dist
 	-rm -rf ./build
+	-rm -rf ./*.egg-info
 	-find . -name '*.py[co]' -exec rm {} \;
 	-find . -name '__pycache__' -exec rm -r {} \;
-	-find . -name '*.egg-info' -exec rm -r {} \;
 
 
 .PHONY: build
@@ -75,7 +75,7 @@ build:
 
 .PHONY: package
 ## Build the project and assemble a deployable package.
-package:
+package: clean
 	$(call show-prompt,Building the deployment package)
 	$(PIPENV_RUN) python setup.py sdist -d $(DIST_PATH)
 	$(PIPENV_RUN) python setup.py bdist_wheel -d $(DIST_PATH)
@@ -108,9 +108,8 @@ lint-fix:
 ## Publish to the respective indexing service
 publish: package
 	$(call show-prompt,Running all publishing scripts)
-	$(TWINE) check dist/*
-	$(TWINE) upload dist/*
-	$(call repeat-for-all,$@)
+	$(TWINE) check $(DIST_PATH)/*
+	$(TWINE) upload --non-interactive $(DIST_PATH)/*
 
 .PHONY: version
 ## Set the version of this package according to version file found in the repo root.

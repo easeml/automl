@@ -27,6 +27,7 @@ COMPONENTS := client schema web engine
 
 # Other config variables.
 PROJECT_NAME := easeml
+VERSION := $(shell cat $(ROOT_DIR_PATH)/VERSION)
 
 
 # Importable config variables.
@@ -106,5 +107,11 @@ publish:
 ## Set the version of all components according to version file found in the repo root. To update the version,
 ## make sure to first update the VERSION file.
 version:
+	$(call show-prompt,Increasing package version)
+	$(eval MAJOR=$(word 1,$(subst ., ,$(VERSION))))
+	$(eval MINOR=$(word 2,$(subst ., ,$(VERSION))))
+	$(eval PATCH=$(word 3,$(subst ., ,$(VERSION))))
+	$(eval PATCH=$(shell echo $$(($(PATCH)+1))))
+	@echo $(MAJOR).$(MINOR).$(PATCH) > $(ROOT_DIR_PATH)/VERSION
 	$(call show-prompt,Updating package version)
 	$(call repeat-for-all,$@)

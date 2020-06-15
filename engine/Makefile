@@ -114,6 +114,7 @@ package: $(WEB_UI_DIST_PATH)
 	cd $(ROOT_DIR_PATH); \
 	    snapcraft clean; \
 	    snapcraft ;\
+	    mv easeml_$(VERSION)_amd64.snap $(DIST_PATH); \
 	    echo "Done!"
 
 
@@ -154,10 +155,10 @@ version:
 
 .PHONY: publish
 ## Publish to the respective indexing service
-publish: #package
+publish: package
 	$(call show-prompt,Publishing snap)
 	@echo "$(SNAP_TOKEN)" | snapcraft login --with -
-	snapcraft upload $(ROOT_DIR_PATH)/easeml_$(VERSION)_amd64.snap --release edge
+	snapcraft upload $(DIST_PATH)/easeml_$(VERSION)_amd64.snap --release edge
 	snapcraft logout
 
 .PHONY: docs

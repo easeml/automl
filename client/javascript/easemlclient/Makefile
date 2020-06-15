@@ -92,12 +92,12 @@ lint-fix:
 .PHONY: publish
 ## Publish to the respective indexing service
 publish:
-	$(call show-prompt,Running all publishing scripts)
-	$(call repeat-for-all,$@)
+	$(call show-prompt,Publishing javascript client to NPM)
+	$(NPM) publish --access=public
 
 .PHONY: version
 ## Set the version of this package according to version file found in the repo root.
 version:
 	$(call show-prompt,Updating package version)
-	$(NPM) version $(VERSION) --no-git-tag-version
+	$(NPM) version $(VERSION) --no-git-tag-version --allow-same-version
 	@echo New version: $(VERSION)
