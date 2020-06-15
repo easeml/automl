@@ -110,6 +110,11 @@ package: $(WEB_UI_DIST_PATH)
 			$(PACKR) clean; \
 		done; \
 	done
+	$(call show-prompt,Building Snap Package)
+	cd $(ROOT_DIR_PATH); \
+	    snapcraft clean; \
+	    snapcraft ;\
+	    echo "Done!"
 
 
 .PHONY: serve
@@ -143,13 +148,17 @@ lint-fix:
 .PHONY: version
 ## Set the version of this package according to version file found in the repo root.
 version:
-	@echo
+	$(call show-prompt,Changing snap version)
+	sed -i '0,/version:.*/s//version: $(VERSION)/' $(ROOT_DIR_PATH)/snap/snapcraft.yaml
+	@echo New version: $(VERSION)
 
 .PHONY: publish
 ## Publish to the respective indexing service
-publish:
-	$(call show-prompt,Running all publishing scripts)
-	$(call repeat-for-all,$@)
+publish: #package
+	$(call show-prompt,Publishing snap)
+	@echo "$(SNAP_TOKEN)" | snapcraft login --with -
+	snapcraft upload $(ROOT_DIR_PATH)/easeml_$(VERSION)_amd64.snap --release edge
+	snapcraft logout
 
 .PHONY: docs
 ## Generate the documentation Markdown files.

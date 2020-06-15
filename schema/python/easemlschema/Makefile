@@ -25,6 +25,7 @@ PYTHON := $(shell which python)
 PIP := $(shell which pip)
 PIPENV := $(shell which pipenv)
 PIPENV_RUN := $(PIPENV) run
+TWINE := $(shell which twine)
 VERSION := $(shell cat $(ROOT_DIR_PATH)/VERSION)
 
 
@@ -44,6 +45,10 @@ init:
     else \
         ${PIPENV} install -e . --dev; \
 	fi ; \
+    if [ -z "${TWINE}" ]; then \
+            echo 'Installing TWINE'; \
+            python3 -m pip install --user --upgrade twine; \
+    fi;\
 	echo '$@: done'
 
 
@@ -99,6 +104,13 @@ lint-fix:
 	$(PIPENV_RUN) pipenv run autopep8 --in-place --aggressive --aggressive --aggressive \
 				  --max-line-length 120 --recursive $(PROJECT_NAME) test
 
+.PHONY: publish
+## Publish to the respective indexing service
+publish: package
+	$(call show-prompt,Running all publishing scripts)
+	$(TWINE) check dist/*
+	$(TWINE) upload dist/*
+	$(call repeat-for-all,$@)
 
 .PHONY: version
 ## Set the version of this package according to version file found in the repo root.

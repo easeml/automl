@@ -89,5 +89,5 @@ lint-fix:
 ## Set the version of this package according to version file found in the repo root.
 version:
 	$(call show-prompt,Updating package version)
-	$(NPM) version $(VERSION) --no-git-tag-version
+	$(NPM) version $(VERSION) --no-git-tag-version --allow-same-version
 	@echo New version: $(VERSION)
