@@ -87,17 +87,12 @@ jobs:
                 git push $remote_repo_trigger --tag
 
             - name: ECHO TAG
-              if: ${{ startsWith(github.ref, 'refs/tags') }}
               run: |
                 echo "TEST"
-                echo env.TAG
                 echo $TAG
                 echo ${{ env.TAG }}
                 echo $PUBLISH
-                echo ${{ env.PUBLISH }}
-                git status
-                git pull
-                git tag "TEST"
+                echo $github.ref
 
             # Installation Taken from https://github.com/samuelmeuli/action-snapcraft/blob/master/index.js
             - name: Publish
