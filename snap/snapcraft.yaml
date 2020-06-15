@@ -1,5 +1,5 @@
 name: easeml
-version: git
+version: 0.1.2
 summary: Ease.ml is a declarative machine learning service platform.
 description: |
   Ease.ml is a declarative machine learning service platform. 
@@ -42,7 +42,9 @@ parts:
     override-pull: |
       echo "Preparing Build Environment"
       echo "Installing Make"
-      apt install make
+      apt install -y make
+      echo "Installing git"
+      apt install -y git
       apt install -y wget
       echo "Getting NodeJS"
       export VERSION='12.8.0'
