@@ -73,14 +73,8 @@ jobs:
                 make version
                 VERSION=`cat VERSION`
                 echo "USING GIT"
-                remote_repo="https://${GITHUB_ACTOR}:${{ secrets.ACTION_PAT }}@github.com/${GITHUB_REPOSITORY}.git"
-                echo "DATA"
-                echo ${GITHUB_ACTOR}
-                echo "DATA2"
-                echo ${GITHUB_REPOSITORY}
-                echo "DATA3"
-                echo $remote_repo
-                echo "REPO"
+                remote_repo="https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+                remote_repo_trigger="https://leaguilar:${{ secrets.ACTION_PAT }}@github.com/${GITHUB_REPOSITORY}.git"
                 git config user.name "$(git --no-pager log --format=format:'%an' -n 1)"
                 git config user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
                 echo "##CREATING TAG"
@@ -90,7 +84,8 @@ jobs:
                 echo "##COMMITING"
                 git commit -m "Bumped Version"
                 echo "##PUSHING"
-                git push $remote_repo --follow-tags
+                git push $remote_repo 
+                git push $remote_repo_trigger --tag
 
             - name: ECHO TAG
               if: ${{ startsWith(github.ref, 'refs/tags') }}
