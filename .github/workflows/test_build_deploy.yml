@@ -79,6 +79,8 @@ jobs:
                 echo "DATA2"
                 echo ${GITHUB_REPOSITORY}
                 echo "DATA3"
+                echo $remote_repo
+                echo "REPO"
                 git config --global user.name "leaguilar"
                 git config --global user.email "leonel.aguilar.m@gmail.com"
                 echo "##CREATING TAG"
