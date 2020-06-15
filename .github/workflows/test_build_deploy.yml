@@ -62,13 +62,15 @@ jobs:
             - name: Build
               run: make build
 
-            if: env.BRANCH == 'workflow'
+            
             - name: SETUP
+              if: env.BRANCH == 'workflow'
               run: |
                 echo ::set-env name=PUBLISH::true
 
-            if: env.BRANCH == 'workflow' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+            
             - name: ECHO TAG
+              if: env.BRANCH == 'workflow' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
               run: |
                 echo "TEST"
                 echo env.TAG
@@ -78,8 +80,8 @@ jobs:
                 echo $PUBLISH
                 echo ${{ env.$PUBLISH }}
 
-            if: env.PUBLISH == 'true'
             - name: Publish
+              if: env.PUBLISH == 'true'
               run: |
                 make publish
                 echo ::set-output name=status::success
