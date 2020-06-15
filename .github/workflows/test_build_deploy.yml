@@ -72,7 +72,6 @@ jobs:
                 VERSION=`cat VERSION`
                 echo "USING GIT"
                 remote_repo="https://${GITHUB_ACTOR}:${{ secrets.ACTION_PAT }}@github.com/${GITHUB_REPOSITORY}.git"
-                git config http.sslVerify false
                 git config user.name "Automated Publisher"
                 git config user.email "actions@users.noreply.github.com"
                 echo "##CREATING TAG"
