@@ -18,6 +18,12 @@ jobs:
           matrix:
             node-version: [12.x]
         steps:
+          - name: Extract Info
+              id: branch_info
+              run: |
+                echo ::set-env name=NAME::${GITHUB_REF#refs/*/}
+                echo ::set-env name=BRANCH::${GITHUB_REF#refs/heads/}
+                echo ::set-env name=TAG::${GITHUB_REF#refs/tags/}
             - name: Setup Env
               shell: bash
               run: |
@@ -33,6 +39,9 @@ jobs:
               uses: actions/setup-node@v1
               with:
                 node-version: ${{ matrix.node-version }}
+                always-auth: true
+              env:
+                NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
                 
             - name: Set up Python
               uses: actions/setup-python@v1
@@ -53,9 +62,30 @@ jobs:
             - name: Build
               run: make build
 
+            if: env.BRANCH == 'workflow'
+            - name: SETUP
+              run: |
+                echo ::set-env name=PUBLISH::true
+
+            if: env.BRANCH == 'workflow' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+            - name: ECHO TAG
+              run: |
+                echo "TEST"
+                echo env.TAG
+                echo $TAG
+                echo ${{ env.TAG }}
+                echo env.$PUBLISH
+                echo $PUBLISH
+                echo ${{ env.$PUBLISH }}
+
+            if: env.PUBLISH == 'true'
             - name: Publish
               run: |
                 make publish
                 echo ::set-output name=status::success
+              env:
+                TWINE_USERNAME: __token__
+                TWINE_PASSWORD: ${{ secrets.PIPY_TOKEN }}
+                SNAP_TOKEN: ${{ secrets.SNAPCRAFT_TOKEN }}
               continue-on-error: true
       
