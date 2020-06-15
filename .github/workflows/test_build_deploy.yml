@@ -1,8 +1,11 @@
 name: TestBuildPublish
-on: 
-    push:
-      branches:
-            - workflow
+on:
+  push:
+    branches:
+      - '*'
+  create:
+    tags:
+      - 'v*'
 env:
     CI: true
     TERM: xterm
@@ -61,7 +64,6 @@ jobs:
 
             - name: Build
               run: make build
-
             
             - name: SETUP
               if: ${{ env.BRANCH == 'workflow' }}
