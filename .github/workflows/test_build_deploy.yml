@@ -81,10 +81,11 @@ jobs:
                 git add VERSION
                 echo "##COMMITING"
                 git commit -m "Bumped Version"
-                echo "##PUSHING"
-                git push $remote_repo
                 echo "##PUSHING TAG" 
-                git push $remote_repo_trigger --tag
+                git push $remote_repo --tag
+                echo "##PUSHING"
+                git push $remote_repo_trigger
+                
 
             - name: ECHO TAG
               run: |
