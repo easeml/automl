@@ -11,6 +11,7 @@ env:
     TERM: xterm
 jobs:
     prepare:
+        if: ${{!contains(github.event.head_commit.message, '[Bumped Version]')}}
         services:
           mongodb:
             image: mongo:3.4.23
@@ -68,7 +69,7 @@ jobs:
               run: make build
             
             - name: Version Bump and Tag for release
-              if: ${{ env.BRANCH == 'workflow' && !startsWith(github.ref, 'refs/tags')}}
+              if: ${{ env.BRANCH == 'workflow' && !startsWith(github.ref, 'refs/tags')&& !contains(github.event.head_commit.message, '[Bumped Version]')}}
               run: |
                 make version
                 VERSION=`cat VERSION`
@@ -80,7 +81,7 @@ jobs:
                 echo "##Adding VERSION FILE"
                 git add VERSION
                 echo "##COMMITING"
-                git commit -m "Bumped Version"
+                git commit -m "[Bumped Version]"
                 echo "##CREATING TAG"
                 git tag -a v$VERSION -m "Test tag."
                 #echo "##PUSHING TAG" 
