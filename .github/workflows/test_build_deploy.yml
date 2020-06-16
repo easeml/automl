@@ -53,6 +53,8 @@ jobs:
 
             - name: Check out code into the Go module directory
               uses: actions/checkout@v2
+              with:
+                persist-credentials: false
                                     
             - name: Init 
               run: |
@@ -81,10 +83,10 @@ jobs:
                 git add VERSION
                 echo "##COMMITING"
                 git commit -m "Bumped Version"
-                echo "##PUSHING TAG" 
-                git push $remote_repo --tag
+                #echo "##PUSHING TAG" 
+                #git push $remote_repo --tag
                 echo "##PUSHING"
-                git push $remote_repo_trigger
+                git push $remote_repo_trigger --follow-tags
                 
 
             - name: ECHO TAG
