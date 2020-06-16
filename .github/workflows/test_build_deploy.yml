@@ -77,12 +77,12 @@ jobs:
                 remote_repo_trigger="https://leaguilar:${{ secrets.ACTION_PAT }}@github.com/${GITHUB_REPOSITORY}.git"
                 git config user.name "$(git --no-pager log --format=format:'%an' -n 1)"
                 git config user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
-                echo "##CREATING TAG"
-                git tag -a v$VERSION -m "Test tag."
                 echo "##Adding VERSION FILE"
                 git add VERSION
                 echo "##COMMITING"
                 git commit -m "Bumped Version"
+                echo "##CREATING TAG"
+                git tag -a v$VERSION -m "Test tag."
                 #echo "##PUSHING TAG" 
                 #git push $remote_repo --tag
                 echo "##PUSHING"
