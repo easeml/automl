@@ -24,7 +24,6 @@ PROJECT_NAME := easemlclient
 PYTHON := $(shell which python)
 PIP := $(shell which pip)
 PIPENV := $(shell which pipenv)
-TWINE := $(shell which twine)
 PIPENV_RUN := $(PIPENV) run
 VERSION := $(shell cat $(ROOT_DIR_PATH)/VERSION)
 TESTS_PATH:= test
@@ -40,16 +39,12 @@ include $(ROOT_DIR_PATH)/dev/makefiles/show-prompt.mk
 init:
 	@if [ -z "${PIPENV}" ]; then \
 		echo 'Installing pipenv'; \
-		pip install pipenv; \
+		$(PYTHON) -m pip install pipenv; \
 		PIPENV=$$(which pipenv); \
         $$PIPENV install -e . --dev; \
     else \
         ${PIPENV} install -e . --dev; \
-	fi ; \
-	if [ -z "${TWINE}" ]; then \
-    		echo 'Installing TWINE'; \
-    		python3 -m pip install --user --upgrade twine; \
-    fi;\
+	fi ;
 	echo '$@: done'
 
 
@@ -112,8 +107,8 @@ lint-fix:
 ## Publish to the respective indexing service
 publish: package
 	$(call show-prompt,Running all publishing scripts)
-	$(TWINE) check $(DIST_PATH)/*
-	$(TWINE) upload --non-interactive $(DIST_PATH)/*
+	$(PIPENV_RUN) twine check $(DIST_PATH)/*
+	$(PIPENV_RUN) twine upload --non-interactive $(DIST_PATH)/*
 
 
 .PHONY: version

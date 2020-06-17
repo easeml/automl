@@ -1,5 +1,5 @@
 name: easeml
-version: 0.1.2
+version: 0.1.4
 summary: Ease.ml is a declarative machine learning service platform.
 description: |
   Ease.ml is a declarative machine learning service platform. 
@@ -38,43 +38,19 @@ slots:
 
 parts:
   buildenv:
-    plugin: nil
-    override-pull: |
-      echo "Preparing Build Environment"
-      echo "Installing Make"
-      apt install -y make
-      echo "Installing git"
-      apt install -y git
-      apt install -y wget
-      echo "Getting NodeJS"
-      export VERSION='12.8.0'
-
-      case "$SNAP_ARCH" in
-        "amd64")
-            export NBASE="node-v$VERSION-linux-x64"
-            ;;
-        *)
-            echo "Unsupported Architecture "$SNAP_ARCH
-            exit 1
-      esac
-
-      wget https://nodejs.org/dist/v$VERSION/$NBASE.tar.gz
-      tar xvzf $NBASE.tar.gz -C .
-      mkdir -p $HOME/temp_install
-      mv $NBASE/* $HOME/temp_install
-      echo "Cleaning"
-      rm $NBASE.tar.gz
-      echo "Installing go"
-      snap install --classic go
-      echo "Getting Packr2"
-      go get -v -u github.com/gobuffalo/packr/v2/...
+    plugin: dump
+    source: dev/scripts/linux/docker/
+    override-build: |
+      ./prepare-temp-build-env-engine.sh
   easeml:
     plugin: dump
     source: .
+    after: [buildenv]
     override-build: |
       echo "Exporting Paths"
+      export GOROOT=$HOME/temp_install/go
       export GOPATH=$HOME/go
-      export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin:$HOME/temp_install/bin
+      export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin:$HOME/temp_install/bin:$HOME/temp_install/go/bin
       npm set unsafe-perm true
       cd engine
       mkdir -p $SNAPCRAFT_PART_INSTALL/bin/
@@ -85,7 +61,6 @@ parts:
     stage-packages:
         - libssl1.0.0
         - libasn1-8-heimdal
-        - libcurl4
         - libgssapi3-heimdal
         - libhcrypto4-heimdal
         - libheimbase1-heimdal
@@ -94,11 +69,15 @@ parts:
         - libkrb5-26-heimdal
         - libldap-2.4-2
         - libnghttp2-14
-        - libpsl5
         - libroken18-heimdal
         - librtmp1
         - libsasl2-2
         - libwind0-heimdal
+        - libc6
+        - libcomerr2
+        - libdb5.3
+        - libgcc1
+        - zlib1g
     filesets:
         mongo:
             - usr

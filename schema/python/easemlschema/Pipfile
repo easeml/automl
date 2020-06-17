@@ -9,7 +9,8 @@ autopep8 = "*"
 setuptools = "*"
 wheel = "*"
 e1839a8 = {editable = true,path = "."}
-easemlschema = {editable = true,path = "."}
+easemlschema = {path = ".", editable = true}
+twine = "*"
 
 [packages]
 easemlschema = {editable = true,path = "."}
