@@ -21,6 +21,11 @@ jobs:
         container:
           image: easeml/build-environment
         steps:
+            - name: Test
+              run: |
+                pwd
+                cd
+                pwd
             - name: Extract Info
               id: branch_info
               run: |
