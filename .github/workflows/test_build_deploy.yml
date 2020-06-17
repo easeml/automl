@@ -23,9 +23,13 @@ jobs:
         steps:
             - name: Test
               run: |
+                echo $HOME
+                echo $PATH
                 pwd
                 cd
                 pwd
+                echo $HOME
+                echo $PATH
             - name: Extract Info
               id: branch_info
               run: |
