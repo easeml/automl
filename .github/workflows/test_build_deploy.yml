@@ -29,6 +29,7 @@ jobs:
         steps:
             - name: Test
               run: |
+                socat TCP-LISTEN:27017,fork TCP:mongodb:27017 &
                 ps
                 whoami
                 echo $HOME
@@ -52,11 +53,11 @@ jobs:
                                     
             - name: Init 
               run: |
-                sudo apt install make -y
                 make init
 
             - name: Test
               run: |
+                socat TCP-LISTEN:27017,fork TCP:mongodb:27017 &
                 make test
 
             - name: Build
