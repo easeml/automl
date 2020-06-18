@@ -25,8 +25,6 @@ jobs:
             - name: Test
               run: |
                 whoami
-                sudo apt install -y tree
-                tree
                 echo $HOME
                 echo $PATH
                 pwd
@@ -34,7 +32,6 @@ jobs:
                 pwd
                 echo $HOME
                 echo $PATH
-                tree
             - name: Extract Info
               id: branch_info
               run: |
