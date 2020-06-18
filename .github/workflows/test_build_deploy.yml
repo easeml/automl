@@ -48,20 +48,19 @@ jobs:
 
             - name: Check out code into the Go module directory
               uses: actions/checkout@v2
+              with:
+                persist-credentials: false
                                     
             - name: Init
-              if: ${{ env.BRANCH != 'workflow'}} 
               run: |
                 make init
 
             - name: Test
-              if: ${{ env.BRANCH != 'workflow'}} 
               run: |
                 socat TCP-LISTEN:27017,fork TCP:mongodb:27017 &
                 make test
 
             - name: Build
-              if: ${{ env.BRANCH != 'workflow'}} 
               run: make build
             
             - name: Version Bump and Tag for release
@@ -89,10 +88,10 @@ jobs:
 
             # Installation Taken from https://github.com/samuelmeuli/action-snapcraft/blob/master/index.js
             - name: Publish
-              #if: ${{ startsWith(github.ref, 'refs/tags') }}
+              if: ${{ startsWith(github.ref, 'refs/tags') }}
               run: |
                 make publish
-                echo ::set-output name=status::success
+                #echo ::set-output name=status::success
               env:
                 TWINE_USERNAME: __token__
                 TWINE_PASSWORD: ${{ secrets.PIPY_TOKEN }}
