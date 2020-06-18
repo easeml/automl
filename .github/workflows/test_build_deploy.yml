@@ -25,7 +25,7 @@ jobs:
             - name: Test
               run: |
                 whoami
-                apt install -y tree
+                sudo apt install -y tree
                 tree
                 echo $HOME
                 echo $PATH
