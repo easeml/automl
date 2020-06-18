@@ -1,6 +1,6 @@
 {
   "name": "easemlclient",
-  "version": "0.1.0",
+  "version": "0.1.6",
   "description": "The JavaScript client to the ease.ml system.",
   "main": "lib/easemlclient.js",
   "module": "src/index.js",

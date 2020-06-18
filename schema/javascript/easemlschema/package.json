@@ -1,6 +1,6 @@
 {
   "name": "easemlschema",
-  "version": "0.1.0",
+  "version": "0.1.6",
   "description": "Easeml schema used to define the type of a machine learning data set.",
   "main": "lib/index.js",
   "module": "src/index.js",
