@@ -24,8 +24,7 @@ jobs:
           env:
             GOROOT: "/usr/local/go"
             GOPATH: "/home/easeml/go"
-            PATH: "${PATH}:/usr/local/go/bin:/usr/local/pyenv/bin:/home/easeml/go/bin"
-            #PATH: "/snap/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/go/bin:/usr/local/pyenv/bin:/home/easeml/go/bin"
+            PATH: "/snap/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/go/bin:/usr/local/pyenv/bin:/home/easeml/go/bin"
             
         steps:
             - name: Test
