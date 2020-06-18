@@ -67,9 +67,7 @@ jobs:
             - name: Version Bump and Tag for release
               if: ${{ env.BRANCH == 'workflow' && !startsWith(github.ref, 'refs/tags')&& !contains(github.event.head_commit.message, '[Bumped Version]')}}
               run: |
-                pwd
-                ls -lah
-                #make version
+                make version
                 VERSION=`cat VERSION`
                 echo $VERSION
                 echo "USING GIT"
