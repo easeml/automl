@@ -20,7 +20,7 @@ jobs:
         runs-on: ubuntu-latest
         container:
           image: easeml/build-environment
-          options: "--user easeml --network=host"
+          options: "--user easeml"
           env:
             GOROOT: "/usr/local/go"
             GOPATH: "/home/easeml/go"
@@ -29,6 +29,7 @@ jobs:
         steps:
             - name: Test
               run: |
+                ps
                 whoami
                 echo $HOME
                 echo $PATH
