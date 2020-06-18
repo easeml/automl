@@ -20,9 +20,11 @@ jobs:
         runs-on: ubuntu-latest
         container:
           image: easeml/build-environment
+          options: "--user easeml"
         steps:
             - name: Test
               run: |
+                whoami
                 apt install -y tree
                 tree
                 echo $HOME

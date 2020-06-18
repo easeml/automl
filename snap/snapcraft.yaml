@@ -48,12 +48,15 @@ parts:
     after: [buildenv]
     override-build: |
       echo "Exporting Paths"
-      export GOROOT=$HOME/temp_install/go
+      export TOOL_INSTALL_PATH=/usr/local
+      export GOROOT=$TOOL_INSTALL_PATH/go
       export GOPATH=$HOME/go
-      export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin:$HOME/temp_install/bin:$HOME/temp_install/go/bin
+      mkdir -p $GOPATH/bin
+      export PATH=$PATH:$GOROOT/bin:$GOPATH/bin:$TOOL_INSTALL_PATH/bin
       npm set unsafe-perm true
       cd engine
       mkdir -p $SNAPCRAFT_PART_INSTALL/bin/
+      make init
       make install INSTALL_PATH=$SNAPCRAFT_PART_INSTALL/bin/
   mongod:
     source: http://downloads.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.0.tgz

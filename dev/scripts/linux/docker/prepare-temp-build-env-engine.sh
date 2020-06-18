@@ -11,19 +11,18 @@ apt install -y wget
 apt install -y curl
 echo "Getting NodeJS"
 export VERSION='12.8.0'
-export NBASE="node-v$VERSION-linux-x64"
-wget https://nodejs.org/dist/v$VERSION/$NBASE.tar.gz
-tar xzf $NBASE.tar.gz -C .
-mkdir -p $HOME/temp_install
-mv $NBASE/* $HOME/temp_install
-echo "Cleaning"
-rm $NBASE.tar.gz
+export NBASE="node-v$VERSION-linux-x64.tar.gz"
+export GBASE="go1.14.4.linux-amd64.tar.gz"
+#export TOOL_INSTALL_PATH=$HOME/temp_install
+export TOOL_INSTALL_PATH=/usr/local
+mkdir -p $TOOL_INSTALL_PATH
+wget https://nodejs.org/dist/v$VERSION/$NBASE
+tar -C $TOOL_INSTALL_PATH/ -xzf $NBASE --strip-components=1
 echo "Installing go"
-curl -O https://storage.googleapis.com/golang/go1.14.4.linux-amd64.tar.gz
-sudo tar -C $HOME/temp_install/ -xzf go1.14.4.linux-amd64.tar.gz
+curl -O https://storage.googleapis.com/golang/$GBASE
+tar -C $TOOL_INSTALL_PATH/ -xzf $GBASE
 mkdir -p ~/go
-export GOROOT=$HOME/temp_install/go
-export GOPATH=$HOME/go
-export PATH=$PATH:$HOME/go/bin:$HOME/temp_install/go/bin
-echo "Getting Packr2"
-go get -u github.com/gobuffalo/packr/v2/...
+echo "Cleaning"
+rm $NBASE
+rm $GBASE
+
