@@ -27,18 +27,6 @@ jobs:
             PATH: "/snap/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/go/bin:/usr/local/pyenv/bin:/home/easeml/go/bin"
             
         steps:
-            - name: Test
-              run: |
-                socat TCP-LISTEN:27017,fork TCP:mongodb:27017 &
-                ps
-                whoami
-                echo $HOME
-                echo $PATH
-                pwd
-                cd
-                pwd
-                echo $HOME
-                echo $PATH
             - name: Extract Info
               id: branch_info
               run: |
@@ -100,10 +88,9 @@ jobs:
               run: |
                 echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
                 make publish
-                #echo ::set-output name=status::success
               env:
                 TWINE_USERNAME: __token__
-                TWINE_PASSWORD: ${{ secrets.PIPY_TOKEN }}
+                TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
                 SNAP_TOKEN: ${{ secrets.SNAPCRAFT_TOKEN }}
                 NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
               continue-on-error: true

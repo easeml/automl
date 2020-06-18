@@ -52,8 +52,8 @@ init:
 clean:
 	$(call show-prompt,Cleaning the build files)
 	-$(PIPENV_RUN) python setup.py clean
-	-rm -f ./$(DIST_PATH)/$(PROJECT_NAME)-$(VERSION)*.whl
-	-rm -f ./$(DIST_PATH)/$(PROJECT_NAME)-$(VERSION)*.tar.gz
+	-rm -f $(DIST_PATH)/$(PROJECT_NAME)-$(VERSION)*.whl
+	-rm -f $(DIST_PATH)/$(PROJECT_NAME)-$(VERSION)*.tar.gz
 	-rm -rf ./dist
 	-rm -rf ./build
 	-rm -rf ./*.egg-info
