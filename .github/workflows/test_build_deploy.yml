@@ -21,6 +21,11 @@ jobs:
         container:
           image: easeml/build-environment
           options: "--user easeml"
+          env:
+            GOROOT: "/usr/local/go"
+            GOPATH: "/home/easeml/go"
+            PATH: "$PATH:/usr/local/go/bin:/usr/local/pyenv/bin:/home/easeml/go/bin"
+            
         steps:
             - name: Test
               run: |
