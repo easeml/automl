@@ -74,13 +74,21 @@ jobs:
                 remote_repo_trigger="https://leaguilar:${{ secrets.ACTION_PAT }}@github.com/${GITHUB_REPOSITORY}.git"
                 git config user.name "$(git --no-pager log --format=format:'%an' -n 1)"
                 git config user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
-                echo "##Adding VERSION FILE"
+                echo "##Adding VERSION FILES"
                 git add VERSION
+                git add client/javascript/easemlclient/package.json
+                git add client/jupyterlab/easemlclient/package.json
+                git add client/python/easemlclient/easemlclient/__init__.py
+                git add schema/javascript/easemlschema/package.json
+                git add schema/python/easemlschema/easemlschema/__init__.py
+                git add snap/snapcraft.yaml
+                git add web/package.json
+
                 echo "##COMMITING"
                 git commit -m "[Bumped Version]"
                 echo "##CREATING TAG"
                 git tag -a v$VERSION -m "Test tag."
-                #echo "##PUSHING TAG" 
+                #echo "##PUSHING TAG"
                 #git push $remote_repo --tag
                 echo "##PUSHING"
                 git push $remote_repo_trigger --follow-tags
@@ -90,6 +98,7 @@ jobs:
             - name: Publish
               if: ${{ startsWith(github.ref, 'refs/tags') }}
               run: |
+                echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
                 make publish
                 #echo ::set-output name=status::success
               env:
