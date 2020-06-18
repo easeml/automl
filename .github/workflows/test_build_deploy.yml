@@ -21,6 +21,8 @@ jobs:
         container:
           image: easeml/build-environment
           options: "--user easeml"
+          ports:
+              - 27017:27017
           env:
             GOROOT: "/usr/local/go"
             GOPATH: "/home/easeml/go"
