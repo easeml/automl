@@ -26,18 +26,15 @@ jobs:
             - name: Extract Info
               id: branch_info
               run: |
-                set -x
                 echo ::set-env name=NAME::${GITHUB_REF#refs/*/}
                 echo ::set-env name=BRANCH::${GITHUB_REF#refs/heads/}
                 echo ::set-env name=TAG::${GITHUB_REF#refs/tags/}
-                pwd
-                find ../../ \( -type d -exec sudo chmod -v u+rwx,g+rwx,o+rx {} \; -o -type f -exec sudo chmod -v u+rw,g+rw,o+r {} \; \)
-                ls -lah ..
+                echo ::set-env name=REMOTE_REPO="https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
             - name: Check out code into the Go module directory
-              uses: actions/checkout@v2
-              with:
-                persist-credentials: false
-                path: leo 
+              run: |
+                echo ${{env.REMOTE_REPO}}
+                git clone --depth 1 ${{env.REMOTE_REPO}} 
 
                                     
             - name: Init
