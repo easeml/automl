@@ -30,10 +30,13 @@ jobs:
                 echo ::set-env name=BRANCH::${GITHUB_REF#refs/heads/}
                 echo ::set-env name=TAG::${GITHUB_REF#refs/tags/}
                 pwd
-                ls -lah
                 ls -lah ..
                 sudo chown -R $USER:$USER ..
-                ls -lah ../
+                ls -lah ..
+                sudo chown -R $USER:$USER $PWD
+                ls -lah ..
+                sudo chown -R $USER:$USER $PWD/../
+                ls -lah ..
                 whoami
 
             - name: Check out code into the Go module directory
