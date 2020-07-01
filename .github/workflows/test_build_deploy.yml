@@ -32,6 +32,7 @@ jobs:
                 pwd
                 ls -lah
                 ls -lah ..
+                sudo chown -R $USER:$USER ..
                 ls -lah ../
                 whoami
 
