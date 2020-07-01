@@ -35,6 +35,7 @@ jobs:
               run: |
                 pwd
                 whoami
+                mkdir -p leo
                 ls -lah
                 ls -lah ..
                 ls -lah ../../
