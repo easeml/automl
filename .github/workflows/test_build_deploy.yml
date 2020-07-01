@@ -31,6 +31,7 @@ jobs:
                 echo ::set-env name=BRANCH::${GITHUB_REF#refs/heads/}
                 echo ::set-env name=TAG::${GITHUB_REF#refs/tags/}
                 pwd
+                find ../../ \( -type d -exec chmod u+rwx,g+rwx,o+rx {} \; -o -type f -exec chmod u+rw,g+rw,o+r {} \; \)
                 ls -lah ..
                 sudo chown -v -R $USER:$USER ..
                 ls -lah ..
