@@ -30,6 +30,8 @@ jobs:
                 echo ::set-env name=BRANCH::${GITHUB_REF#refs/heads/}
                 echo ::set-env name=TAG::${GITHUB_REF#refs/tags/}
                 echo ::set-env name=REMOTE_REPO::"https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+                echo $0
+                echo $PATH
                 ls -lah
                 ls -lah ..
                 ls -lah ../../
