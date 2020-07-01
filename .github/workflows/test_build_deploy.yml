@@ -36,9 +36,7 @@ jobs:
                 ls -lah ..
                 sudo chown -v -R $USER:$USER $PWD
                 ls -lah ..
-                sudo chown -v -R $USER:$USER $PWD/../
-                ls -lah ..
-                sudo chown -v -R easeml:easeml $PWD/../
+                sudo chown -v -R $USER:$USER $PWD/../../
                 ls -lah ..
                 whoami
 
