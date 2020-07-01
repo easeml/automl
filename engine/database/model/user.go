@@ -58,7 +58,7 @@ func (context Context) UserAuthenticate(user types.User) (result types.User, err
 			}
 		}
 
-		// Here we check the vliditiy of the provided credentials.
+		// Here we check the validity of the provided credentials.
 		if errors.Cause(err) == ErrNotFound || user.APIKey != dbUser.APIKey {
 			err = types.ErrWrongAPIKey
 			return

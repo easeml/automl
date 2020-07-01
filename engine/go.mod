@@ -8,19 +8,23 @@ require (
 	github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40 // indirect
 	github.com/cavaliercoder/grab v2.0.0+incompatible
 	github.com/containerd/containerd v1.3.2 // indirect
+	github.com/coreos/go-etcd v2.0.0+incompatible // indirect
+	github.com/cpuguy83/go-md2man v1.0.10 // indirect
 	github.com/docker/docker v1.4.2-0.20200103225628-a9507c6f7662
 	github.com/ds3lab/easeml/client/go/easemlclient v0.0.0
 	github.com/ds3lab/easeml/schema/go/easemlschema v0.0.0
 	github.com/emicklei/forest v1.1.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
-	github.com/gobuffalo/packr/v2 v2.7.1
+	github.com/gobuffalo/envy v1.9.0 // indirect
+	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/golang/mock v1.3.0 // indirect
 	github.com/google/go-cmp v0.3.0 // indirect
 	github.com/gorilla/context v1.1.1
 	github.com/gorilla/mux v1.7.1
 	github.com/howeyc/gopass v0.0.0-20170109162249-bf9dde6d0d2c
 	github.com/justinas/alice v0.0.0-20171023064455-03f45bd4b7da
+	github.com/karrick/godirwalk v1.15.6 // indirect
 	github.com/mholt/archiver v2.1.0+incompatible
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/morikuni/aec v1.0.0 // indirect
@@ -28,16 +32,22 @@ require (
 	github.com/otiai10/curr v0.0.0-20150429015615-9b4961190c95 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.8.1
+	github.com/rogpeppe/go-internal v1.6.0 // indirect
 	github.com/rs/cors v1.6.0
 	github.com/satori/go.uuid v1.2.0
-	github.com/sirupsen/logrus v1.4.2
-	github.com/spf13/cobra v0.0.5
-	github.com/spf13/viper v1.3.2
-	github.com/stretchr/testify v1.4.0
+	github.com/sirupsen/logrus v1.6.0
+	github.com/spf13/cobra v1.0.0
+	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/spf13/viper v1.4.0
+	github.com/stretchr/testify v1.5.1
 	github.com/tus/tusd v0.0.0-20190508030626-9d693c93a3ea
-	golang.org/x/net v0.0.0-20190620200207-3b0461eec859
+	github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8 // indirect
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
+	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b
+	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
+	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
-	google.golang.org/grpc v1.20.1 // indirect
+	golang.org/x/tools v0.0.0-20200701151220-7cb253f4c4f8 // indirect
 	gopkg.in/Acconut/lockfile.v1 v1.1.0 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
 )

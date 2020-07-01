@@ -11,9 +11,11 @@ import (
 
 	"github.com/globalsign/mgo/bson"
 	"github.com/stretchr/testify/assert"
+	"github.com/ds3lab/easeml/engine/utils"
 )
 
-var MongoInstance = "localhost"
+var MongoInstance = utils.GetEnvVariableOrDefault("EASEML_DATABASE_ADDRESS","localhost")
+
 var TestDBName = "testdb"
 
 func TestUserAuthenticate(t *testing.T) {

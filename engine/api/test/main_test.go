@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"github.com/ds3lab/easeml/engine/utils"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -20,7 +21,7 @@ var server *httptest.Server
 var client *forest.APITesting
 var rootAPIKey string
 
-const testDbAddr = "localhost"
+var testDbAddr = utils.GetEnvVariableOrDefault("EASEML_DATABASE_ADDRESS","localhost")
 const testDbName = "easeml_test"
 const apiBasepath = "/api/v1"
 const testWorkDir = ""

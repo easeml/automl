@@ -20,7 +20,7 @@ type Connection struct {
 // DBName is the name of the target database.
 // var DBName string
 
-// Cache is the key/value cache store used to reduce database trafic.
+// Cache is the key/value cache store used to reduce database traffic.
 var Cache = cache.New(cache.NoExpiration, cache.NoExpiration)
 
 // Connect initializes the MongoDB session.
