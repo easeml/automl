@@ -43,7 +43,7 @@ jobs:
               with:
                 persist-credentials: false
                 entrypoint: /bin/echo
-                args: The ${{ github.event_name }} event triggered this step. on ${{PWD}} and $PWD  
+                args: The ${{ github.event_name }} event triggered this step. $PWD  
 
                                     
             - name: Init
