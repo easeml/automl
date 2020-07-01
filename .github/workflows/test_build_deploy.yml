@@ -36,11 +36,18 @@ jobs:
             - name: Pull code
               run: |
                 set -x
+                whoami
+                pwd
                 git clone --depth 1 ${{env.REMOTE_REPO}} 
+                cd ~/
+                pwd
 
                                     
             - name: Init
               run: |
+                set -x
+                whoami
+                pwd
                 . ~/.bashrc
                 make init
 
