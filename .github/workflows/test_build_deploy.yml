@@ -21,10 +21,6 @@ jobs:
         container:
           image: easeml/build-environment
           options: "--user easeml"
-          env:
-            GOROOT: "/usr/local/go"
-            GOPATH: "/home/easeml/go"
-            PATH: "/snap/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/go/bin:/usr/local/pyenv/bin:/home/easeml/go/bin"
             
         steps:
             - name: Extract Info
@@ -41,18 +37,19 @@ jobs:
                                     
             - name: Init
               run: |
+                source ~/.bashrc
                 make init
 
             - name: Test
               run: |
-                socat TCP-LISTEN:27017,fork TCP:mongodb:27017 &
+                source .env.test
                 make test
 
             - name: Build
               run: make build
             
             - name: Version Bump and Tag for release
-              if: ${{ env.BRANCH == 'workflow' && !startsWith(github.ref, 'refs/tags')&& !contains(github.event.head_commit.message, '[Bumped Version]')}}
+              if: ${{ env.BRANCH == 'workflow' }}
               run: |
                 make version
                 VERSION=`cat VERSION`
@@ -62,6 +59,8 @@ jobs:
                 remote_repo_trigger="https://leaguilar:${{ secrets.ACTION_PAT }}@github.com/${GITHUB_REPOSITORY}.git"
                 git config user.name "$(git --no-pager log --format=format:'%an' -n 1)"
                 git config user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
+                echo "##Check changes"
+                git status
                 echo "##Adding VERSION FILES"
                 git add VERSION
                 git add client/javascript/easemlclient/package.json
@@ -80,11 +79,10 @@ jobs:
                 #git push $remote_repo --tag
                 echo "##PUSHING"
                 git push $remote_repo_trigger --follow-tags
-                
 
             # Installation Taken from https://github.com/samuelmeuli/action-snapcraft/blob/master/index.js
             - name: Publish
-              if: ${{ startsWith(github.ref, 'refs/tags') }}
+              if: ${{ env.BRANCH == 'workflow' }}
               run: |
                 echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
                 make publish
@@ -93,5 +91,5 @@ jobs:
                 TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
                 SNAP_TOKEN: ${{ secrets.SNAPCRAFT_TOKEN }}
                 NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-              continue-on-error: true
+
       
