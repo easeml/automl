@@ -33,7 +33,11 @@ jobs:
 
             - name: Check out code into the Go module directory
               run: |
-                echo ${{env.REMOTE_REPO}}
+                pwd
+                whoami
+                ls -lah
+                ls -lah ..
+                ls -lah ../../
                 git clone --depth 1 ${{env.REMOTE_REPO}} 
 
                                     
