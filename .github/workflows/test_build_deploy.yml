@@ -30,24 +30,11 @@ jobs:
                 echo ::set-env name=BRANCH::${GITHUB_REF#refs/heads/}
                 echo ::set-env name=TAG::${GITHUB_REF#refs/tags/}
                 echo ::set-env name=REMOTE_REPO::"https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-                echo $0
-                echo $PATH
-                ls -lah
-                ls -lah ..
-                ls -lah ../../
 
             - name: Check out code into the Go module directory
               run: |
                 set -x
-                pwd
-                whoami
-                ls -lah
-                ls -lah ..
-                find .. \( -type d -exec sudo chmod -v u+rwx,g+rwx,o+rx {} \; -o -type f -exec sudo chmod -v u+rw,g+rw,o+r {} \; \)
-                mkdir -p leo
-                ls -lah
-                ls -lah ..
-                ls -lah ../../
+                find .. \( -type d -exec sudo chmod -v u+rwx,g+rwx,o+rwx {} \; -o -type f -exec sudo chmod -v u+rw,g+rw,o+r {} \; \)
                 git clone --depth 1 ${{env.REMOTE_REPO}} 
 
                                     
