@@ -31,11 +31,11 @@ jobs:
                 echo ::set-env name=TAG::${GITHUB_REF#refs/tags/}
                 pwd
                 ls -lah ..
-                sudo chown -R $USER:$USER ..
+                sudo chown -v -R $USER:$USER ..
                 ls -lah ..
-                sudo chown -R $USER:$USER $PWD
+                sudo chown -v -R $USER:$USER $PWD
                 ls -lah ..
-                sudo chown -R $USER:$USER $PWD/../
+                sudo chown -v -R $USER:$USER $PWD/../
                 ls -lah ..
                 whoami
 
