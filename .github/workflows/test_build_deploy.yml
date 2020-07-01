@@ -26,6 +26,7 @@ jobs:
             - name: Extract Info
               id: branch_info
               run: |
+                set -x
                 echo ::set-env name=NAME::${GITHUB_REF#refs/*/}
                 echo ::set-env name=BRANCH::${GITHUB_REF#refs/heads/}
                 echo ::set-env name=TAG::${GITHUB_REF#refs/tags/}
@@ -37,12 +38,15 @@ jobs:
                 ls -lah ..
                 sudo chown -v -R $USER:$USER $PWD/../
                 ls -lah ..
+                sudo chown -v -R easeml:easeml $PWD/../
+                ls -lah ..
                 whoami
 
             - name: Check out code into the Go module directory
               uses: actions/checkout@v2
               with:
                 persist-credentials: false
+
                                     
             - name: Init
               run: |
