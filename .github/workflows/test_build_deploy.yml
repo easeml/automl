@@ -39,21 +39,21 @@ jobs:
               run: |
                 set -x
                 echo $HOME
-                echo $TEST_VAR
+                echo $EASEML_HOME
+                . $EASEML_HOME/.bashrc
                 whoami
                 pwd
                 git clone --depth 1 ${{env.REMOTE_REPO}} 
                 cd ~/
                 pwd
-              shell: bash -eo pipefail {0}
-
                                     
             - name: Init
               run: |
                 set -x
                 whoami
+                printenv
                 pwd
-                . ~/.bashrc
+                . $EASEML_HOME/.bashrc
                 make init
               shell: bash
 
