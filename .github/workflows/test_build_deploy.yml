@@ -32,39 +32,16 @@ jobs:
                 echo ::set-env name=REMOTE_REPO::"https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
                 # Fix permissions
                 find .. \( -type d -exec sudo chmod -v u+rwx,g+rwx,o+rwx {} \; -o -type f -exec sudo chmod -v u+rw,g+rw,o+r {} \; \)
-                echo $HOME
-                echo $PATH
-                cat $EASEML_HOME/.bashrc
-                source $EASEML_HOME/.bashrc
-                cat $EASEML_HOME/.env.base
-                source $EASEML_HOME/.env.base
+                . $EASEML_HOME/.env.base
                 echo $PATH
                 ps -o args= -p "$$"
-                echo $0
-                export $PATH="/bin"
-                echo $PATH
-              shell: bash -eo pipefail {0}
 
             - name: Pull code
               run: |
                 set -x
-                ps -o args= -p "$$"
-                printenv
-                echo $HOME
-                echo $EASEML_HOME
-                source $EASEML_HOME/.bashrc
-                whoami
-                printenv
-                pwd
+                echo $PATH
                 git clone --depth 1 ${{env.REMOTE_REPO}} . 
-                pwd
-                ls -lah
-                ls -lah ../
-                cd ~/
-                ls -lah
-                pwd
-              shell: bash
-                                    
+                                   
             - name: Init
               run: |
                 cat Makefile
