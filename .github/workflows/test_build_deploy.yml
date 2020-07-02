@@ -33,7 +33,7 @@ jobs:
                 # Fix permissions
                 find .. \( -type d -exec sudo chmod -v u+rwx,g+rwx,o+rwx {} \; -o -type f -exec sudo chmod -v u+rw,g+rw,o+r {} \; \)
                 echo $HOME
-                cat $0
+                ps -o args= -p "$$"
                 echo $0
 
             - name: Pull code
@@ -57,6 +57,7 @@ jobs:
             - name: Init
               run: |
                 set -x
+                ls -lah
                 whoami
                 printenv
                 pwd
