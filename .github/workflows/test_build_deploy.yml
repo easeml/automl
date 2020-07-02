@@ -43,7 +43,7 @@ jobs:
                 git clone --depth 1 ${{env.REMOTE_REPO}} 
                 cd ~/
                 pwd
-              shell: bash --noprofile --norc -eo pipefail {0}
+              shell: bash -eo pipefail {0}
 
                                     
             - name: Init
