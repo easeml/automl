@@ -35,10 +35,12 @@ jobs:
                 echo $HOME
                 ps -o args= -p "$$"
                 echo $0
+              shell: bash
 
             - name: Pull code
               run: |
                 set -x
+                ps -o args= -p "$$"
                 printenv
                 echo $HOME
                 echo $EASEML_HOME
@@ -56,12 +58,15 @@ jobs:
                                     
             - name: Init
               run: |
+                ps -o args= -p "$$"
                 set -x
                 ls -lah
                 whoami
                 printenv
                 pwd
                 . $EASEML_HOME/.bashrc
+                pwd
+                ls -lah
                 make init
               shell: bash
 
