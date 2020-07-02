@@ -68,7 +68,7 @@ jobs:
                 pwd
                 ls -lah
                 make init
-              shell: bash
+              shell: /bin/bash --noprofile --norc -eo pipefail {0}
 
             - name: Test
               run: |
