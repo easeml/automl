@@ -52,7 +52,7 @@ jobs:
             - name: Test
               run: |
                 . $EASEML_HOME/.env.base
-                . .env.test
+                . ./.env.test
                 make test
 
             - name: Build
