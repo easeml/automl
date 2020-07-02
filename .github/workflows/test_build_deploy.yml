@@ -44,7 +44,8 @@ jobs:
               run: |
                 ls -lah
                 . $EASEML_HOME/.env.base
-                . .env.test
+                cat .env.test
+                . ./.env.test
                 ls -lah
                 make init
 
