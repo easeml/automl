@@ -62,6 +62,11 @@ package:
 	$(call show-prompt,Building the deployment package)
 	$(call repeat-for-all,$@)
 
+.PHONY: publish
+## Publish to the respective indexing service
+publish:
+	$(call show-prompt,Running all publishing scripts)
+	$(call repeat-for-all,$@)
 
 .PHONY: test
 ## Run all tests.
