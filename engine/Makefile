@@ -82,7 +82,6 @@ build: $(WEB_UI_DIST_PATH)
 	$(PACKR)
 	$(GO) build -o $(PROJECT_NAME)
 	$(PACKR) clean
-	which packr2
 
 .PHONY: install
 ## Call build then move binary to INSTALL_PATH

@@ -78,6 +78,4 @@ jobs:
                 TWINE_USERNAME: __token__
                 TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
                 SNAP_TOKEN: ${{ secrets.SNAPCRAFT_TOKEN }}
-                NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-
-      
+                NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}   
