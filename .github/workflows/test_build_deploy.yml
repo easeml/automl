@@ -42,9 +42,7 @@ jobs:
                                    
             - name: Init
               run: |
-                ls -lah
                 . $EASEML_HOME/.env.base
-                cat .env.test
                 . ./.env.test
                 ls -lah
                 make init
@@ -67,31 +65,19 @@ jobs:
                 make version
                 VERSION=`cat VERSION`
                 echo $VERSION
-                echo "USING GIT"
-                remote_repo="https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-                remote_repo_trigger="https://leaguilar:${{ secrets.ACTION_PAT }}@github.com/${GITHUB_REPOSITORY}.git"
-                git config user.name "$(git --no-pager log --format=format:'%an' -n 1)"
-                git config user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
+                #echo "USING GIT"
+                #git config user.name "$(git --no-pager log --format=format:'%an' -n 1)"
+                #git config user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
                 echo "##Check changes"
                 git status
                 echo "##Adding VERSION FILES"
-                git add VERSION
-                git add client/javascript/easemlclient/package.json
-                git add client/jupyterlab/easemlclient/package.json
-                git add client/python/easemlclient/easemlclient/__init__.py
-                git add schema/javascript/easemlschema/package.json
-                git add schema/python/easemlschema/easemlschema/__init__.py
-                git add snap/snapcraft.yaml
-                git add web/package.json
-
+                git add -u
                 echo "##COMMITING"
                 git commit -m "[Bumped Version]"
                 echo "##CREATING TAG"
                 git tag -a v$VERSION -m "Test tag."
-                #echo "##PUSHING TAG"
-                #git push $remote_repo --tag
                 echo "##PUSHING"
-                git push $remote_repo_trigger --follow-tags
+                git push ${{env.REMOTE_REPO}} --follow-tags
 
             # Installation Taken from https://github.com/samuelmeuli/action-snapcraft/blob/master/index.js
             - name: Publish
