@@ -77,7 +77,6 @@ package:
 	$(call show-prompt,Building the deployment package)
 	$(call repeat-for-all,$@)
 
-https://github.com/DS3Lab/easeml.git
 .PHONY: test
 ## Run all tests.
 test:
