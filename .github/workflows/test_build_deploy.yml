@@ -25,29 +25,19 @@ jobs:
             - name: Extract Info
               id: branch_info
               run: |
-                set -x
                 echo ::set-env name=NAME::${GITHUB_REF#refs/*/}
                 echo ::set-env name=BRANCH::${GITHUB_REF#refs/heads/}
                 echo ::set-env name=TAG::${GITHUB_REF#refs/tags/}
                 echo ::set-env name=REMOTE_REPO::"https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
                 # Fix permissions
                 find .. \( -type d -exec sudo chmod -v u+rwx,g+rwx,o+rwx {} \; -o -type f -exec sudo chmod -v u+rw,g+rw,o+r {} \; \)
-                echo "Shell used"
-                ps -o args= -p "$$"
 
-            - name: Pull code
-              run: |
-                set -x
-                git clone --depth 1 ${{env.REMOTE_REPO}} . 
+            - name: Check out code
+              uses: actions/checkout@v2 
                                    
             - name: Init
               run: |
-                pwd
-                ls -lah
-                cat Makefile
                 . $EASEML_HOME/.env.base
-                pwd
-                ls -lah
                 make init
 
             - name: Test
@@ -61,7 +51,7 @@ jobs:
                 . $EASEML_HOME/.env.base
                 make build
             
-            - name: Version Bump and Tag for release
+            - name: Version Bump and Tag
               if: ${{ env.BRANCH == 'workflow' }}
               run: |
                 . $EASEML_HOME/.env.base
@@ -98,6 +88,7 @@ jobs:
             - name: Publish
               if: ${{ env.BRANCH == 'workflow' }}
               run: |
+                . $EASEML_HOME/.env.base
                 echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
                 make publish
               env:
