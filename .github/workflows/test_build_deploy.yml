@@ -42,11 +42,13 @@ jobs:
                                    
             - name: Init
               run: |
+                pwd
+                ls -lah
+                cat Makefile
                 . $EASEML_HOME/.env.base
                 pwd
                 ls -lah
                 make init
-              shell: bash --noprofile --norc -eo pipefail {0}
 
             - name: Test
               run: |
