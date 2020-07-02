@@ -29,6 +29,8 @@ jobs:
                 echo ::set-env name=BRANCH::${GITHUB_REF#refs/heads/}
                 echo ::set-env name=TAG::${GITHUB_REF#refs/tags/}
                 echo ::set-env name=REMOTE_REPO::"https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+                git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
+                git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
                 
             - name: Fix permissions #similar to https://github.com/actions/checkout/issues/211
               run: |
@@ -66,8 +68,8 @@ jobs:
                 VERSION=`cat VERSION`
                 echo $VERSION
                 #echo "USING GIT"
-                #git config user.name "$(git --no-pager log --format=format:'%an' -n 1)"
-                #git config user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
+                #git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
+                #git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
                 echo "##Check changes"
                 git status
                 echo "##Adding VERSION FILES"
