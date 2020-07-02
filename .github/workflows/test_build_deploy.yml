@@ -38,10 +38,12 @@ jobs:
             - name: Pull code
               run: |
                 set -x
+                printenv
                 echo $HOME
                 echo $EASEML_HOME
                 . $EASEML_HOME/.bashrc
                 whoami
+                printenv
                 pwd
                 git clone --depth 1 ${{env.REMOTE_REPO}} 
                 cd ~/
