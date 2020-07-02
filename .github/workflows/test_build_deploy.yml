@@ -32,43 +32,37 @@ jobs:
                 echo ::set-env name=REMOTE_REPO::"https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
                 # Fix permissions
                 find .. \( -type d -exec sudo chmod -v u+rwx,g+rwx,o+rwx {} \; -o -type f -exec sudo chmod -v u+rw,g+rw,o+r {} \; \)
-                . $EASEML_HOME/.env.base
-                echo $PATH
+                echo "Shell used"
                 ps -o args= -p "$$"
 
             - name: Pull code
               run: |
                 set -x
-                echo $PATH
                 git clone --depth 1 ${{env.REMOTE_REPO}} . 
                                    
             - name: Init
               run: |
-                cat Makefile
-                ps -o args= -p "$$"
-                set -x
-                ls -lah
-                whoami
-                printenv
-                pwd
-                . $EASEML_HOME/.bashrc
+                . $EASEML_HOME/.env.base
                 pwd
                 ls -lah
-                cat Makefile
                 make init
               shell: bash --noprofile --norc -eo pipefail {0}
 
             - name: Test
               run: |
+                . $EASEML_HOME/.env.base
                 . .env.test
                 make test
 
             - name: Build
-              run: make build
+              run: |
+                . $EASEML_HOME/.env.base
+                make build
             
             - name: Version Bump and Tag for release
               if: ${{ env.BRANCH == 'workflow' }}
               run: |
+                . $EASEML_HOME/.env.base
                 make version
                 VERSION=`cat VERSION`
                 echo $VERSION
