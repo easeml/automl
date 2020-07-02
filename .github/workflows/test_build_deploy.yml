@@ -11,7 +11,6 @@ env:
     TERM: xterm
 jobs:
     prepare:
-        if: ${{!contains(github.event.head_commit.message, '[Bumped Version]')}}
         services:
           mongodb:
             image: mongo:3.4.23
@@ -52,28 +51,26 @@ jobs:
               run: make build
             
             - name: Version Bump and Tag
-              if: ${{ env.BRANCH == 'workflow' }}
+              if: ${{ env.BRANCH == 'master' }}
               run: |
-                . $EASEML_HOME/.env.base
                 make version
                 VERSION=`cat VERSION`
                 echo Version = $VERSION
                 git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
                 git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
-                echo "##Check changes"
+                echo "## Check changes"
                 git status
-                echo "##Adding VERSION FILES"
+                echo "## Adding versioned files"
                 git add -u
-                echo "##COMMITING"
+                echo "## Commiting changes"
                 git commit -m "[Bumped Version]"
-                echo "##CREATING TAG"
+                echo "## Creating version tag"
                 git tag -a v$VERSION -m "Release tag."
-                echo "##PUSHING"
+                echo "## Pushing changes"
                 git push ${{env.REMOTE_REPO}} --follow-tags
 
-            # Installation Taken from https://github.com/samuelmeuli/action-snapcraft/blob/master/index.js
             - name: Publish
-              if: ${{ env.BRANCH == 'workflow' }}
+              if: ${{ env.BRANCH == 'master' }}
               run: |
                 echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
                 make publish
