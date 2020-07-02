@@ -30,7 +30,7 @@ jobs:
                 echo ::set-env name=TAG::${GITHUB_REF#refs/tags/}
                 echo ::set-env name=REMOTE_REPO::"https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
                 
-            - name: cleanup #https://github.com/actions/checkout/issues/211
+            - name: Fix permissions #similar to https://github.com/actions/checkout/issues/211
               run: |
                 printenv
                 # Fix permissions
@@ -42,7 +42,10 @@ jobs:
                                    
             - name: Init
               run: |
+                ls -lah
                 . $EASEML_HOME/.env.base
+                . .env.test
+                ls -lah
                 make init
 
             - name: Test
