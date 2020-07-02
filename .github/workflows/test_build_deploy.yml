@@ -29,7 +29,6 @@ jobs:
                 echo ::set-env name=BRANCH::${GITHUB_REF#refs/heads/}
                 echo ::set-env name=TAG::${GITHUB_REF#refs/tags/}
                 echo ::set-env name=REMOTE_REPO::"https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-                printenv
                 
             - name: Fix permissions #similar to https://github.com/actions/checkout/issues/211
               run: |
@@ -42,22 +41,15 @@ jobs:
               uses: actions/checkout@v2 
                                    
             - name: Init
-              run: |
-                . $EASEML_HOME/.env.base
-                . ./.env.test
-                ls -lah
-                make init
+              run: make init
 
             - name: Test
               run: |
-                . $EASEML_HOME/.env.base
                 . ./.env.test
                 make test
 
             - name: Build
-              run: |
-                . $EASEML_HOME/.env.base
-                make build
+              run: make build
             
             - name: Version Bump and Tag
               if: ${{ env.BRANCH == 'workflow' }}
@@ -75,7 +67,7 @@ jobs:
                 echo "##COMMITING"
                 git commit -m "[Bumped Version]"
                 echo "##CREATING TAG"
-                git tag -a v$VERSION -m "Test tag."
+                git tag -a v$VERSION -m "Release tag."
                 echo "##PUSHING"
                 git push ${{env.REMOTE_REPO}} --follow-tags
 
@@ -83,7 +75,6 @@ jobs:
             - name: Publish
               if: ${{ env.BRANCH == 'workflow' }}
               run: |
-                . $EASEML_HOME/.env.base
                 echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
                 make publish
               env:
