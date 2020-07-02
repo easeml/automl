@@ -44,7 +44,7 @@ jobs:
                 printenv
                 echo $HOME
                 echo $EASEML_HOME
-                . $EASEML_HOME/.bashrc
+                source $EASEML_HOME/.bashrc
                 whoami
                 printenv
                 pwd
@@ -55,6 +55,7 @@ jobs:
                 cd ~/
                 ls -lah
                 pwd
+              shell: bash
                                     
             - name: Init
               run: |
@@ -68,7 +69,7 @@ jobs:
                 pwd
                 ls -lah
                 make init
-              shell: /bin/bash --noprofile --norc -eo pipefail {0}
+              shell: bash --noprofile --norc -eo pipefail {0}
 
             - name: Test
               run: |
