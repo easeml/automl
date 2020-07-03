@@ -18,8 +18,8 @@ setup(
     description='Client library used to communicate with the ease.ml service.',
     long_description=README,
     long_description_content_type="text/markdown",
-    author='Bojan Karlas',
-    author_email='bojan.karlas@gmail.com',
+    author='Bojan Karlas, Leonel Aguilar',
+    author_email='bojan.karlas@gmail.com, leonel.aguilar.m@gmail.com',
     url='https://github.com/DS3Lab/easeml',
     license='MIT',
     install_requires=REQUIREMENTS,
@@ -29,5 +29,12 @@ setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent"
-    ]
+    ],
+    entry_points={"console_scripts": ["easemlclient=easemlclient.commands.client:main"],
+                  "easemlclient": ["download = easemlclient.commands.download:download_action_group", "show = easemlclient.commands.show:show_action_group", "create = easemlclient.commands.create:create_action_group"],
+                  "easemlclient.download": ["dataset = easemlclient.commands.download:download_dataset", "model = easemlclient.commands.download:download_model"],
+                  "easemlclient.show": ["dataset = easemlclient.commands.show:show_dataset", "job = easemlclient.commands.show:show_job", "task = easemlclient.commands.show:show_task"],
+                  "easemlclient.create": ["dataset = easemlclient.commands.create:create_dataset", "job = easemlclient.commands.create:create_job_action_group"],
+                  "easemlclient.create.job": ["new = easemlclient.commands.create:create_new_job", "from-task = easemlclient.commands.create:create_job_from_task"],
+                  },
 )

@@ -3,7 +3,6 @@ Implementation of the `Job` class.
 """
 import pyrfc3339
 
-from copy import deepcopy
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Dict, Optional, Any, Iterator, Tuple, List
@@ -28,6 +27,9 @@ class JobStatus(Enum):
     TERMINATED = "terminated"
     ERROR = "error"
 
+    def __str__(self):
+        return str(self.value)
+
 
 class Job(ApiType['Job']):
     """The Job class contains information about datasets.
@@ -45,31 +47,38 @@ class Job(ApiType['Job']):
 
     def __init__(self, input: Dict[str, Any]) -> None:
         if "id" not in input:
-            raise ValueError("Invalid input dictionary: It must contain an 'id' key.")
+            raise ValueError(
+                "Invalid input dictionary: It must contain an 'id' key.")
 
         super().__init__(input)
 
     @classmethod
-    def create(cls, dataset: Dataset, objective: Module, models: List[Module],
-               accept_new_models: bool = True, max_tasks: int = 100,
-               alt_objectives: Optional[List[Module]] = None, config_space: Optional[Dict[str, Any]] = None) -> 'Job':
+    def create(cls,
+               dataset: Dataset,
+               objective: Module,
+               models: List[Module],
+               accept_new_models: bool = True,
+               max_tasks: int = 100,
+               alt_objectives: Optional[List[Module]] = None,
+               config_space: Optional[Dict[str,
+                                           Any]] = None) -> 'Job':
         init_dict: Dict[str, Any] = {"id": None}
         if dataset is not None:
             init_dict["dataset"] = dataset.id
         if objective is not None:
             init_dict["objective"] = objective.id
-        if models is not None:
+        if models is not None and len(models) != 0:
             init_dict["models"] = [x.id for x in models]
         if accept_new_models is not None:
             init_dict["accept-new-models"] = accept_new_models
         if max_tasks is not None:
             init_dict["max-tasks"] = max_tasks
-        if alt_objectives is not None:
+        if alt_objectives is not None and len(alt_objectives) != 0:
             init_dict["alt-objectives"] = [x.id for x in alt_objectives]
         if config_space is not None:
             init_dict["config-space"] = config_space
         return Job(init_dict)
-    
+
     @classmethod
     def create_ref(cls, id: str) -> 'Job':
         return Job({"id": id})
@@ -91,7 +100,8 @@ class Job(ApiType['Job']):
     @property
     def models(self) -> Optional[List[Module]]:
         value = self._dict.get("models")
-        return [Module({"id": x}) for x in value] if value is not None else None
+        return [Module({"id": x})
+                for x in value] if value is not None else None
 
     @property
     def config_space(self) -> Optional[str]:
@@ -100,7 +110,8 @@ class Job(ApiType['Job']):
 
     @property
     def accept_new_models(self) -> Optional[bool]:
-        value = self._updates.get("accept-new-models") or self._dict.get("accept-new-models")
+        value = self._updates.get(
+            "accept-new-models") or self._dict.get("accept-new-models")
         return bool(value) if value is not None else None
 
     @accept_new_models.setter
@@ -118,7 +129,8 @@ class Job(ApiType['Job']):
     @property
     def alt_objectives(self) -> Optional[List[Module]]:
         value = self._dict.get("alt-objectives")
-        return [Module({"id": x}) for x in value] if value is not None else None
+        return [Module({"id": x})
+                for x in value] if value is not None else None
 
     @property
     def max_tasks(self) -> Optional[int]:
@@ -145,12 +157,14 @@ class Job(ApiType['Job']):
     @property
     def running_duration(self) -> Optional[timedelta]:
         value = self._dict.get("running-duration")
-        return timedelta(milliseconds=int(value)) if value is not None else None
+        return timedelta(milliseconds=int(
+            value)) if value is not None else None
 
     @property
     def pause_duration(self) -> Optional[timedelta]:
         value = self._dict.get("pause-duration")
-        return timedelta(milliseconds=int(value)) if value is not None else None
+        return timedelta(milliseconds=int(
+            value)) if value is not None else None
 
     @property
     def status(self) -> Optional[JobStatus]:
@@ -190,16 +204,31 @@ class Job(ApiType['Job']):
         url = connection.url("jobs/" + self.id)
         return self._get(connection, url)
 
+
 class JobQuery(ApiQuery['Job', 'JobQuery']):
 
-    VALID_SORTING_FIELDS = ["user", "dataset", "objective", "creation-time", "running-time-start", "running-time-end", "status"]
+    VALID_SORTING_FIELDS = [
+        "user",
+        "dataset",
+        "objective",
+        "creation-time",
+        "running-time-start",
+        "running-time-end",
+        "status"]
 
-    def __init__(self, id: Optional[List[str]] = None, user: Optional[User] = None,
-                 dataset: Optional[Dataset] = None, model: Optional[Module] = None,
-                 objective: Optional[Module] = None, alt_objective: Optional[Module] = None,
-                 status: Optional[JobStatus] = None, accept_new_models: Optional[bool] = None,                
-                 order_by: Optional[str] = None, order: Optional[ApiQueryOrder] = None,
-                 limit: Optional[int] = None, cursor: Optional[str] = None) -> None:
+    def __init__(self,
+                 id: Optional[List[str]] = None,
+                 user: Optional[User] = None,
+                 dataset: Optional[Dataset] = None,
+                 model: Optional[Module] = None,
+                 objective: Optional[Module] = None,
+                 alt_objective: Optional[Module] = None,
+                 status: Optional[JobStatus] = None,
+                 accept_new_models: Optional[bool] = None,
+                 order_by: Optional[str] = None,
+                 order: Optional[ApiQueryOrder] = None,
+                 limit: Optional[int] = None,
+                 cursor: Optional[str] = None) -> None:
         super().__init__(order_by, order, limit, cursor)
         self.T = Job
 
@@ -220,6 +249,8 @@ class JobQuery(ApiQuery['Job', 'JobQuery']):
         if accept_new_models is not None:
             self._query["accept-new-models"] = accept_new_models
 
-    def run(self, connection: Connection) -> Tuple[List[Job], Optional['JobQuery']]:
+    def run(self,
+            connection: Connection) -> Tuple[List[Job],
+                                             Optional['JobQuery']]:
         url = connection.url("jobs")
         return self._run(connection, url)

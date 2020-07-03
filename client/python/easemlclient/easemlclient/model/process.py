@@ -17,11 +17,17 @@ class ProcType(Enum):
     WORKER = "worker"
     SCHEDULER = "scheduler"
 
+    def __str__(self):
+        return str(self.value)
+
 
 class ProcStatus(Enum):
     IDLE = "idle"
     WORKING = "working"
     TERMINATED = "terminated"
+
+    def __str__(self):
+        return str(self.value)
 
 
 class Process(ApiType['Process']):
@@ -40,10 +46,11 @@ class Process(ApiType['Process']):
 
     def __init__(self, input: Dict[str, Any]) -> None:
         if "id" not in input:
-            raise ValueError("Invalid input dictionary: It must contain an 'id' key.")
+            raise ValueError(
+                "Invalid input dictionary: It must contain an 'id' key.")
 
         self._dict: Dict[str, Any] = deepcopy(input)
-    
+
     @classmethod
     def create_ref(cls, id: str) -> 'Process':
         return Process({"id": id})
@@ -105,16 +112,31 @@ class Process(ApiType['Process']):
         url = connection.url("processes/" + self.id)
         return self._get(connection, url)
 
+
 class ProcessQuery(ApiQuery['Process', 'ProcessQuery']):
 
-    VALID_SORTING_FIELDS = ["id", "process-id", "host-id", "host-address", "start-time", "type", "resource", "status"]
+    VALID_SORTING_FIELDS = [
+        "id",
+        "process-id",
+        "host-id",
+        "host-address",
+        "start-time",
+        "type",
+        "resource",
+        "status"]
 
-    def __init__(self, id: Optional[List[str]] = None, process_id: Optional[int] = None,
-                 host_id: Optional[str] = None, host_address: Optional[str] = None,
-                 type: Optional[ProcType] = None, resource: Optional[str] = None,
+    def __init__(self,
+                 id: Optional[List[str]] = None,
+                 process_id: Optional[int] = None,
+                 host_id: Optional[str] = None,
+                 host_address: Optional[str] = None,
+                 type: Optional[ProcType] = None,
+                 resource: Optional[str] = None,
                  status: Optional[ProcStatus] = None,
-                 order_by: Optional[str] = None, order: Optional[ApiQueryOrder] = None,
-                 limit: Optional[int] = None, cursor: Optional[str] = None) -> None:
+                 order_by: Optional[str] = None,
+                 order: Optional[ApiQueryOrder] = None,
+                 limit: Optional[int] = None,
+                 cursor: Optional[str] = None) -> None:
         super().__init__(order_by, order, limit, cursor)
         self.T = Process
 
@@ -133,6 +155,8 @@ class ProcessQuery(ApiQuery['Process', 'ProcessQuery']):
         if status is not None:
             self._query["status"] = status.value
 
-    def run(self, connection: Connection) -> Tuple[List[Process], Optional['ProcessQuery']]:
+    def run(self,
+            connection: Connection) -> Tuple[List[Process],
+                                             Optional['ProcessQuery']]:
         url = connection.url("processes")
         return self._run(connection, url)

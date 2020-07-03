@@ -4,17 +4,14 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pydoc-markdown = "*"
-mypy = "*"
-e1839a8 = {editable = true,path = "."}
-easemlclient = {path = ".", editable = true}
-twine = "*"
+zipp = {editable = true, path = "."}
+easemlclient = {editable = true, path = "."}
 
 [packages]
-requests = "*"
-pyrfc3339 = "*"
-tuspy = "*"
-docker = "*"
+tuspy = {editable = true,path = "."}
+zipp = {editable = true, path = "."}
+pylint = "*"
+autopep8 = "*"
 
 [requires]
 python_version = "3.6"

@@ -3,10 +3,8 @@ Implementation of the `Dataset` class.
 """
 import pyrfc3339
 
-from copy import deepcopy
 from datetime import datetime
 from enum import Enum
-from io import FileIO
 from tusclient import client as tus_client
 from typing import Dict, Optional, Any, Iterator, Tuple, List, IO
 
@@ -22,6 +20,9 @@ class DatasetSource(Enum):
     LOCAL = "local"
     DOWNLOAD = "download"
 
+    def __str__(self):
+        return str(self.value)
+
 
 class DatasetStatus(Enum):
     CREATED = "created"
@@ -30,6 +31,9 @@ class DatasetStatus(Enum):
     VALIDATED = "validated"
     ARCHIVED = "archived"
     ERROR = "error"
+
+    def __str__(self):
+        return str(self.value)
 
 
 class Dataset(ApiType['Dataset']):
@@ -46,15 +50,22 @@ class Dataset(ApiType['Dataset']):
         The current status of the user. Can be 'active' or 'archived'.
     """
     # TODO tutorial assumes we can pass directly the keyword i.e. id=ID
+
     def __init__(self, input: Dict[str, Any]) -> None:
         if "id" not in input:
-            raise ValueError("Invalid input dictionary: It must contain an 'id' key.")
+            raise ValueError(
+                "Invalid input dictionary: It must contain an 'id' key.")
 
         super().__init__(input)
 
     @classmethod
-    def create(cls, id: str, source: Optional[DatasetSource] = None, source_address: Optional[str] = None,
-               name: Optional[str] = None, description: Optional[str] = None) -> 'Dataset':
+    def create(
+            cls,
+            id: str,
+            source: Optional[DatasetSource] = None,
+            source_address: Optional[str] = None,
+            name: Optional[str] = None,
+            description: Optional[str] = None) -> 'Dataset':
         init_dict: Dict[str, Any] = {"id": id}
         if source is not None:
             init_dict["source"] = source.value
@@ -65,7 +76,7 @@ class Dataset(ApiType['Dataset']):
         if description is not None:
             init_dict["description"] = description
         return Dataset(init_dict)
-    
+
     @classmethod
     def create_ref(cls, id: str) -> 'Dataset':
         return Dataset({"id": id})
@@ -78,6 +89,13 @@ class Dataset(ApiType['Dataset']):
     def user(self) -> Optional[User]:
         value = self._dict.get("user")
         return User({"id": value}) if value is not None else None
+
+    @user.setter
+    def user(self, value: Optional[str]):
+        if value is not None:
+            self._dict["user"] = value
+        else:
+            self._dict.pop("user")
 
     @property
     def name(self) -> Optional[str]:
@@ -93,7 +111,8 @@ class Dataset(ApiType['Dataset']):
 
     @property
     def description(self) -> Optional[str]:
-        value = self._updates.get("description") or self._dict.get("description")
+        value = self._updates.get(
+            "description") or self._dict.get("description")
         return str(value) if value is not None else None
 
     @description.setter
@@ -159,36 +178,65 @@ class Dataset(ApiType['Dataset']):
         return self._post(connection, url)
 
     def patch(self, connection: Connection) -> 'Dataset':
-        url = connection.url("datasets/" + self.id)
+        if not self.user:
+            self.user = connection.user_id
+        url = connection.url("datasets/" + self.user.id + "/" + self.id)
         return self._patch(connection, url)
 
     def get(self, connection: Connection) -> 'Dataset':
-        # TODO error currently @ ("datasets/" +self.user+"/"+ self.id)
-        url = connection.url("datasets/" + self.id)
+        if not self.user:
+            self.user = connection.user_id
+        url = connection.url("datasets/" + self.user.id + "/" + self.id)
         return self._get(connection, url)
-    
-    def upload(self, connection: Connection, data: IO, file_name: Optional[str] = None) -> None:
-        url = connection.url("datasets/%s/upload" % self.id)
-        metadata = {"filename" : file_name} if file_name is not None else None
 
-        # Initialize the client for the TUS upload protocol. Apply the authentication header.
+    def upload(self, connection: Connection, data: IO,
+               file_name: Optional[str] = None) -> None:
+        if not self.user:
+            self.user = connection.user_id
+        url = connection.url(
+            "datasets/{}/{}/upload".format(self.user.id, self.id))
+        metadata = {"filename": file_name} if file_name is not None else None
+
+        # Initialize the client for the TUS upload protocol. Apply the
+        # authentication header.
         client = tus_client.TusClient(url)
         connection.auth(client)
 
-        uploader = client.uploader(file_stream=data, chunk_size=201800, metadata=metadata)
+        uploader = client.uploader(
+            file_stream=data, chunk_size=201800, metadata=metadata)
         uploader.upload()
+
+    def get_dataset(self, connection: Connection) -> bytes:
+        # TODO FIX ID
+        if not self.user:
+            self.user = connection.user_id
+        if self.user.id in self.id:
+            id = self.id.split("/")[-1]
+        else:
+            id = self.id
+
+        url = connection.url("datasets/" + self.user.id +
+                             "/" + id + "/data.tar")
+        return self._download(connection, url)
 
 
 class DatasetQuery(ApiQuery['Dataset', 'DatasetQuery']):
 
-    VALID_SORTING_FIELDS = ["id", "user", "source", "source-address", "creation-time", "status"]
+    VALID_SORTING_FIELDS = ["id", "user", "source",
+                            "source-address", "creation-time", "status"]
 
-    def __init__(self, id: Optional[List[str]] = None, user: Optional[User] = None,
-                 status: Optional[DatasetStatus] = None, source: Optional[DatasetSource] = None,
+    def __init__(self,
+                 id: Optional[List[str]] = None,
+                 user: Optional[User] = None,
+                 status: Optional[DatasetStatus] = None,
+                 source: Optional[DatasetSource] = None,
                  source_address: Optional[str] = None,
-                 schema_in: Optional[str] = None, schema_out: Optional[str] = None,                 
-                 order_by: Optional[str] = None, order: Optional[ApiQueryOrder] = None,
-                 limit: Optional[int] = None, cursor: Optional[str] = None) -> None:
+                 schema_in: Optional[str] = None,
+                 schema_out: Optional[str] = None,
+                 order_by: Optional[str] = None,
+                 order: Optional[ApiQueryOrder] = None,
+                 limit: Optional[int] = None,
+                 cursor: Optional[str] = None) -> None:
         super().__init__(order_by, order, limit, cursor)
         self.T = Dataset
 
@@ -207,6 +255,8 @@ class DatasetQuery(ApiQuery['Dataset', 'DatasetQuery']):
         if schema_out is not None:
             self._query["schema-out"] = schema_out
 
-    def run(self, connection: Connection) -> Tuple[List[Dataset], Optional['DatasetQuery']]:
+    def run(self,
+            connection: Connection) -> Tuple[List[Dataset],
+                                             Optional['DatasetQuery']]:
         url = connection.url("datasets")
         return self._run(connection, url)

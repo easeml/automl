@@ -3,7 +3,6 @@ Implementation of the `Module` class.
 """
 import pyrfc3339
 
-from copy import deepcopy
 from datetime import datetime
 from enum import Enum
 from io import FileIO
@@ -21,12 +20,18 @@ class ModuleType(Enum):
     OBJECTIVE = "objective"
     OPTIMIZER = "optimizer"
 
+    def __str__(self):
+        return str(self.value)
+
 
 class ModuleSource(Enum):
     UPLOAD = "upload"
     LOCAL = "local"
     DOWNLOAD = "download"
     REGISTRY = "registry"
+
+    def __str__(self):
+        return str(self.value)
 
 
 class ModuleStatus(Enum):
@@ -35,6 +40,9 @@ class ModuleStatus(Enum):
     ACTIVE = "active"
     ARCHIVED = "archived"
     ERROR = "error"
+
+    def __str__(self):
+        return str(self.value)
 
 
 class Module(ApiType['Module']):
@@ -53,14 +61,22 @@ class Module(ApiType['Module']):
 
     def __init__(self, input: Dict[str, Any]) -> None:
         if "id" not in input:
-            raise ValueError("Invalid input dictionary: It must contain an 'id' key.")
+            raise ValueError(
+                "Invalid input dictionary: It must contain an 'id' key.")
 
         super().__init__(input)
 
     @classmethod
-    def create(cls, id: str, type: Optional[ModuleType] = None, label: Optional[str] = None,
-               source: Optional[ModuleSource] = None, source_address: Optional[str] = None,
-               name: Optional[str] = None, description: Optional[str] = None,) -> 'Module':
+    def create(
+        cls,
+        id: str,
+        type: Optional[ModuleType] = None,
+        label: Optional[str] = None,
+        source: Optional[ModuleSource] = None,
+        source_address: Optional[str] = None,
+        name: Optional[str] = None,
+        description: Optional[str] = None,
+    ) -> 'Module':
         init_dict: Dict[str, Any] = {"id": id}
         if type is not None:
             init_dict["type"] = type
@@ -75,7 +91,7 @@ class Module(ApiType['Module']):
         if description is not None:
             init_dict["description"] = description
         return Module(init_dict)
-    
+
     @classmethod
     def create_ref(cls, id: str) -> 'Module':
         return Module({"id": id})
@@ -113,7 +129,8 @@ class Module(ApiType['Module']):
 
     @property
     def description(self) -> Optional[str]:
-        value = self._updates.get("description") or self._dict.get("description")
+        value = self._updates.get(
+            "description") or self._dict.get("description")
         return str(value) if value is not None else None
 
     @description.setter
@@ -191,11 +208,12 @@ class Module(ApiType['Module']):
         url = connection.url("modules/" + self.id)
         return self._get(connection, url)
 
-    def upload(self, connection: Connection, data: FileIO, file_name: Optional[str] = None) -> None:
+    def upload(self, connection: Connection, data: FileIO,
+               file_name: Optional[str] = None) -> None:
         url = connection.url("modules/%s/upload" % self.id)
-        metadata = {"filename" : file_name}
 
-        # Initialize the client for the TUS upload protocol. Apply the authentication header.
+        # Initialize the client for the TUS upload protocol. Apply the
+        # authentication header.
         client = tus_client.TusClient(url)
         connection.auth(client)
 
@@ -205,15 +223,30 @@ class Module(ApiType['Module']):
 
 class ModuleQuery(ApiQuery['Module', 'ModuleQuery']):
 
-    VALID_SORTING_FIELDS = ["id", "user", "type", "label", "source", "source-address", "creation-time", "status"]
+    VALID_SORTING_FIELDS = [
+        "id",
+        "user",
+        "type",
+        "label",
+        "source",
+        "source-address",
+        "creation-time",
+        "status"]
 
-    def __init__(self, id: Optional[List[str]] = None, user: Optional[User] = None,
-                 type: Optional[ModuleType] = None, label: Optional[str] = None,
-                 status: Optional[ModuleStatus] = None, source: Optional[ModuleSource] = None,
+    def __init__(self,
+                 id: Optional[List[str]] = None,
+                 user: Optional[User] = None,
+                 type: Optional[ModuleType] = None,
+                 label: Optional[str] = None,
+                 status: Optional[ModuleStatus] = None,
+                 source: Optional[ModuleSource] = None,
                  source_address: Optional[str] = None,
-                 schema_in: Optional[str] = None, schema_out: Optional[str] = None,                 
-                 order_by: Optional[str] = None, order: Optional[ApiQueryOrder] = None,
-                 limit: Optional[int] = None, cursor: Optional[str] = None) -> None:
+                 schema_in: Optional[str] = None,
+                 schema_out: Optional[str] = None,
+                 order_by: Optional[str] = None,
+                 order: Optional[ApiQueryOrder] = None,
+                 limit: Optional[int] = None,
+                 cursor: Optional[str] = None) -> None:
         super().__init__(order_by, order, limit, cursor)
         self.T = Module
 
@@ -236,6 +269,8 @@ class ModuleQuery(ApiQuery['Module', 'ModuleQuery']):
         if schema_out is not None:
             self._query["schema-out"] = schema_out
 
-    def run(self, connection: Connection) -> Tuple[List[Module], Optional['ModuleQuery']]:
+    def run(self,
+            connection: Connection) -> Tuple[List[Module],
+                                             Optional['ModuleQuery']]:
         url = connection.url("modules")
         return self._run(connection, url)

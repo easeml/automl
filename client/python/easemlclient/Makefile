@@ -100,8 +100,8 @@ lint:
 ## Automatically fix style errors where possible.
 lint-fix:
 	$(call show-prompt,Fixing coding style violations)
-	$(PIPENV_RUN) pipenv run autopep8 --in-place --aggressive --aggressive --aggressive \
-				  --max-line-length 120 --recursive $(PROJECT_NAME) test
+	$(PIPENV_RUN) autopep8 --in-place --aggressive --aggressive --aggressive \
+				  --max-line-length 120 --recursive $(PROJECT_NAME)
 
 .PHONY: publish
 ## Publish to the respective indexing service

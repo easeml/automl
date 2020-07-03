@@ -27,6 +27,9 @@ class TaskStatus(Enum):
     CANCELED = "canceled"
     ERROR = "error"
 
+    def __str__(self):
+        return str(self.value)
+
 
 class TaskStage(Enum):
     BEGIN = "begin"
@@ -34,6 +37,9 @@ class TaskStage(Enum):
     PREDICTING = "predicting"
     EVALUATING = "evaluating"
     END = "end"
+
+    def __str__(self):
+        return str(self.value)
 
 
 class TaskStageIntervals:
@@ -93,17 +99,20 @@ class TaskStageDurations:
     @property
     def training(self) -> Optional[timedelta]:
         value = self._dict.get("training")
-        return timedelta(milliseconds=int(value)) if value is not None else None
+        return timedelta(milliseconds=int(
+            value)) if value is not None else None
 
     @property
     def predicting(self) -> Optional[timedelta]:
         value = self._dict.get("predicting")
-        return timedelta(milliseconds=int(value)) if value is not None else None
+        return timedelta(milliseconds=int(
+            value)) if value is not None else None
 
     @property
     def evaluating(self) -> Optional[timedelta]:
         value = self._dict.get("evaluating")
-        return timedelta(milliseconds=int(value)) if value is not None else None
+        return timedelta(milliseconds=int(
+            value)) if value is not None else None
 
     def __iter__(self) -> Iterator[Tuple[str, Any]]:
         for (k, v) in self._dict:
@@ -126,10 +135,10 @@ class Task(ApiType['Task']):
 
     def __init__(self, input: Dict[str, Any]) -> None:
         if "id" not in input:
-            raise ValueError("Invalid input dictionary: It must contain an 'id' key.")
-
+            raise ValueError(
+                "Invalid input dictionary: It must contain an 'id' key.")
         super().__init__(input)
-    
+
     @classmethod
     def create_ref(cls, id: str) -> 'Task':
         return Task({"id": id})
@@ -171,7 +180,8 @@ class Task(ApiType['Task']):
     @property
     def alt_objectives(self) -> Optional[List[Module]]:
         value = self._dict.get("alt-objectives")
-        return [Module({"id": x}) for x in value] if value is not None else None
+        return [Module({"id": x})
+                for x in value] if value is not None else None
 
     @property
     def config(self) -> Optional[str]:
@@ -233,7 +243,8 @@ class Task(ApiType['Task']):
     @property
     def running_duration(self) -> Optional[timedelta]:
         value = self._dict.get("running-duration")
-        return timedelta(milliseconds=int(value)) if value is not None else None
+        return timedelta(milliseconds=int(
+            value)) if value is not None else None
 
     def __iter__(self) -> Iterator[Tuple[str, Any]]:
         for (k, v) in self._dict:
@@ -246,15 +257,31 @@ class Task(ApiType['Task']):
     def patch(self, connection: Connection) -> 'Task':
         url = connection.url("tasks/" + self.id)
         return self._patch(connection, url)
-    
+
     def get_predictions(self, connection: Connection) -> bytes:
         url = connection.url("tasks/" + self.id + "/predictions.tar")
         return self._download(connection, url)
-    
+
     def get_parameters(self, connection: Connection) -> bytes:
         url = connection.url("tasks/" + self.id + "/parameters.tar")
         return self._download(connection, url)
-    
+
+    def get_logs(self, connection: Connection, fname=None) -> bytes:
+        if not fname:
+            fname = ".tar"
+        else:
+            fname = "/" + fname
+        url = connection.url("tasks/" + self.id + "/logs" + fname)
+        return self._download(connection, url)
+
+    def get_metadata(self, connection: Connection, fname=None) -> bytes:
+        if not fname:
+            fname = ".tar"
+        else:
+            fname = "/" + fname
+        url = connection.url("tasks/" + self.id + "/metadata" + fname)
+        return self._download(connection, url)
+
     def get_image(self, connection: Connection) -> bytes:
         url = connection.url("tasks/" + self.id + "/image/download")
         return self._download(connection, url)
@@ -262,15 +289,38 @@ class Task(ApiType['Task']):
 
 class TaskQuery(ApiQuery['Task', 'TaskQuery']):
 
-    VALID_SORTING_FIELDS = ["id", "process", "job", "user", "dataset", "objective", "model", "quality", "quality-train", "quality-expected", "creation-time", "status", "stage"]
+    VALID_SORTING_FIELDS = [
+        "id",
+        "process",
+        "job",
+        "user",
+        "dataset",
+        "objective",
+        "model",
+        "quality",
+        "quality-train",
+        "quality-expected",
+        "creation-time",
+        "status",
+        "stage"]
 
-    def __init__(self, id: Optional[List[str]] = None, user: Optional[User] = None,
-                 dataset: Optional[Dataset] = None, model: Optional[Module] = None,
-                 objective: Optional[Module] = None, alt_objective: Optional[Module] = None,
-                 process: Optional[Process] = None, job: Optional[Job] = None,
-                 status: Optional[TaskStatus] = None, stage: Optional[TaskStage] = None,                
-                 order_by: Optional[str] = None, order: Optional[ApiQueryOrder] = None,
-                 limit: Optional[int] = None, cursor: Optional[str] = None) -> None:
+    # TODO ApiType constructors accept dictionaries we should try to be
+    # consistent
+    def __init__(self,
+                 id: Optional[List[str]] = None,
+                 user: Optional[User] = None,
+                 dataset: Optional[Dataset] = None,
+                 model: Optional[Module] = None,
+                 objective: Optional[Module] = None,
+                 alt_objective: Optional[Module] = None,
+                 process: Optional[Process] = None,
+                 job: Optional[Job] = None,
+                 status: Optional[TaskStatus] = None,
+                 stage: Optional[TaskStage] = None,
+                 order_by: Optional[str] = None,
+                 order: Optional[ApiQueryOrder] = None,
+                 limit: Optional[int] = None,
+                 cursor: Optional[str] = None) -> None:
         super().__init__(order_by, order, limit, cursor)
         self.T = Task
 
@@ -295,6 +345,8 @@ class TaskQuery(ApiQuery['Task', 'TaskQuery']):
         if stage is not None:
             self._query["stage"] = stage.value
 
-    def run(self, connection: Connection) -> Tuple[List[Task], Optional['TaskQuery']]:
+    def run(self,
+            connection: Connection) -> Tuple[List[Task],
+                                             Optional['TaskQuery']]:
         url = connection.url("tasks")
         return self._run(connection, url)

@@ -1,9 +1,6 @@
 """
 Implementation of the `User` class.
 """
-import requests
-
-from copy import deepcopy
 from enum import Enum
 from typing import Dict, Optional, Any, Iterator, Tuple, List
 
@@ -14,6 +11,9 @@ from .type import ApiType, ApiQuery, ApiQueryOrder
 class UserStatus(Enum):
     ACTIVE = "active"
     ARCHIVED = "archived"
+
+    def __str__(self):
+        return str(self.value)
 
 
 class User(ApiType['User']):
@@ -32,19 +32,24 @@ class User(ApiType['User']):
 
     def __init__(self, input: Dict[str, Any]) -> None:
         if "id" not in input:
-            raise ValueError("Invalid input dictionary: It must contain an 'id' key.")
-        
+            raise ValueError(
+                "Invalid input dictionary: It must contain an 'id' key.")
+
         super().__init__(input)
 
     @classmethod
-    def create(cls, id: str, name: Optional[str] = None, password_hash: Optional[str] = None) -> 'User':
+    def create(
+            cls,
+            id: str,
+            name: Optional[str] = None,
+            password_hash: Optional[str] = None) -> 'User':
         init_dict: Dict[str, Any] = {"id": id}
         if name is not None:
             init_dict["name"] = name
         if password_hash is not None:
             init_dict["password"] = password_hash
         return User(init_dict)
-    
+
     @classmethod
     def create_ref(cls, id: str) -> 'User':
         return User({"id": id})
@@ -110,9 +115,13 @@ class UserQuery(ApiQuery['User', 'UserQuery']):
 
     VALID_SORTING_FIELDS = ["id", "name", "status"]
 
-    def __init__(self, id: Optional[List[str]] = None, status: Optional[UserStatus] = None,
-                 order_by: Optional[str] = None, order: Optional[ApiQueryOrder] = None,
-                 limit: Optional[int] = None, cursor: Optional[str] = None) -> None:
+    def __init__(self,
+                 id: Optional[List[str]] = None,
+                 status: Optional[UserStatus] = None,
+                 order_by: Optional[str] = None,
+                 order: Optional[ApiQueryOrder] = None,
+                 limit: Optional[int] = None,
+                 cursor: Optional[str] = None) -> None:
         super().__init__(order_by, order, limit, cursor)
         self.T = User
 
@@ -121,6 +130,8 @@ class UserQuery(ApiQuery['User', 'UserQuery']):
         if status is not None:
             self._query["status"] = status.value
 
-    def run(self, connection: Connection) -> Tuple[List[User], Optional['UserQuery']]:
+    def run(self,
+            connection: Connection) -> Tuple[List[User],
+                                             Optional['UserQuery']]:
         url = connection.url("users")
         return self._run(connection, url)

@@ -11,6 +11,7 @@ from .core import Connection
 
 T = TypeVar('T', bound='ApiType')
 
+
 class ApiType(Generic[T]):
     """The User class contains information about users.
     """
@@ -18,12 +19,12 @@ class ApiType(Generic[T]):
     def __init__(self: T, input: Dict[str, Any]) -> None:
         self._dict: Dict[str, Any] = deepcopy(input)
         self._updates: Dict[str, Any] = {}
-        self.T:Type[T] = type(self)
+        self.T: Type[T] = type(self)
 
     def _post(self: T, connection: Connection, url: str) -> T:
         resp = requests.post(url, auth=connection.auth, json={**self._dict, **self._updates})
         resp.raise_for_status()
-        self._dict['id']=resp.headers['Location'][resp.headers['Location'].rfind('/')+1:]
+        self._dict['id'] = resp.headers['Location'][resp.headers['Location'].rfind('/') + 1:]
         return self.T({**self._dict, **self._updates})
 
     def _patch(self: T, connection: Connection, url: str) -> T:
@@ -36,7 +37,7 @@ class ApiType(Generic[T]):
         resp.raise_for_status()
         payload = resp.json()
         return self.T(payload["data"])
-    
+
     def _download(self: T, connection: Connection, url: str) -> bytes:
         resp = requests.get(url, auth=connection.auth)
         resp.raise_for_status()
@@ -69,8 +70,12 @@ class ApiQueryOrder(Enum):
 
 class ApiQuery(Generic[T, Q]):
 
-    def __init__(self: Q, order_by: Optional[str] = None, order: Optional[ApiQueryOrder] = None,
-                 limit: Optional[int] = None, cursor: Optional[str] = None) -> None:
+    def __init__(
+            self: Q,
+            order_by: Optional[str] = None,
+            order: Optional[ApiQueryOrder] = None,
+            limit: Optional[int] = None,
+            cursor: Optional[str] = None) -> None:
         self._query: Dict[str, Any] = {}
         if order_by is not None:
             order_by = order_by.replace("_", "-")
@@ -81,9 +86,10 @@ class ApiQuery(Generic[T, Q]):
             self._query["limit"] = limit
         if cursor is not None:
             self._query["cursor"] = cursor
-        self.T:Type[T] = ApiType
+        self.T: Type[T] = ApiType
 
-    def _run(self: Q, connection: Connection, url: str) -> Tuple[List[T], Optional[Q]]:
+    def _run(self: Q, connection: Connection,
+             url: str) -> Tuple[List[T], Optional[Q]]:
         resp = requests.get(url, auth=connection.auth, params=self._query)
         resp.raise_for_status()
 

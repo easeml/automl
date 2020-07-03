@@ -7,8 +7,10 @@ from io import BytesIO
 
 client = docker.from_env()
 
+
 def build_module() -> None:
     pass
+
 
 def upload_module(name: str) -> None:
     image = client.images.get(name)
