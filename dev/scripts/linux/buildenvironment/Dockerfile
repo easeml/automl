@@ -44,6 +44,7 @@ ENV GOPATH "$EASEML_HOME/go"
 ENV PATH "$PATH:/usr/local/go/bin:$PYENV_ROOT/bin:$EASEML_HOME/go/bin"
 
 RUN mkdir -p $GOPATH
-RUN find $EASEML_HOME \( -type d -exec sudo chmod -v u+rwx,g+rwx,o+rwx {} \; -o -type f -exec sudo chmod -v u+rw,g+rw,o+r {} \; \)
+RUN find $EASEML_HOME \( -type d -exec sudo chmod -v u+rwx,g+rwx,o+rwx {} \; -o -executable -type f -exec sudo chmod -v u+rwx,g+rwx,o+rwx {} \; -o ! -executable -type f -exec sudo chmod -v u+rw,g+rw,o+rw {} \; \)
+RUN find /usr/local \( -type d -exec sudo chmod -v u+rwx,g+rwx,o+rwx {} \; -o -executable -type f -exec sudo chmod -v u+rwx,g+rwx,o+rwx {} \; -o ! -executable -type f -exec sudo chmod -v u+rw,g+rw,o+rw {} \; \)
 
 ENTRYPOINT /bin/bash
