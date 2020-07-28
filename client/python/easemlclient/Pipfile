@@ -6,7 +6,6 @@ verify_ssl = true
 [dev-packages]
 pydoc-markdown = "*"
 mypy = "*"
-e1839a8 = {editable = true,path = "."}
 easemlclient = {path = ".", editable = true}
 twine = "*"
 
@@ -15,6 +14,7 @@ requests = "*"
 pyrfc3339 = "*"
 tuspy = "*"
 docker = "*"
+easemlclient = {editable = true, path = "."}
 
 [requires]
 python_version = "3.6"
