@@ -10,3 +10,4 @@ func GetEnvVariableOrDefault(envarname string,defaultval string) string {
 	}
 	return envvar
 }
+
