@@ -47,7 +47,7 @@ require (
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
 	golang.org/x/sys v0.0.0-20200728102440-3e129f6d46b1 // indirect
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
-	golang.org/x/tools v0.0.0-20200728160517-2ad651e9e297 // indirect
+	golang.org/x/tools v0.0.0-20200728173525-b6476686b71b // indirect
 	gopkg.in/Acconut/lockfile.v1 v1.1.0 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
 )

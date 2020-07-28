@@ -1,6 +1,6 @@
 {
   "name": "@easeml/jupyterlab_easeml",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "ease.ml client for jupyterlab",
   "keywords": [
     "jupyter",
