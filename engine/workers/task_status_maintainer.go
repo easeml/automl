@@ -29,7 +29,7 @@ func (context Context) TaskStatusMaintainerListener() {
 		task, err = context.ModelContext.LockTask(model.F{"status": types.TaskTerminating}, context.ProcessID, "", "")
 		if err == nil {
 			log.Printf("TASK FOUND IN THE TERMINATING STATE")
-			go context.TaskTarminatingWorker(task)
+			go context.TaskTerminatingWorker(task)
 		} else if errors.Cause(err) != model.ErrNotFound {
 			panic(err)
 		}
@@ -55,7 +55,7 @@ func (context Context) TaskPausingWorker(task types.Task) {
 }
 
 // TaskTarminatingWorker handles all terminating tasks.
-func (context Context) TaskTarminatingWorker(task types.Task) {
+func (context Context) TaskTerminatingWorker(task types.Task) {
 
 	// Mark task as paused.
 	context.repeatUntilSuccess(func() (err error) {

@@ -238,6 +238,10 @@ func (apiContext Context) TaskDataDownloadHandler(basePath string, dataSubdir st
 			targetTaskPath = taskPaths.Predictions
 		} else if dataSubdir == "parameters" {
 			targetTaskPath = taskPaths.Parameters
+		} else if dataSubdir == "logs" {
+			targetTaskPath = taskPaths.Logs
+		} else if dataSubdir == "metadata" {
+			targetTaskPath = taskPaths.Metadata
 		}
 
 		apiContext.ServeLocalResource(targetTaskPath, relativePath, task.StageTimes.Predicting.End, w, r)

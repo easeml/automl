@@ -378,6 +378,7 @@ func (context Context) runModelTraining(task *types.Task, modelImageName string,
 		"--data", modules.MntPrefix + trainDatasetPath,
 		"--conf", modules.MntPrefix + configFilePath,
 		"--output", modules.MntPrefix + paths.Parameters,
+		"--metadata", modules.MntPrefix + paths.Metadata,
 	}
 	outReader, err := modules.RunContainerAndCollectOutput(modelImageName, nil, command, context.GpuDevices)
 	if err != nil {
@@ -423,6 +424,7 @@ func (context Context) runModelPrediction(task *types.Task, modelImageName strin
 		"--data", modules.MntPrefix + valDatasetPath,
 		"--memory", modules.MntPrefix + paths.Parameters,
 		"--output", modules.MntPrefix + valOutputPath,
+		"--metadata", modules.MntPrefix + paths.Metadata,
 	}
 	outReader, err := modules.RunContainerAndCollectOutput(modelImageName, nil, command, context.GpuDevices)
 	if err != nil {

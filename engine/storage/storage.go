@@ -160,6 +160,10 @@ func (context Context) GetAllTaskPaths(id string) (paths TaskPaths, err error) {
 	if paths.Logs, err = context.GetTaskPath(id, "logs"); err != nil {
 		return
 	}
+	if paths.Metadata, err = context.GetTaskPath(id, "metadata"); err != nil {
+		return
+	}
+
 	if paths.Config, err = context.GetTaskPath(id, "config"); err != nil {
 		return
 	}
@@ -173,6 +177,7 @@ func (context Context) GetAllTaskPaths(id string) (paths TaskPaths, err error) {
 type TaskPaths struct {
 	Parameters  string
 	Logs        string
+	Metadata    string
 	Debug       string
 	Predictions string
 	Evaluations string
