@@ -26,7 +26,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "eslint-plugin-vue": "^6.2.1",
     "highlight.js": "^9.18.1",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "js-untar": "^2.0.0",
     "js-yaml": "^3.13.1",
     "metismenu": "^3.0.5",
