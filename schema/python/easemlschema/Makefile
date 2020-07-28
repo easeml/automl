@@ -34,10 +34,17 @@ include $(ROOT_DIR_PATH)/dev/makefiles/show-prompt.mk
 
 
 .PHONY: init
-## Initialize the development environment to enable running of build and test.
+## Initialize the development environment to enable running of build and test rules.
 init:
-	$(call show-prompt,Installing development dependencies)
-	$(PIPENV) install -e . --dev
+	@if [ -z "${PIPENV}" ]; then \
+		echo 'Installing pipenv'; \
+		$(PYTHON) -m pip install pipenv; \
+		PIPENV=$$(which pipenv); \
+        $$PIPENV install -e . --dev; \
+    else \
+        ${PIPENV} install -e . --dev; \
+	fi ;
+	echo '$@: done'
 
 
 .PHONY: clean
@@ -45,13 +52,13 @@ init:
 clean:
 	$(call show-prompt,Cleaning the build files)
 	-$(PIPENV_RUN) python setup.py clean
-	-rm -f ./$(DIST_PATH)/$(PROJECT_NAME)-$(VERSION)*.whl
-	-rm -f ./$(DIST_PATH)/$(PROJECT_NAME)-$(VERSION)*.tar.gz
+	-rm -f $(DIST_PATH)/$(PROJECT_NAME)-$(VERSION)*.whl
+	-rm -f $(DIST_PATH)/$(PROJECT_NAME)-$(VERSION)*.tar.gz
 	-rm -rf ./dist
 	-rm -rf ./build
+	-rm -rf ./*.egg-info
 	-find . -name '*.py[co]' -exec rm {} \;
 	-find . -name '__pycache__' -exec rm -r {} \;
-	-find . -name '*.egg-info' -exec rm -r {} \;
 
 
 .PHONY: build
@@ -63,7 +70,7 @@ build:
 
 .PHONY: package
 ## Build the project and assemble a deployable package.
-package:
+package: clean
 	$(call show-prompt,Building the deployment package)
 	$(PIPENV_RUN) python setup.py sdist -d $(DIST_PATH)
 	$(PIPENV_RUN) python setup.py bdist_wheel -d $(DIST_PATH)
@@ -92,6 +99,12 @@ lint-fix:
 	$(PIPENV_RUN) pipenv run autopep8 --in-place --aggressive --aggressive --aggressive \
 				  --max-line-length 120 --recursive $(PROJECT_NAME) test
 
+.PHONY: publish
+## Publish to the respective indexing service
+publish: package
+	$(call show-prompt,Running all publishing scripts)
+	$(PIPENV_RUN) twine check $(DIST_PATH)/*
+	$(PIPENV_RUN) twine upload --non-interactive $(DIST_PATH)/*
 
 .PHONY: version
 ## Set the version of this package according to version file found in the repo root.

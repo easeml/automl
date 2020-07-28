@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/ds3lab/easeml/engine/modules"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

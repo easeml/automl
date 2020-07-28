@@ -11,16 +11,18 @@ import (
 	"testing"
 
 	"github.com/ds3lab/easeml/engine/database/model"
+	"github.com/ds3lab/easeml/engine/database/model/types"
+	"github.com/ds3lab/easeml/engine/logger"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/emicklei/forest"
 	"github.com/stretchr/testify/assert"
 )
 
-func createModule(module model.Module) (result model.Module, err error) {
+func createModule(module types.Module) (result types.Module, err error) {
 	context, err := model.Connect(testDbAddr, testDbName, false)
+	log := logger.NewProcessLogger(true)
 	if err != nil {
-		log.Fatalf("fatal: %+v", err)
+		log.WriteFatal(fmt.Sprintf("fatal: %+v", err))
 	}
 	defer context.Session.Close()
 	context.User.ID = module.User
@@ -38,14 +40,14 @@ func TestModulesGet(t *testing.T) {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	passwordHash := hex.EncodeToString(hasher.Sum(nil))
-	_, err = createUser(model.User{ID: "user_mg_1", PasswordHash: passwordHash, Status: "active"})
+	_, err = createUser(types.User{ID: "user_mg_1", PasswordHash: passwordHash, Status: "active"})
 	assert.Nil(t, err)
 
 	// Create modules.
-	var modules = []model.Module{
-		model.Module{ID: "root/module1", User: "root", Name: "Module 1", Source: "download", Type: "model", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
-		model.Module{ID: "user2/module2", User: "user2", Name: "Module 2", Source: "upload", Type: "model", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
-		model.Module{ID: "user2/module3", User: "user2", Name: "Module 3", Source: "download", Type: "objective", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
+	var modules = []types.Module{
+		types.Module{ID: "root/module1", User: "root", Name: "Module 1", Source: "download", Type: "model", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
+		types.Module{ID: "user2/module2", User: "user2", Name: "Module 2", Source: "upload", Type: "model", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
+		types.Module{ID: "user2/module3", User: "user2", Name: "Module 3", Source: "download", Type: "objective", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
 	}
 	for _, module := range modules {
 		_, err = createModule(module)
@@ -167,7 +169,7 @@ func TestModulesPost(t *testing.T) {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	passwordHash := hex.EncodeToString(hasher.Sum(nil))
-	_, err = createUser(model.User{ID: "user_mp_1", PasswordHash: passwordHash, Status: "active"})
+	_, err = createUser(types.User{ID: "user_mp_1", PasswordHash: passwordHash, Status: "active"})
 	assert.Nil(t, err)
 
 	// Don't authenticate. Post module. Should return 403.
@@ -214,7 +216,7 @@ func TestModulesGetById(t *testing.T) {
 	var err error
 
 	// Create the module which we will use in the test.
-	_, err = createModule(model.Module{ID: "user2/module10", User: "user2", Name: "Module 1", Source: "download", Type: "model", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1})
+	_, err = createModule(types.Module{ID: "user2/module10", User: "user2", Name: "Module 1", Source: "download", Type: "model", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1})
 	assert.Nil(t, err)
 
 	// Create user_mbid_1.
@@ -222,7 +224,7 @@ func TestModulesGetById(t *testing.T) {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	passwordHash := hex.EncodeToString(hasher.Sum(nil))
-	_, err = createUser(model.User{ID: "user_mbid_1", PasswordHash: passwordHash, Status: "active"})
+	_, err = createUser(types.User{ID: "user_mbid_1", PasswordHash: passwordHash, Status: "active"})
 	assert.Nil(t, err)
 
 	// Don't authenticate. Get root module. Should return 404.
@@ -254,9 +256,9 @@ func TestModulesPatch(t *testing.T) {
 	var err error
 
 	// Create modules.
-	var modules = []model.Module{
-		model.Module{ID: "root/module10", User: "root", Name: "Module 10", Source: "download", Type: "model", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
-		model.Module{ID: "user_mu_1/module21", User: "user_mu_1", Name: "Module 21", Source: "upload", Type: "model", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
+	var modules = []types.Module{
+		types.Module{ID: "root/module10", User: "root", Name: "Module 10", Source: "download", Type: "model", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
+		types.Module{ID: "user_mu_1/module21", User: "user_mu_1", Name: "Module 21", Source: "upload", Type: "model", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
 	}
 	for _, module := range modules {
 		_, err = createModule(module)
@@ -268,7 +270,7 @@ func TestModulesPatch(t *testing.T) {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	passwordHash := hex.EncodeToString(hasher.Sum(nil))
-	_, err = createUser(model.User{ID: "user_mu_1", PasswordHash: passwordHash, Status: "active"})
+	_, err = createUser(types.User{ID: "user_mu_1", PasswordHash: passwordHash, Status: "active"})
 	assert.Nil(t, err)
 
 	// Authenticate as root. Patch module name. Should return 200.
@@ -297,8 +299,8 @@ func TestModulesPatch(t *testing.T) {
 }
 
 type modulesResponse struct {
-	Data     []model.Module           `json:"data"`
-	Metadata model.CollectionMetadata `json:"metadata"`
+	Data     []types.Module           `json:"data"`
+	Metadata types.CollectionMetadata `json:"metadata"`
 }
 
 func BenchmarkModulesGet1000(b *testing.B) {
@@ -307,13 +309,13 @@ func BenchmarkModulesGet1000(b *testing.B) {
 	var err error
 
 	// Temporarily turn off logging.
-	level := log.GetLevel()
-	log.SetLevel(log.PanicLevel)
-	defer log.SetLevel(level)
+	// level := log.GetLevel()
+	// log.SetLevel(log.PanicLevel)
+	// defer log.SetLevel(level)
 
 	// Create a 1000 users.
 	for n := 0; n < 1000; n++ {
-		_, err = createModule(model.Module{
+		_, err = createModule(types.Module{
 			ID:        fmt.Sprintf("root/%d", rand.Int()),
 			User:      "root",
 			Name:      "Module 1",
@@ -332,7 +334,7 @@ func BenchmarkModulesGet1000(b *testing.B) {
 		// Empty cursor will return the first page of results.
 		cursor := ""
 
-		for result := []model.Module{}; len(result) < 1000; {
+		for result := []types.Module{}; len(result) < 1000; {
 
 			// Execute a GET response with a cursor and limit.
 			config = forest.NewConfig("/modules").Header("X-API-KEY", rootAPIKey)

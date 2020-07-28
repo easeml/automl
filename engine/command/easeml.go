@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -89,6 +90,13 @@ func init() {
 func initConfig() {
 
 	setConfigInfo(viper.GetViper())
+
+	// Viper's environment variable for 12 factor app style configuration.
+	// The equivalence between flags and environmental variables is as follows:
+	// [flag] --database-address ADDRESS is equivalent to [env] export EASEML_DATABASE_ADDRESS="ADDRESS" (aside from precedence)
+	viper.SetEnvPrefix("EASEML")
+	replacer := strings.NewReplacer("-", "_")
+	viper.SetEnvKeyReplacer(replacer)
 
 	viper.AutomaticEnv() // read in environment variables that match
 

@@ -11,8 +11,9 @@ import (
 	"testing"
 
 	"github.com/ds3lab/easeml/engine/database/model"
+	"github.com/ds3lab/easeml/engine/database/model/types"
+	"github.com/ds3lab/easeml/engine/logger"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/emicklei/forest"
 	"github.com/stretchr/testify/assert"
 )
@@ -31,10 +32,11 @@ const testSchemaOutSrc1 string = `{
 	}
 }`
 
-func createDataset(dataset model.Dataset) (result model.Dataset, err error) {
+func createDataset(dataset types.Dataset) (result types.Dataset, err error) {
 	context, err := model.Connect(testDbAddr, testDbName, false)
+	log := logger.NewProcessLogger(true)
 	if err != nil {
-		log.Fatalf("fatal FATAL: %+v", err)
+		log.WriteFatal(fmt.Sprintf("fatal FATAL: %+v", err))
 	}
 	defer context.Session.Close()
 	context.User.ID = dataset.User
@@ -52,14 +54,14 @@ func TestDatasetsGet(t *testing.T) {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	passwordHash := hex.EncodeToString(hasher.Sum(nil))
-	_, err = createUser(model.User{ID: "user_dg_1", PasswordHash: passwordHash, Status: "active"})
+	_, err = createUser(types.User{ID: "user_dg_1", PasswordHash: passwordHash, Status: "active"})
 	assert.Nil(t, err)
 
 	// Create datasets.
-	var datasets = []model.Dataset{
-		model.Dataset{ID: "root/dataset1", User: "root", Name: "Dataset 1", Source: "download", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
-		model.Dataset{ID: "user2/dataset2", User: "user2", Name: "Dataset 2", Source: "upload", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
-		model.Dataset{ID: "user2/dataset3", User: "user2", Name: "Dataset 3", Source: "download", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
+	var datasets = []types.Dataset{
+		types.Dataset{ID: "root/dataset1", User: "root", Name: "Dataset 1", Source: "download", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
+		types.Dataset{ID: "user2/dataset2", User: "user2", Name: "Dataset 2", Source: "upload", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
+		types.Dataset{ID: "user2/dataset3", User: "user2", Name: "Dataset 3", Source: "download", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
 	}
 	for _, dataset := range datasets {
 		_, err = createDataset(dataset)
@@ -181,7 +183,7 @@ func TestDatasetsPost(t *testing.T) {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	passwordHash := hex.EncodeToString(hasher.Sum(nil))
-	_, err = createUser(model.User{ID: "user_dp_1", PasswordHash: passwordHash, Status: "active"})
+	_, err = createUser(types.User{ID: "user_dp_1", PasswordHash: passwordHash, Status: "active"})
 	assert.Nil(t, err)
 
 	// Don't authenticate. Post dataset. Should return 403.
@@ -228,7 +230,7 @@ func TestDatasetsGetById(t *testing.T) {
 	var err error
 
 	// Create the dataset which we will use in the test.
-	_, err = createDataset(model.Dataset{ID: "user2/dataset10", User: "user2", Name: "Dataset 1", Source: "download", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1})
+	_, err = createDataset(types.Dataset{ID: "user2/dataset10", User: "user2", Name: "Dataset 1", Source: "download", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1})
 	assert.Nil(t, err)
 
 	// Create user_dbid_1.
@@ -236,7 +238,7 @@ func TestDatasetsGetById(t *testing.T) {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	passwordHash := hex.EncodeToString(hasher.Sum(nil))
-	_, err = createUser(model.User{ID: "user_dbid_1", PasswordHash: passwordHash, Status: "active"})
+	_, err = createUser(types.User{ID: "user_dbid_1", PasswordHash: passwordHash, Status: "active"})
 	assert.Nil(t, err)
 
 	// Don't authenticate. Get root dataset. Should return 404.
@@ -268,9 +270,9 @@ func TestDatasetsPatch(t *testing.T) {
 	var err error
 
 	// Create datasets.
-	var datasets = []model.Dataset{
-		model.Dataset{ID: "root/dataset10", User: "root", Name: "Dataset 10", Source: "download", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
-		model.Dataset{ID: "user_du_1/dataset21", User: "user_du_1", Name: "Dataset 21", Source: "upload", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
+	var datasets = []types.Dataset{
+		types.Dataset{ID: "root/dataset10", User: "root", Name: "Dataset 10", Source: "download", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
+		types.Dataset{ID: "user_du_1/dataset21", User: "user_du_1", Name: "Dataset 21", Source: "upload", SchemaIn: testSchemaInSrc1, SchemaOut: testSchemaOutSrc1},
 	}
 	for _, dataset := range datasets {
 		_, err = createDataset(dataset)
@@ -282,7 +284,7 @@ func TestDatasetsPatch(t *testing.T) {
 	hasher := sha256.New()
 	hasher.Write([]byte(password))
 	passwordHash := hex.EncodeToString(hasher.Sum(nil))
-	_, err = createUser(model.User{ID: "user_du_1", PasswordHash: passwordHash, Status: "active"})
+	_, err = createUser(types.User{ID: "user_du_1", PasswordHash: passwordHash, Status: "active"})
 	assert.Nil(t, err)
 
 	// Authenticate as root. Patch dataset name. Should return 200.
@@ -311,8 +313,8 @@ func TestDatasetsPatch(t *testing.T) {
 }
 
 type datasetsResponse struct {
-	Data     []model.Dataset          `json:"data"`
-	Metadata model.CollectionMetadata `json:"metadata"`
+	Data     []types.Dataset          `json:"data"`
+	Metadata types.CollectionMetadata `json:"metadata"`
 }
 
 func BenchmarkDatasetsGet1000(b *testing.B) {
@@ -321,13 +323,14 @@ func BenchmarkDatasetsGet1000(b *testing.B) {
 	var err error
 
 	// Temporarily turn off logging.
-	level := log.GetLevel()
-	log.SetLevel(log.PanicLevel)
-	defer log.SetLevel(level)
+
+	// level := log.GetLevel()
+	// log.SetLevel(log.PanicLevel)
+	// defer log.SetLevel(level)
 
 	// Create a 1000 users.
 	for n := 0; n < 1000; n++ {
-		_, err = createDataset(model.Dataset{
+		_, err = createDataset(types.Dataset{
 			ID:        fmt.Sprintf("root/%d", rand.Int()),
 			User:      "root",
 			Name:      "Dataset 1",
@@ -346,7 +349,7 @@ func BenchmarkDatasetsGet1000(b *testing.B) {
 		// Empty cursor will return the first page of results.
 		cursor := ""
 
-		for result := []model.Dataset{}; len(result) < 1000; {
+		for result := []types.Dataset{}; len(result) < 1000; {
 
 			// Execute a GET response with a cursor and limit.
 			config = forest.NewConfig("/datasets").Header("X-API-KEY", rootAPIKey)

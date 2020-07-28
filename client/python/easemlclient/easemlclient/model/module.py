@@ -91,7 +91,7 @@ class Module(ApiType['Module']):
 
     @property
     def type(self) -> Optional[ModuleType]:
-        value = self._dict.get("user")
+        value = self._dict.get("type")
         return ModuleType(value) if value is not None else None
 
     @property
@@ -222,13 +222,13 @@ class ModuleQuery(ApiQuery['Module', 'ModuleQuery']):
         if user is not None:
             self._query["user"] = user.id
         if type is not None:
-            self._query["type"] = type.value
+            self._query["type"] = type
         if label is not None:
             self._query["label"] = label
         if status is not None:
-            self._query["status"] = status.value
+            self._query["status"] = status
         if source is not None:
-            self._query["source"] = source.value
+            self._query["source"] = source
         if source_address is not None:
             self._query["source-address"] = source_address
         if schema_in is not None:

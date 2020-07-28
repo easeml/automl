@@ -58,6 +58,8 @@ $(WEB_UI_DIST_PATH):
 init:
 	$(call show-prompt,Installing module dependencies)
 	$(GO) mod download
+	echo "Installing PACKR2 binary"
+	$(GO) get -v -u github.com/gobuffalo/packr/v2/packr2
 
 
 .PHONY: clean
@@ -89,7 +91,7 @@ install: build
 		mv $(PROJECT_NAME) $(PROJECT_NAME)_temp;\
 		mv $(PROJECT_NAME)_temp $(INSTALL_PATH)/$(PROJECT_NAME);\
 	else\
-		echo "Empty INSTALL_PATH and GOPATH. Please set the env variable INSTALL_PATH or GOPATH to a valid directory so that the output binary can be placed there. Preferably this directory is included in your PATH environmental variable";\
+		echo "Empty INSTALL_PATH and GOPATH. Please set the env variable INSTALL_PATH or GOPATH to a valid directory so that the output binary can be placed there. Preferably this directory is included in your \$PATH environmental variable";\
 		exit 1;\
 	fi && \
 	echo '$@: done'
@@ -107,6 +109,12 @@ package: $(WEB_UI_DIST_PATH)
 			$(PACKR) clean; \
 		done; \
 	done
+	$(call show-prompt,Building Snap Package)
+	cd $(ROOT_DIR_PATH); \
+	    snapcraft clean; \
+	    snapcraft ;\
+	    mv easeml_$(VERSION)_amd64.snap $(DIST_PATH); \
+	    echo "Done!"
 
 
 .PHONY: serve
@@ -140,8 +148,17 @@ lint-fix:
 .PHONY: version
 ## Set the version of this package according to version file found in the repo root.
 version:
-	@echo
+	$(call show-prompt,Changing snap version)
+	sed -i '0,/version:.*/s//version: $(VERSION)/' $(ROOT_DIR_PATH)/snap/snapcraft.yaml
+	@echo New version: $(VERSION)
 
+.PHONY: publish
+## Publish to the respective indexing service
+publish: package
+	$(call show-prompt,Publishing snap)
+	@echo "$(SNAP_TOKEN)" | snapcraft login --with -
+	snapcraft upload $(DIST_PATH)/easeml_$(VERSION)_amd64.snap --release edge
+	snapcraft logout
 
 .PHONY: docs
 ## Generate the documentation Markdown files.

@@ -89,10 +89,15 @@ lint-fix:
 	$(call show-prompt,Fixing coding style violations)
 	$(NPM_RUN) lint fix
 
+.PHONY: publish
+## Publish to the respective indexing service
+publish:
+	$(call show-prompt,Running all publishing scripts)
+	$(call repeat-for-all,$@)
 
 .PHONY: version
 ## Set the version of this package according to version file found in the repo root.
 version:
 	$(call show-prompt,Updating package version)
-	$(NPM) version $(VERSION) --no-git-tag-version
+	$(NPM) version $(VERSION) --no-git-tag-version --allow-same-version
 	@echo New version: $(VERSION)

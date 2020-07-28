@@ -244,7 +244,7 @@ function findReadmeAndScan(opener) {
 export default {
     name: 'NewDatasetModal',
     components: {
-        vueDropzone: vue2Dropzone,
+        // vueDropzone: vue2Dropzone,
         FileDropzone
     },
     data() {

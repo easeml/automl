@@ -24,6 +24,7 @@ PROJECT_NAME := easemlclient
 NPM := $(shell which npm)
 NPM_RUN := $(NPM) run
 VERSION := $(shell cat $(ROOT_DIR_PATH)/VERSION)
+TESTS_PATH:= test
 
 
 # Include common make functions.
@@ -67,8 +68,12 @@ endif
 .PHONY: test
 ## Run all tests.
 test:
-	$(call show-prompt,Running all tests)
-	$(NPM_RUN) test
+	@$(call show-prompt,Running all tests) &&\
+    if [ -d "$(TESTS_PATH)" ]; then \
+        $(NPM_RUN) test; \
+    else\
+        echo 'No tests found in '$(TESTS_PATH);\
+    fi \
 
 
 .PHONY: lint
@@ -84,10 +89,15 @@ lint-fix:
 	$(call show-prompt,Fixing coding style violations)
 	$(NPM_RUN) lint fix
 
+.PHONY: publish
+## Publish to the respective indexing service
+publish:
+	$(call show-prompt,Publishing javascript client to NPM)
+	$(NPM) publish --access=public
 
 .PHONY: version
 ## Set the version of this package according to version file found in the repo root.
 version:
 	$(call show-prompt,Updating package version)
-	$(NPM) version $(VERSION) --no-git-tag-version
+	$(NPM) version $(VERSION) --no-git-tag-version --allow-same-version
 	@echo New version: $(VERSION)

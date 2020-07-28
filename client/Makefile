@@ -17,7 +17,7 @@ include $(ROOT_DIR_PATH)/dev/makefiles/show-prompt.mk
 
 
 # All available language versions.
-LANGUAGES := go javascript python
+LANGUAGES := jupyterlab go javascript python
 
 
 # Other config variables.
@@ -76,6 +76,17 @@ lint:
 	$(call show-prompt,Running all linting checks)
 	$(call repeat-for-all,$@)
 
+.PHONY: init
+## Run initialization script in all Makefiles
+init:
+	$(call show-prompt,Running all init scripts)
+	$(call repeat-for-all,$@)
+
+.PHONY: publish
+## Publish to the respective indexing service
+publish:
+	$(call show-prompt,Running all publishing scripts)
+	$(call repeat-for-all,$@)
 
 .PHONY: version
 ## Set the version of this package according to version file found in the repo root.

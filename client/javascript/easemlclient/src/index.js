@@ -31,7 +31,7 @@ function Context (serverAddress, userCredentials) {
   this.userCredentials = userCredentials
   this.baseURL = urljoin(serverAddress, API_PREFIX)
 
-  let axiosConfig = {
+  const axiosConfig = {
     timeout: 1000,
     baseURL: this.baseURL,
     headers: {}
@@ -42,11 +42,11 @@ function Context (serverAddress, userCredentials) {
     axiosConfig.headers['X-API-KEY'] = userCredentials.apiKey
     this.authHeader['X-API-KEY'] = userCredentials.apiKey
   } else if ('username' in userCredentials && 'password' in userCredentials) {
-    axiosConfig['auth'] = {
+    axiosConfig.auth = {
       username: userCredentials.username,
       password: userCredentials.password
     }
-    this.authHeader['Authorization'] = 'Basic ' + btoa(userCredentials.username + ':' + userCredentials.password)
+    this.authHeader.Authorization = 'Basic ' + btoa(userCredentials.username + ':' + userCredentials.password)
   }
 
   this.userCredentials = userCredentials

@@ -5,11 +5,11 @@ import common from './common'
 import decamelizeKeys from 'decamelize-keys'
 
 import moment from 'moment'
-let momentDurationFormatSetup = require('moment-duration-format')
+const momentDurationFormatSetup = require('moment-duration-format')
 momentDurationFormatSetup(moment)
 
 function transformDataItem (input) {
-  let runningDuration = moment.duration(input['running-duration'], 'milliseconds')
+  const runningDuration = moment.duration(input['running-duration'], 'milliseconds')
 
   return {
     id: input.id,
@@ -42,7 +42,7 @@ function getTasks (query) {
   return new Promise((resolve, reject) => {
     common.runGetQuery(this.axiosInstance, '/tasks', query)
       .then(data => {
-        let items = []
+        const items = []
 
         if (data) {
           for (let i = 0; i < data.length; i++) {
@@ -63,7 +63,7 @@ function getTaskById (id) {
   return new Promise((resolve, reject) => {
     this.axiosInstance.get('/tasks/' + id)
       .then(response => {
-        let result = transformDataItem(response.data.data)
+        const result = transformDataItem(response.data.data)
         resolve(result)
       })
       .catch(e => {
@@ -75,9 +75,9 @@ function getTaskById (id) {
 function updateTask (id, updates) {
   // Collect fields of interest.
   updates = decamelizeKeys(updates, '-')
-  let data = {}
+  const data = {}
   if ('status' in updates) {
-    data['status'] = updates['status']
+    data.status = updates.status
   }
 
   // Run patch request as a promise.
@@ -97,7 +97,7 @@ function listTaskPredictionsDirectoryByPath (id, relPath) {
   return new Promise((resolve, reject) => {
     this.axiosInstance.get('/tasks/' + id + '/predictions' + relPath)
       .then(response => {
-        let result = response.data
+        const result = response.data
         resolve(result)
       })
       .catch(e => {
@@ -119,8 +119,8 @@ function downloadTaskPredictionsByPath (id, relPath, inBrowser = false) {
     return new Promise((resolve, reject) => {
       this.axiosInstance.get('/tasks/' + id + '/predictions' + relPath)
         .then(response => {
-          let contentType = response.headers['Content-Type'] || ''
-          let result = new Blob([response.data], { type: contentType })
+          const contentType = response.headers['Content-Type'] || ''
+          const result = new Blob([response.data], { type: contentType })
           resolve(result)
         })
         .catch(e => {
@@ -143,8 +143,8 @@ function downloadTrainedModelAsImage (id, inBrowser = false) {
     return new Promise((resolve, reject) => {
       this.axiosInstance.get('/tasks/' + id + '/image/download')
         .then(response => {
-          let contentType = response.headers['Content-Type'] || ''
-          let result = new Blob([response.data], { type: contentType })
+          const contentType = response.headers['Content-Type'] || ''
+          const result = new Blob([response.data], { type: contentType })
           resolve(result)
         })
         .catch(e => {

@@ -23,6 +23,7 @@ class ApiType(Generic[T]):
     def _post(self: T, connection: Connection, url: str) -> T:
         resp = requests.post(url, auth=connection.auth, json={**self._dict, **self._updates})
         resp.raise_for_status()
+        self._dict['id']=resp.headers['Location'][resp.headers['Location'].rfind('/')+1:]
         return self.T({**self._dict, **self._updates})
 
     def _patch(self: T, connection: Connection, url: str) -> T:

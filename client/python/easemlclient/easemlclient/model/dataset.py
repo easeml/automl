@@ -17,6 +17,7 @@ from .type import ApiType, ApiQuery, ApiQueryOrder
 
 
 class DatasetSource(Enum):
+    GIT = "git"
     UPLOAD = "upload"
     LOCAL = "local"
     DOWNLOAD = "download"
@@ -44,7 +45,7 @@ class Dataset(ApiType['Dataset']):
     status: str
         The current status of the user. Can be 'active' or 'archived'.
     """
-
+    # TODO tutorial assumes we can pass directly the keyword i.e. id=ID
     def __init__(self, input: Dict[str, Any]) -> None:
         if "id" not in input:
             raise ValueError("Invalid input dictionary: It must contain an 'id' key.")
@@ -162,6 +163,7 @@ class Dataset(ApiType['Dataset']):
         return self._patch(connection, url)
 
     def get(self, connection: Connection) -> 'Dataset':
+        # TODO error currently @ ("datasets/" +self.user+"/"+ self.id)
         url = connection.url("datasets/" + self.id)
         return self._get(connection, url)
     

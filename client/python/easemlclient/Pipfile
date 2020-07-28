@@ -6,12 +6,15 @@ verify_ssl = true
 [dev-packages]
 pydoc-markdown = "*"
 mypy = "*"
+easemlclient = {path = ".", editable = true}
+twine = "*"
 
 [packages]
 requests = "*"
 pyrfc3339 = "*"
 tuspy = "*"
 docker = "*"
+easemlclient = {editable = true, path = "."}
 
 [requires]
 python_version = "3.6"

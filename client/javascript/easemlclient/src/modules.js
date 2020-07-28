@@ -38,7 +38,7 @@ function getModules (query) {
   return new Promise((resolve, reject) => {
     common.runGetQuery(this.axiosInstance, '/modules', query)
       .then(data => {
-        let items = []
+        const items = []
 
         if (data) {
           for (let i = 0; i < data.length; i++) {
@@ -59,7 +59,7 @@ function getModuleById (id) {
   return new Promise((resolve, reject) => {
     this.axiosInstance.get('/modules/' + id)
       .then(response => {
-        let result = transformDataItem(response.data.data)
+        const result = transformDataItem(response.data.data)
         resolve(result)
       })
       .catch(e => {
@@ -70,24 +70,24 @@ function getModuleById (id) {
 
 function validateModuleFields (input) {
   input = decamelizeKeys(input, '-')
-  let errors = {}
+  const errors = {}
 
   if (!input.id) {
-    errors['id'] = 'The id must be specified.'
+    errors.id = 'The id must be specified.'
   } else if (!common.ID_FORMAT.test(input.id)) {
-    errors['id'] = 'The id can contain only letters, numbers and underscores.'
+    errors.id = 'The id can contain only letters, numbers and underscores.'
   }
 
   if (!input.source) {
-    errors['type'] = 'The type must be specified.'
+    errors.type = 'The type must be specified.'
   } else if (!['model', 'objective', 'optimizer'].includes(input.source)) {
-    errors['source'] = 'The type must be either "model", "objective" or "optimizer".'
+    errors.source = 'The type must be either "model", "objective" or "optimizer".'
   }
 
   if (!input.source) {
-    errors['source'] = 'The source must be specified.'
+    errors.source = 'The source must be specified.'
   } else if (!['upload', 'download', 'local', 'registry'].includes(input.source)) {
-    errors['source'] = 'The source must be either "registry", "upload", "download" or "local".'
+    errors.source = 'The source must be either "registry", "upload", "download" or "local".'
   }
 
   if (!input['source-address'] && input.source !== 'upload') {
@@ -95,7 +95,7 @@ function validateModuleFields (input) {
   }
 
   if (input.name && !common.NAME_FORMAT.test(input.name)) {
-    errors['name'] = 'The name can contain only printable ASCII characters.'
+    errors.name = 'The name can contain only printable ASCII characters.'
   }
 
   return errors
@@ -104,14 +104,14 @@ function validateModuleFields (input) {
 function createModule (input) {
   // Collect fields of interest.
   input = decamelizeKeys(input, '-')
-  let data = {
-    'id': input['id'],
-    'type': input['type'],
-    'label': input['label'] || '',
-    'source': input['source'],
+  const data = {
+    id: input.id,
+    type: input.type,
+    label: input.label || '',
+    source: input.source,
     'source-address': input['source-address'],
-    'name': input['name'] || '',
-    'description': input['description'] || ''
+    name: input.name || '',
+    description: input.description || ''
   }
 
   // Run post request as a promise.
@@ -133,15 +133,15 @@ function createModule (input) {
 function updateModule (id, updates) {
   // Collect fields of interest.
   updates = decamelizeKeys(updates, '-')
-  let data = {}
+  const data = {}
   if ('name' in updates) {
-    data['name'] = updates['name']
+    data.name = updates.name
   }
   if ('description' in updates) {
-    data['description'] = updates['description']
+    data.description = updates.description
   }
   if ('status' in updates) {
-    data['status'] = updates['status']
+    data.status = updates.status
   }
 
   // Run patch request as a promise.

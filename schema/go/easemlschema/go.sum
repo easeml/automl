@@ -1,3 +1,5 @@
 github.com/ds3lab/easeml v0.0.0-20181112043503-d69ef4611cf3 h1:UymPMCgy3xtnADqsGD7KOidJN7oykgVZLgR+2g9MCMc=
 github.com/kshedden/gonpy v0.0.0-20181015193932-4db3805e76d5 h1:yePVBtqXdvMrYT53ayUfgbeWPayiZrbxob5oYcnD08Y=
 github.com/kshedden/gonpy v0.0.0-20181015193932-4db3805e76d5/go.mod h1:+uEXxXG0RlfBPqG1tq5QN/F2jRlcuY0dExSONLpEwcA=
+github.com/robertkrimen/godocdown v0.0.0-20130622164427-0bfa04905481 h1:jMxcLa+VjJKhpCwbLUXAD15wJ+hhvXMLujCl3MkXpfM=
+github.com/robertkrimen/godocdown v0.0.0-20130622164427-0bfa04905481/go.mod h1:C9WhFzY47SzYBIvzFqSvHIR6ROgDo4TtdTuRaOMjF/s=

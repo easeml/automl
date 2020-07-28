@@ -5,12 +5,12 @@ import common from './common'
 import decamelizeKeys from 'decamelize-keys'
 
 import moment from 'moment'
-let momentDurationFormatSetup = require('moment-duration-format')
+const momentDurationFormatSetup = require('moment-duration-format')
 momentDurationFormatSetup(moment)
 
 function transformDataItem (input) {
-  let creationTime = new Date(input['creation-time'])
-  let runningDuration = moment.duration(input['running-duration'], 'milliseconds')
+  const creationTime = new Date(input['creation-time'])
+  const runningDuration = moment.duration(input['running-duration'], 'milliseconds')
 
   return {
     id: input.id,
@@ -30,10 +30,10 @@ function transformDataItem (input) {
 
 function mergeModelConfigSpaces (input) {
   // Take an object where keys are model IDs and values are config spaces.
-  let result = []
-  for (let modelId in input) {
-    if (input.hasOwnProperty(modelId)) {
-      result.push({ 'id': modelId, 'config': input[modelId] })
+  const result = []
+  for (const modelId in input) {
+    if (Object.prototype.hasOwnProperty.call(input, modelId)) {
+      result.push({ id: modelId, config: input[modelId] })
     }
   }
   // Return the object formatted as it should be sent to the easeml REST API.
@@ -48,7 +48,7 @@ function getJobs (query) {
   return new Promise((resolve, reject) => {
     common.runGetQuery(this.axiosInstance, '/jobs', query)
       .then(data => {
-        let items = []
+        const items = []
 
         if (data) {
           for (let i = 0; i < data.length; i++) {
@@ -69,7 +69,7 @@ function getJobById (id) {
   return new Promise((resolve, reject) => {
     this.axiosInstance.get('/jobs/' + id)
       .then(response => {
-        let result = transformDataItem(response.data.data)
+        const result = transformDataItem(response.data.data)
         resolve(result)
       })
       .catch(e => {
@@ -80,18 +80,18 @@ function getJobById (id) {
 
 function validateJobFields (input) {
   input = decamelizeKeys(input, '-')
-  let errors = {}
+  const errors = {}
 
   if (!input.dataset) {
-    errors['dataset'] = 'The dataset must be specified.'
+    errors.dataset = 'The dataset must be specified.'
   }
 
   if (!input.objective) {
-    errors['objective'] = 'The objective must be specified.'
+    errors.objective = 'The objective must be specified.'
   }
 
   if (!input.models) {
-    errors['models'] = 'The models list must be specified and cannot be empty.'
+    errors.models = 'The models list must be specified and cannot be empty.'
   }
 
   return errors
@@ -100,11 +100,11 @@ function validateJobFields (input) {
 function createJob (input) {
   // Collect fields of interest.
   input = decamelizeKeys(input, '-')
-  let data = {
-    'dataset': input['dataset'],
-    'objective': input['objective'],
+  const data = {
+    dataset: input.dataset,
+    objective: input.objective,
     'alt-objectives': input['alt-objectives'] || [],
-    'models': input['models'],
+    models: input.models,
     'accept-new-models': input['accept-new-models'] === true,
     'max-tasks': Number(input['max-tasks']),
     'config-space': input['config-space'] || ''
@@ -134,7 +134,7 @@ function createJob (input) {
 function updateJob (id, updates) {
   // Collect fields of interest.
   updates = decamelizeKeys(updates, '-')
-  let data = {}
+  const data = {}
   if ('max-tasks' in updates) {
     data['max-tasks'] = updates['max-tasks']
   }
@@ -142,7 +142,7 @@ function updateJob (id, updates) {
     data['accept-new-models'] = updates['accept-new-models']
   }
   if ('status' in updates) {
-    data['status'] = updates['status']
+    data.status = updates.status
   }
 
   // Run patch request as a promise.

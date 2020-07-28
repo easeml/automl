@@ -8,9 +8,11 @@ pylint = "*"
 autopep8 = "*"
 setuptools = "*"
 wheel = "*"
+easemlschema = {path = ".", editable = true}
+twine = "*"
 
 [packages]
-easemlschema = {editable = true,path = "."}
+easemlschema = {editable = true, path = "."}
 
 [requires]
 python_version = "3.6"

@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/ds3lab/easeml/engine/utils"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -8,7 +9,8 @@ import (
 
 func TestConnect(t *testing.T) {
 	assert := assert.New(t)
-	connection, err := Connect("localhost", "testdb")
+	var MongoInstance = utils.GetEnvVariableOrDefault("EASEML_DATABASE_ADDRESS","localhost")
+	connection, err := Connect(MongoInstance, "testdb")
 
 	assert.Nil(err)
 	assert.Equal("testdb", connection.DBName)

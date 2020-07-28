@@ -2,7 +2,6 @@ package test
 
 import (
 	"crypto/sha256"
-	"github.com/ds3lab/easeml/engine/database/model"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -11,15 +10,19 @@ import (
 	"net/url"
 	"testing"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/ds3lab/easeml/engine/database/model"
+	"github.com/ds3lab/easeml/engine/database/model/types"
+	"github.com/ds3lab/easeml/engine/logger"
+
 	"github.com/emicklei/forest"
 	"github.com/stretchr/testify/assert"
 )
 
-func createUser(user model.User) (result model.User, err error) {
+func createUser(user types.User) (result types.User, err error) {
 	context, err := model.Connect(testDbAddr, testDbName, false)
+	log := logger.NewProcessLogger(true)
 	if err != nil {
-		log.Fatalf("fatal: %+v", err)
+		log.WriteFatal(fmt.Sprintf("fatal: %+v", err))
 	}
 	defer context.Session.Close()
 
@@ -312,9 +315,9 @@ func BenchmarkUserGetById(b *testing.B) {
 	var err error
 
 	// Temporarily turn off logging.
-	level := log.GetLevel()
-	log.SetLevel(log.ErrorLevel)
-	defer log.SetLevel(level)
+	// level := log.GetLevel()
+	// log.SetLevel(log.ErrorLevel)
+	// defer log.SetLevel(level)
 
 	for n := 0; n < b.N; n++ {
 		config = forest.NewConfig("/users/root").Header("X-API-KEY", rootAPIKey)
@@ -332,9 +335,9 @@ func BenchmarkUserLoginLogout(b *testing.B) {
 	var err error
 
 	// Temporarily turn off logging.
-	level := log.GetLevel()
-	log.SetLevel(log.PanicLevel)
-	defer log.SetLevel(level)
+	// level := log.GetLevel()
+	// log.SetLevel(log.PanicLevel)
+	// defer log.SetLevel(level)
 
 	// Create a temp user.
 	var bodyFormat = `{"id" : "%s", "name" : "%s", "status" : "%s", "password" : "%s"}`
@@ -387,9 +390,9 @@ func BenchmarkUsersPost(b *testing.B) {
 	var err error
 
 	// Temporarily turn off logging.
-	level := log.GetLevel()
-	log.SetLevel(log.PanicLevel)
-	defer log.SetLevel(level)
+	// level := log.GetLevel()
+	// log.SetLevel(log.PanicLevel)
+	// defer log.SetLevel(level)
 
 	// Main benchmark loop.
 	for n := 0; n < b.N; n++ {
@@ -412,8 +415,8 @@ func BenchmarkUsersPost(b *testing.B) {
 }
 
 type usersResponse struct {
-	Data     []model.User             `json:"data"`
-	Metadata model.CollectionMetadata `json:"metadata"`
+	Data     []types.User             `json:"data"`
+	Metadata types.CollectionMetadata `json:"metadata"`
 }
 
 func BenchmarkUsersGet1000(b *testing.B) {
@@ -422,9 +425,9 @@ func BenchmarkUsersGet1000(b *testing.B) {
 	var err error
 
 	// Temporarily turn off logging.
-	level := log.GetLevel()
-	log.SetLevel(log.PanicLevel)
-	defer log.SetLevel(level)
+	// level := log.GetLevel()
+	// log.SetLevel(log.PanicLevel)
+	// defer log.SetLevel(level)
 
 	// Create a 1000 users.
 	for n := 0; n < 1000; n++ {
@@ -451,7 +454,7 @@ func BenchmarkUsersGet1000(b *testing.B) {
 		// Empty cursor will return the first page of results.
 		cursor := ""
 
-		for result := []model.User{}; len(result) < 1000; {
+		for result := []types.User{}; len(result) < 1000; {
 
 			// Execute a GET response with a cursor and limit.
 			config = forest.NewConfig("/users").Header("X-API-KEY", rootAPIKey)

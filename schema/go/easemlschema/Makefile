@@ -64,6 +64,11 @@ package: build
 	mkdir -p $(DIST_PATH)
 	tar -zcvf $(DIST_PATH)/$(RELEASE_TAR_NAME) dataset/* schema/* *.go go.*
 
+.PHONY: publish
+## Publish to the respective indexing service
+publish:
+	$(call show-prompt,Running all publishing scripts)
+	$(call repeat-for-all,$@)
 
 .PHONY: test
 ## Run all tests.

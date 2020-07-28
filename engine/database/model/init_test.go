@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/ds3lab/easeml/engine/utils"
 	"testing"
 
 	"github.com/ds3lab/easeml/engine/database"
@@ -13,7 +14,8 @@ import (
 
 func TestClear(t *testing.T) {
 	assert := assert.New(t)
-	connection, err := database.Connect("localhost", "testdb")
+	var MongoInstance = utils.GetEnvVariableOrDefault("EASEML_DATABASE_ADDRESS","localhost")
+	connection, err := database.Connect(MongoInstance, "testdb")
 	assert.Nil(err)
 
 	// Create a temp database.
@@ -34,7 +36,8 @@ func TestClear(t *testing.T) {
 
 func TestInitialize(t *testing.T) {
 	assert := assert.New(t)
-	connection, err := database.Connect("localhost", "testdb")
+	var MongoInstance = utils.GetEnvVariableOrDefault("EASEML_DATABASE_ADDRESS","localhost")
+	connection, err := database.Connect(MongoInstance, "testdb")
 	assert.Nil(err)
 
 	// Run the Initialize function.
