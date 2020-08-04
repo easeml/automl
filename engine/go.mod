@@ -32,7 +32,7 @@ require (
 	github.com/otiai10/curr v0.0.0-20150429015615-9b4961190c95 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.8.1
-	github.com/rogpeppe/go-internal v1.6.0 // indirect
+	github.com/rogpeppe/go-internal v1.6.1 // indirect
 	github.com/rs/cors v1.6.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.6.0
@@ -42,12 +42,12 @@ require (
 	github.com/stretchr/testify v1.5.1
 	github.com/tus/tusd v0.0.0-20190508030626-9d693c93a3ea
 	github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8 // indirect
-	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899 // indirect
+	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
 	golang.org/x/net v0.0.0-20200625001655-4c5254603344
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
-	golang.org/x/sys v0.0.0-20200728102440-3e129f6d46b1 // indirect
+	golang.org/x/sys v0.0.0-20200803210538-64077c9b5642 // indirect
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
-	golang.org/x/tools v0.0.0-20200728173525-b6476686b71b // indirect
+	golang.org/x/tools v0.0.0-20200804011535-6c149bb5ef0d // indirect
 	gopkg.in/Acconut/lockfile.v1 v1.1.0 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
 )
