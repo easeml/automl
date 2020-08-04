@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/user"
 	"path/filepath"
 	"strings"
 
@@ -323,12 +324,20 @@ func RunContainerAndCollectOutput(imageName string, entrypoint, command []string
 		hostConfig.Resources = container.Resources{DeviceRequests: []container.DeviceRequest{deviceRequest}}
 	}
 
+	// TODO Find a proper place to store the username, we should create username string once
+	currentUser, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+	username:= currentUser.Uid+":"+ currentUser.Gid
+
 	ctx := context.Background()
 	cli := GetDockerClient()
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
 		Image:      imageName,
 		Entrypoint: entrypoint,
 		Cmd:        remappedCommand,
+		User:		username,
 		Tty:        true,
 	}, &hostConfig, nil, "")
 	if err != nil {
@@ -506,6 +515,7 @@ func ValidateModel(modelImageName string, schemaStringIn, schemaStringOut, confi
 		"--data", MntPrefix + filepath.Join(tempDirName, "data"),
 		"--conf", MntPrefix + filepath.Join(tempDirName, "config.json"),
 		"--output", MntPrefix + filepath.Join(tempDirName, "memory"),
+		"--metadata", MntPrefix + filepath.Join(tempDirName, "metadata"),
 	}
 	outReader, err := RunContainerAndCollectOutput(modelImageName, nil, command, nil)
 	defer outReader.Close()
@@ -520,6 +530,7 @@ func ValidateModel(modelImageName string, schemaStringIn, schemaStringOut, confi
 		"--data", MntPrefix + filepath.Join(tempDirName, "data"),
 		"--memory", MntPrefix + filepath.Join(tempDirName, "memory"),
 		"--output", MntPrefix + filepath.Join(tempDirName, "data", "predictions"),
+		"--metadata", MntPrefix + filepath.Join(tempDirName, "metadata"),
 	}
 	outReader, err = RunContainerAndCollectOutput(modelImageName, nil, command, nil)
 	defer outReader.Close()
