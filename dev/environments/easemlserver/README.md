@@ -63,7 +63,7 @@ docker run \
      --label easeml_local \
      -v ${HOME}/.easeml:/home/jovyan/.easeml \
      -v ${PWD}:/home/jovyan/demo/ \
-     -W /home/jovyan/demo/ \
+     -w /home/jovyan/demo/ \
      --user $(id -u):$(id -g)\
      --network local_easeml_network \
      --network-alias easemlclient \
