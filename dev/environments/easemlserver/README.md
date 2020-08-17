@@ -81,7 +81,7 @@ echo "host: http://easemlserver:8080" >> ${HOME}/.easeml/config.yaml
 ## Add jupyterlab configuration, to access the webui from the host (http://localhost:8888 when starting jupyter lab from the container)
 ```bash
 mkdir -p ~/.jupyter/lab/user-settings/@easeml/jupyterlab_easeml
-echo '{ "easemlConfig": {"easemlServer": "http://localhost:8080/"}}' > ~/.jupyter/lab/user-settings/@easeml/jupyterlab_easeml/plugin.jupyterlab-settings
+echo '{ "easemlConfig": {"easemlServer": "http://localhost:8080"}}' > ~/.jupyter/lab/user-settings/@easeml/jupyterlab_easeml/plugin.jupyterlab-settings
 ```
 
 ## Now you can start the Demo
