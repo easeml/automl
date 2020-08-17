@@ -146,7 +146,7 @@
 </template>
 
 <script>
-import client from "easemlclient";
+
 import showdown from "showdown";
 var converter = new showdown.Converter();
 
@@ -234,82 +234,94 @@ export default {
         },
         finish() {
 
-            let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
-            
-            let job = {
-                dataset: this.selectedDataset.id,
-                objective: this.selectedObjective.id,
-                models: this.selectedModels.map(x => x.id),
-                acceptNewModels: this.acceptNewModels,
-                maxTasks: this.maxTasksUnlimited ? 0 : this.maxTasks
-            }
-            context.createJob(job)
-            .then(id => {
-                this.sucess(id);
-            })
-            .catch(e => console.log(e));
+            this.$store.dispatch('getClient', {})
+                .then(context => {
+                    let job = {
+                        dataset: this.selectedDataset.id,
+                        objective: this.selectedObjective.id,
+                        models: this.selectedModels.map(x => x.id),
+                        acceptNewModels: this.acceptNewModels,
+                        maxTasks: this.maxTasksUnlimited ? 0 : this.maxTasks
+                    }
+                    context.createJob(job)
+                    .then(id => {
+                        this.sucess(id);
+                    })
+                    .catch(e => console.log(e));
 
-            // Dispose of the modal.
+                    // Dispose of the modal.
 
-            // Redirect to new job.
+                    // Redirect to new job.
+                })
+                .catch(response => {
+                    // fail
+                    console.log("Failed: ",response)
+                    this.$router.push({ name: 'login'})
+                })
 
         },
         initStep() {
 
-            let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
+            this.$store.dispatch('getClient', {})
+                .then(context => {
             
-            if (this.step === 1) {
-                // Dataset choose step.
-                console
+                    if (this.step === 1) {
+                        // Dataset choose step.
+                        console
 
-                // Get all datasets.
-                context.getDatasets({status: "validated"})
-                .then(data => {
-                    this.datasets = data;
+                        // Get all datasets.
+                        context.getDatasets({status: "validated"})
+                        .then(data => {
+                            this.datasets = data;
 
-                    if (data.length > 0) {
-                        this.selectedDataset = this.datasets[0];
+                            if (data.length > 0) {
+                                this.selectedDataset = this.datasets[0];
+                            }
+                        })
+                        .catch(e => console.log(e));
+
+
+                    } else if (this.step === 2) {
+                        // Objective choose step.
+
+                        // For the chosen dataset, find applicable objectives.
+                        context.getModules({type: "objective", status: "active", schemaIn: this.selectedDataset.schemaOut})
+                        .then(data => {
+                            this.objectives = data;
+
+                            if (data.length > 0) {
+                                this.selectedObjective = this.objectives[0];
+                            }
+                        })
+                        .catch(e => console.log(e));
+
+                    } else if (this.step === 3) {
+                        // Model choose step.
+
+                        // For the chosen dataset, find applicable models.
+                        context.getModules({
+                            type: "model",
+                            status: "active",
+                            schemaIn: this.selectedDataset.schemaIn,
+                            schemaOut: this.selectedDataset.schemaOut
+                        }).then(data => {
+                            this.models = data;
+                            this.selectedModels = this.models;
+                        })
+                        .catch(e => console.log(e));
+
+                    } else if (this.step === 4) {
+                        // Finalization step.
+
+                        // Specify max-tasks and whether new models should be added on the fly.
+
                     }
                 })
-                .catch(e => console.log(e));
-
-
-            } else if (this.step === 2) {
-                // Objective choose step.
-
-                // For the chosen dataset, find applicable objectives.
-                context.getModules({type: "objective", status: "active", schemaIn: this.selectedDataset.schemaOut})
-                .then(data => {
-                    this.objectives = data;
-
-                    if (data.length > 0) {
-                        this.selectedObjective = this.objectives[0];
-                    }
+                .catch(response => {
+                    // fail
+                    console.log("Failed: ",response)
+                    this.$router.push({ name: 'login'})
                 })
-                .catch(e => console.log(e));
-
-            } else if (this.step === 3) {
-                // Model choose step.
-
-                // For the chosen dataset, find applicable models.
-                context.getModules({
-                    type: "model",
-                    status: "active",
-                    schemaIn: this.selectedDataset.schemaIn,
-                    schemaOut: this.selectedDataset.schemaOut
-                }).then(data => {
-                    this.models = data;
-                    this.selectedModels = this.models;
-                })
-                .catch(e => console.log(e));
-
-            } else if (this.step === 4) {
-                // Finalization step.
-
-                // Specify max-tasks and whether new models should be added on the fly.
-
-            }
-
         },
         beforeOpen() {
             this.step = 1;

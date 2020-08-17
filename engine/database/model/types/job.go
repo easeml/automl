@@ -42,6 +42,8 @@ const (
 type Job struct {
 	ID                bson.ObjectId `bson:"_id" json:"id"`
 	User              string        `bson:"user" json:"user"`
+	Pipeline   		  []string      `bson:"pipeline" json:"pipeline"`
+	TaskIds	   		  []string      `bson:"task-ids" json:"task-ids"`
 	Dataset           string        `bson:"dataset" json:"dataset"`
 	Models            []string      `bson:"models" json:"models"`
 	ConfigSpace       string        `bson:"config-space" json:"config-space"`

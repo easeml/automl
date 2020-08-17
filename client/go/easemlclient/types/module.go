@@ -14,7 +14,7 @@ const (
 	// ModuleOptimizer is the module type representing optimizers.
 	ModuleOptimizer = "optimizer"
 
-	// ModuleUpload is a module that has veen uploaded to the system.
+	// ModuleUpload is a module that has been uploaded to the system.
 	ModuleUpload = "upload"
 
 	// ModuleDownload is a module that has been downloaded from a remote location.

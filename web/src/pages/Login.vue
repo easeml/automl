@@ -76,7 +76,6 @@
     </div>
 </template>
 <script>
-import client from "easemlclient"
 import ContentFooter from "@/layout/ContentFooter.vue";
 export default {
     components: {
@@ -119,9 +118,9 @@ export default {
             console.log(this.apiKey);
 
             if (this.apiKey) {
-
-                let credentials = {apiKey: this.apiKey};
-                let context = new client.Context(serverAddress, credentials);
+                let userCredentials = {apiKey: this.apiKey};
+                this.$store.commit('createClient', {serverAddress, userCredentials})
+                let context = this.$store.getters.getClientContext
 
                 context.getUserById("this")
                 .then(result => {
@@ -137,7 +136,8 @@ export default {
                     }
                     
                 })
-                .catch(e => {
+                .catch(error => {
+                    console.log("ERROR: ",error)
                     this.error = "Server error."
                     console.log(error);
                 });
@@ -145,8 +145,9 @@ export default {
 
             } else {
 
-                let credentials = {username: this.userid, password: this.password};
-                let context = new client.Context(serverAddress, credentials);
+                let userCredentials = {username: this.userid, password: this.password};
+                this.$store.commit('createClient', {serverAddress, userCredentials})
+                let context = this.$store.getters.getClientContext
 
                 context.loginUser()
                 .then(result => {

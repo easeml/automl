@@ -1,0 +1,6 @@
+numpy
+EasemlSchema
+scipy
+scikit-learn
+joblib
+mlschema-converters

@@ -60,6 +60,7 @@ export default {
         logout() {
             localStorage.removeItem("user");
             localStorage.removeItem("context");
+            this.$store.commit('deleteClient');
             this.$router.push({name: "login"});
         }
     },

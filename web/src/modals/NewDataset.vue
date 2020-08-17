@@ -193,7 +193,6 @@
 import yaml from "js-yaml";
 import vue2Dropzone from "vue2-dropzone";
 import FileDropzone from "@/components/FileDropzone.vue";
-import client from "easemlclient";
 import showdown from "showdown";
 var converter = new showdown.Converter();
 
@@ -318,64 +317,71 @@ export default {
         },
         finish() {
 
-            let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
+            this.$store.dispatch('getClient', {})
+                .then(context => {
 
-            if (this.datasetSource === "git"){
-                this.datasetSourceAddress=this.datasetSourceAddress+"::"+this.datasetPath
-            }
-            
-            let dataset = {
-                id: this.currentUserId + "/" + this.datasetId,
-                source: this.datasetSource,
-                sourceAddress: this.datasetSourceAddress,
-                name: this.datasetName,
-                description: this.datasetDescription,
-                accessKey: this.datasetAccessKey
-            }
-            context.createDataset(dataset)
-            .then(id => {
+                    if (this.datasetSource === "git"){
+                        this.datasetSourceAddress=this.datasetSourceAddress+"::"+this.datasetPath
+                    }
 
-                // Creation successful. Procede to upload if needed.
-                if (this.datasetSource === "upload") {
+                    let dataset = {
+                        id: this.currentUserId + "/" + this.datasetId,
+                        source: this.datasetSource,
+                        sourceAddress: this.datasetSourceAddress,
+                        name: this.datasetName,
+                        description: this.datasetDescription,
+                        accessKey: this.datasetAccessKey
+                    }
+                    context.createDataset(dataset)
+                    .then(id => {
 
-                    // Switch to upload panel.
-                    this.switchStep(+1);
+                        // Creation successful. Procede to upload if needed.
+                        if (this.datasetSource === "upload") {
 
-                    context.uploadDataset(
-                        dataset.id,
-                        this.datasetRawData,
-                        this.datasetRawData.name,
-                        (bytesUploaded, bytesTotal) => {
+                            // Switch to upload panel.
+                            this.switchStep(+1);
 
-                            this.currentUploadProgress = Math.round(100 * bytesUploaded / bytesTotal);
-                            console.log(this.currentUploadProgress);
+                            context.uploadDataset(
+                                dataset.id,
+                                this.datasetRawData,
+                                this.datasetRawData.name,
+                                (bytesUploaded, bytesTotal) => {
 
-                    }).then(() => {
+                                    this.currentUploadProgress = Math.round(100 * bytesUploaded / bytesTotal);
+                                    console.log(this.currentUploadProgress);
 
-                        // Now we set the new dataset state to transferred.
-                        context.updateDataset(dataset.id, {status: "transferred"})
-                        .then(() => {
+                            }).then(() => {
+
+                                // Now we set the new dataset state to transferred.
+                                context.updateDataset(dataset.id, {status: "transferred"})
+                                .then(() => {
+                                    this.sucess();
+                                }).catch(e => {
+                                    this.error = "Failed to update the dataset.";
+                                    console.log(e);
+                                });
+
+                            }).catch(e => {
+                                this.error = "Failed to upload the dataset.";
+                                console.log(e);
+                            });
+
+
+                        } else {
                             this.sucess();
-                        }).catch(e => {
-                            this.error = "Failed to update the dataset.";
-                            console.log(e);
-                        });
-                        
-                    }).catch(e => {
-                        this.error = "Failed to upload the dataset.";
+                        }
+
+                    })
+                    .catch(e => {
+                        this.error = "Dataset creation error.";
                         console.log(e);
                     });
-
-
-                } else {
-                    this.sucess();
-                }
-
-            })
-            .catch(e => {
-                this.error = "Dataset creation error.";
-                console.log(e);
-            });
+                })
+                .catch(response => {
+                    // fail
+                    console.log("Failed: ",response)
+                    this.$router.push({ name: 'login'})
+                })
 
         },
         switchStep(direction) {
@@ -418,12 +424,19 @@ export default {
             this.switchStep(0);
 
             // Get current user.
-            let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
-            context.getUserById("this")
-            .then(result => {
-                this.currentUserId = result.id;
-            })
-            .catch(e => console.log(e));
+            this.$store.dispatch('getClient', {})
+                .then(context => {
+                    context.getUserById("this")
+                    .then(result => {
+                        this.currentUserId = result.id;
+                    })
+                    .catch(e => console.log(e));
+                })
+                .catch(response => {
+                    // fail
+                    console.log("Failed: ",response)
+                    this.$router.push({ name: 'login'})
+                })
         },
         extractSchema(filestruct) {
 

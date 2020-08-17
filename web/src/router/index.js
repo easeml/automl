@@ -28,6 +28,5 @@ router.beforeEach((to, from, next) => {
   }
 });
 
-router.replace('/')
 
 export default router;

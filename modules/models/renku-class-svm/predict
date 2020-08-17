@@ -1,0 +1,89 @@
+#!/usr/bin/python
+
+import argparse
+import json
+import numpy as np
+import os
+
+import joblib
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import StandardScaler
+
+import easemlschema.schema as sch
+import easemlschema.dataset as ds
+
+from mlsconverters import export_to_file
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+with open(os.path.join(dir_path, "schema-in.json")) as f:
+    schemaIn = json.load(f)
+
+with open(os.path.join(dir_path, "schema-out.json")) as f:
+    schemaOut = json.load(f)
+
+schIn = sch.Schema.load(schemaIn)
+schOut = sch.Schema.load(schemaOut)
+
+className = "cls"
+
+#schIn = sch.Schema.load(schema["input"])
+#schOut = sch.Schema.load(schema["output"])
+
+if __name__ == "__main__":
+
+    description = "Mean absolute error."
+    parser = argparse.ArgumentParser(description=description)
+
+    parser.add_argument("--data", required=True, help="directory containing input data")
+    parser.add_argument("--memory", required=True, help="directory containing the memory")
+    parser.add_argument("--output", required=True, help="directory where the predictions will be dumped")
+    parser.add_argument("--metadata", required=True, help="directory where the metadata will be dumped")
+
+    args = parser.parse_args()
+
+    datasetIn = ds.Dataset.load(os.path.join(args.data, "input"))
+
+    # Infer schemas.
+    srcSchemaIn = datasetIn.infer_schema()
+    matchSchemaIn = schIn.match(srcSchemaIn, build_matching=True)
+    inName = matchSchemaIn.nodes["s1"].src_name
+
+    sample_names = []
+    X_vectors = []
+    for name in datasetIn.children:
+        if isinstance(datasetIn.children[name], ds.Directory):
+            inValue = datasetIn.children[name].children[inName].data
+            X_vectors.append(inValue)
+            sample_names.append(name)
+
+    X = np.stack(X_vectors)
+
+    # Load model, scaler and class categories.
+    scaler = joblib.load(os.path.join(args.memory, "scaler.bin"))
+    model = joblib.load(os.path.join(args.memory, "model.bin"))
+    with open(os.path.join(args.memory, "classes.json")) as fp:
+        outClassCategories = json.load(fp)
+
+    # Apply scaler to inputs.
+    X = scaler.transform(X)
+
+    # Make predictions.
+    y = model.predict(X)
+
+    # Build output dataset.
+    samples = {}
+    for i in range(len(y)):
+        category = ds.Category("s1", [outClassCategories[y[i]]])
+        outChildren = {"s1" : category}
+        samples[sample_names[i]] = ds.Directory(sample_names[i], outChildren)
+    
+    # Add class to samples.
+    category_class = ds.Class(className, outClassCategories)
+    samples[className] = category_class
+
+    root = os.path.join(args.output, "output")
+    datasetOut = ds.Dataset(root, samples)
+    datasetOut.dump(root)
+
+    export_to_file(model,os.path.join(args.metadata, "predict_mls_renku_metadata.json"))

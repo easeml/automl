@@ -2,7 +2,6 @@ package workers
 
 import (
 	"encoding/json"
-	"log"
 	"os"
 	"time"
 
@@ -23,7 +22,12 @@ func (context Context) ModuleValidateListener() {
 	for {
 		module, err := context.ModelContext.LockModule(model.F{"status": types.ModuleTransferred}, context.ProcessID, "", "")
 		if err == nil {
-			log.Printf("MODULE FOUND FOR VALIDATION")
+			// Log task completion.
+			context.Logger.WithFields(
+				"module-id", module.ID,
+				"source", module.Source,
+				"source-address", module.SourceAddress,
+			).WriteInfo("MODULE FOUND FOR VALIDATION")
 			go context.ModuleValidateWorker(module)
 		} else if errors.Cause(err) == model.ErrNotFound {
 			time.Sleep(context.Period)
@@ -69,6 +73,11 @@ func (context Context) ModuleValidateWorker(module types.Module) {
 
 	// Extract image information.
 	_, name, description, jsonSchemaIn, jsonSchemaOut, configSpace, err := modules.InferModuleProperties(imageName)
+	if err != nil {
+		err = errors.WithStack(err)
+		context.moduleValidationError(err, module)
+		return
+	}
 	var schemaIn, schemaOut *sch.Schema
 
 	// Unmarshal image schemas if they were found.

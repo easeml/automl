@@ -1,7 +1,6 @@
 package workers
 
 import (
-	"log"
 	"time"
 
 	"github.com/ds3lab/easeml/engine/database/model"
@@ -20,7 +19,12 @@ func (context Context) TaskStatusMaintainerListener() {
 
 		task, err = context.ModelContext.LockTask(model.F{"status": types.TaskPausing}, context.ProcessID, "", "")
 		if err == nil {
-			log.Printf("TASK FOUND IN THE PAUSING STATE")
+			context.Logger.WithFields(
+				"task-id", task.ID,
+				"model", task.Model,
+				"dataset", task.Dataset,
+				"objective", task.Objective,
+			).WriteInfo("TASK FOUND IN THE PAUSING STATE")
 			go context.TaskPausingWorker(task)
 		} else if errors.Cause(err) != model.ErrNotFound {
 			panic(err)
@@ -28,7 +32,12 @@ func (context Context) TaskStatusMaintainerListener() {
 
 		task, err = context.ModelContext.LockTask(model.F{"status": types.TaskTerminating}, context.ProcessID, "", "")
 		if err == nil {
-			log.Printf("TASK FOUND IN THE TERMINATING STATE")
+			context.Logger.WithFields(
+				"task-id", task.ID,
+				"model", task.Model,
+				"dataset", task.Dataset,
+				"objective", task.Objective,
+			).WriteInfo("TASK FOUND IN THE TERMINATING STATE")
 			go context.TaskTerminatingWorker(task)
 		} else if errors.Cause(err) != model.ErrNotFound {
 			panic(err)

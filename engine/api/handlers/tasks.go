@@ -244,7 +244,7 @@ func (apiContext Context) TaskDataDownloadHandler(basePath string, dataSubdir st
 			targetTaskPath = taskPaths.Metadata
 		}
 
-		apiContext.ServeLocalResource(targetTaskPath, relativePath, task.StageTimes.Predicting.End, w, r)
+		apiContext.ServeLocalResource(targetTaskPath, relativePath, task.StageTimes.Predict.End, w, r)
 
 	})
 
@@ -293,12 +293,12 @@ func (apiContext Context) TaskImageDownload(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Build model and serve the tar file.
-	newImageTag := strings.Replace(task.Model, "/", "-", -1) + ":" + strings.Replace(task.ID, "/", "-", -1)
+	newImageTag := strings.ToLower(strings.Replace(task.Model, "/", "-", -1) + ":" + strings.Replace(task.ID, "/", "-", -1))
 	imageReader, err := modules.BuildModelImageWithMemory(taskModel.SourceAddress, allPaths.Parameters, newImageTag)
 	if err != nil {
 		responses.Context(apiContext).RespondWithError(w, r, http.StatusInternalServerError, "Something went wrong.", errors.WithStack(err))
 		return
 	}
 	fileName := filepath.Base(taskModel.ID) + "-trained.tar"
-	http.ServeContent(w, r, fileName, task.StageTimes.Training.End, imageReader)
+	http.ServeContent(w, r, fileName, task.StageTimes.Train.End, imageReader)
 }

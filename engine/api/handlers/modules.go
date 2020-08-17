@@ -3,6 +3,8 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -161,7 +163,8 @@ func (apiContext Context) ModulesPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if errors.Cause(err) == types.ErrIdentifierTaken {
-		responses.Context(apiContext).RespondWithError(w, r, http.StatusConflict, "Identifier taken.", errors.WithStack(err))
+		// TODO Currently used when starting the upload process
+		responses.Context(apiContext).RespondWithError(w, r, http.StatusConflict, "Identifier taken.", err)
 		return
 	}
 	if errors.Cause(err) == model.ErrBadInput {
@@ -348,6 +351,7 @@ func (apiContext Context) ModulesUploadHandler(basePath string) http.HandlerFunc
 		config := tusd.Config{
 			BasePath:      myBasePath,
 			StoreComposer: composer,
+			Logger : log.New(ioutil.Discard,"TUSD",0),
 		}
 
 		handler, err := tusd.NewUnroutedHandler(config)

@@ -4,7 +4,6 @@ import (
 	ctx "context"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -171,19 +170,43 @@ func (context Context) ModuleRegistryPullWorker(module types.Module) {
 	if err != nil {
 		panic(err)
 	}
-
 	// Pull image from registry.
-	resp, err := cli.ImagePull(ctx.Background(), module.SourceAddress, dockertypes.ImagePullOptions{})
-	defer resp.Close()
-	if err != nil {
-		panic(err)
+	resp, err := cli.ImagePull(ctx.Background(), module.SourceAddress, dockertypes.ImagePullOptions{RegistryAuth:module.AccessKey})
+
+	if module.AccessKey != ""{
+		//Flush used accessKey
+		context.repeatUntilSuccess(func() error {
+			return context.ModelContext.FlushModuleAccessKey(module.ID)
+		})
+		module.AccessKey=""
 	}
-	body, err := ioutil.ReadAll(resp)
+
+	if err != nil {
+		// Unlock the module and update the status.
+		context.repeatUntilSuccess(func() error {
+			return context.ModelContext.UpdateModuleStatus(module.ID, types.ModuleError, "")
+		})
+		context.repeatUntilSuccess(func() error {
+			return context.ModelContext.UnlockModule(module.ID, context.ProcessID)
+		})
+
+		// Log task completion.
+		context.Logger.WithFields(
+			"module-id", module.ID,
+			"source", module.Source,
+			"source-address", module.SourceAddress,
+		).WriteError("MODULE ACCESS FROM REGISTRY FAILED")
+		return
+	}
+	defer resp.Close()
+
+	//body, err := ioutil.ReadAll(resp)
+	_ , err = ioutil.ReadAll(resp)
 	if err != nil {
 		panic(err)
 	}
 	// TODO: Maybe this is not needed. Maybe save it as log. Or maybe just discard.
-	log.Printf(string(body))
+	// log.Printf(string(body))
 
 	// Get the download target directory.
 	path, err := context.StorageContext.GetModulePath(module.ID, module.Type, "")

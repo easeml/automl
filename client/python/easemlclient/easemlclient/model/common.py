@@ -1,7 +1,7 @@
 """
 Implementation of the `TimeInterval` class.
 """
-import pyrfc3339
+import pyrfc3339  # type: ignore
 
 from copy import deepcopy
 from datetime import datetime
@@ -38,5 +38,5 @@ class TimeInterval:
         return pyrfc3339.parse(value) if value is not None else None
 
     def __iter__(self) -> Iterator[Tuple[str, Any]]:
-        for (k, v) in self._dict:
+        for (k, v) in self._dict.items():
             yield (k, v)

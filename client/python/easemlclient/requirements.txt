@@ -2,3 +2,5 @@ requests>=2.22.0
 pyrfc3339>=1.1
 tuspy>=0.2.4
 docker>=4.0.1
+pluggy>=0.3,<1.0
+PyYAML>=5.3.1

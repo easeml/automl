@@ -125,11 +125,16 @@ func (context Context) DatasetGitWorker(dataset types.Dataset) {
 
 	splitedAddress := strings.Split(dataset.SourceAddress, "::")
 	if len(splitedAddress) != 2{
+		err :=errors.New("DATASET GIT ADDRESS::FILE ERROR")
 		context.Logger.WithFields(
 			"dataset-id", dataset.ID,
 			"source", dataset.Source,
 			"source-address", dataset.SourceAddress,
-		).WriteError("DATASET GIT ADDRESS::FILE ERROR")
+		).WithError(err).WriteError("DATASET GIT ADDRESS::FILE ERROR")
+		context.repeatUntilSuccess(func() error {
+			return context.ModelContext.UpdateDatasetStatus(dataset.ID, types.DatasetError, err.Error())
+		})
+		return
 	}
 	if dataset.AccessKey == "" || dataset.AccessKey=="expired"{
 		context.Logger.WithFields(
@@ -140,11 +145,17 @@ func (context Context) DatasetGitWorker(dataset types.Dataset) {
 		).WriteInfo("DATASET GIT EMPTY AccessKey")
 	}else{
 		if !strings.Contains(splitedAddress[0], "https://"){
+			err :=errors.New("DATASET GIT REPO ADDRESS ERROR")
 			context.Logger.WithFields(
 				"dataset-id", dataset.ID,
 				"source", dataset.Source,
 				"source-address", splitedAddress[0],
 			).WriteError("DATASET GIT REPO ADDRESS ERROR")
+
+			context.repeatUntilSuccess(func() error {
+				return context.ModelContext.UpdateDatasetStatus(dataset.ID, types.DatasetError, err.Error())
+			})
+			return
 		}else{
 			splitedAddress[0]=strings.ReplaceAll(splitedAddress[0],"https://","")
 			splitedAddress[0]=strings.Join([]string{"https://",dataset.AccessKey,"@",splitedAddress[0]},"")
@@ -161,6 +172,11 @@ func (context Context) DatasetGitWorker(dataset types.Dataset) {
 			"source", dataset.Source,
 			"source-address", dataset.SourceAddress,
 		).WriteError(fmt.Sprintf("External execution error:\n%s\nerr:\n%s\n", outStr, errStr))
+
+		context.repeatUntilSuccess(func() error {
+			return context.ModelContext.UpdateDatasetStatus(dataset.ID, types.DatasetError, err.Error())
+		})
+		return
 	}
 
 	outStr, errStr, execErr =utils.ExecExternal(wdir,"git", "checkout", "master", "--", splitedAddress[1])
@@ -171,6 +187,11 @@ func (context Context) DatasetGitWorker(dataset types.Dataset) {
 			"source", dataset.Source,
 			"source-address", dataset.SourceAddress,
 		).WriteError(fmt.Sprintf("External execution error:\n%s\nerr:\n%s\n", outStr, errStr))
+
+		context.repeatUntilSuccess(func() error {
+			return context.ModelContext.UpdateDatasetStatus(dataset.ID, types.DatasetError, err.Error())
+		})
+		return
 	}
 
 	outStr, errStr, execErr =utils.ExecExternal(wdir, "git", "lfs", "pull", "-I", splitedAddress[1])
@@ -181,6 +202,11 @@ func (context Context) DatasetGitWorker(dataset types.Dataset) {
 			"source", dataset.Source,
 			"source-address", dataset.SourceAddress,
 		).WriteError(fmt.Sprintf("External execution error:\n%s\nerr:\n%s\n", outStr, errStr))
+
+		context.repeatUntilSuccess(func() error {
+			return context.ModelContext.UpdateDatasetStatus(dataset.ID, types.DatasetError, err.Error())
+		})
+		return
 	}
 
 	//Flush used accessKey
@@ -203,7 +229,6 @@ func (context Context) DatasetGitWorker(dataset types.Dataset) {
 		context.repeatUntilSuccess(func() error {
 			return context.ModelContext.UpdateDatasetStatus(dataset.ID, types.DatasetError, err.Error())
 		})
-
 		return
 	}
 

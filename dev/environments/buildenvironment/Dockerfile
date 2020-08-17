@@ -12,7 +12,6 @@ RUN  apt update \
  &&  apt install -y python-pip \
  &&  apt install -y curl \
  &&  apt install -y git \
- &&  apt install -y socat \
  &&  apt install -y libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev \
  &&  python -m pip install --upgrade pip \
  &&  python -m pip install pipenv

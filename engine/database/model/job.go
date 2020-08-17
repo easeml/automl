@@ -291,37 +291,18 @@ func (context Context) CreateJob(job types.Job) (result types.Job, err error) {
 			"the referenced objective \"%s\" does not exist or is not verified and active", job.Dataset)
 	}
 
-	// Validate that the objective exists and is active.
-	var objective types.Module
-	objective, err = context.GetModuleByID(job.Objective)
-	if err != nil && err != ErrNotFound {
-		err = errors.Wrap(err, "error while trying to access the referenced objective")
-		return
-	} else if err == ErrNotFound || objective.Status != types.ModuleActive {
-		err = errors.Wrapf(ErrBadInput,
-			"the referenced objective \"%s\" does not exist or is not active", job.Objective)
-	}
-
-	// Validate that the alternative objectives exist and are active.
-	if len(job.AltObjectives) > 0 {
-		var altObjectives []types.Module
-		altObjectives, _, err = context.GetModules(F{"id": job.AltObjectives}, 0, "", "", "")
-		if err != nil {
-			err = errors.Wrap(err, "error while trying to access the referenced alternative objectives")
-			return
+	// Validate Pipeline
+	// TODO There should be no hardcoded stages
+	// Validate if stages are known
+	evaluate:=false
+	for _,element := range job.Pipeline {
+		if element == types.TaskStageEvaluate{
+			evaluate=true
 		}
-		for i := range job.AltObjectives {
-			var found bool
-			for j := range altObjectives {
-				if job.AltObjectives[i] == altObjectives[j].ID && altObjectives[j].Status == types.ModuleActive {
-					found = true
-					break
-				}
-			}
-			if found == false {
-				err = errors.Wrapf(ErrBadInput,
-					"the referenced alternative objective \"%s\" does not exist or is active", job.AltObjectives[i])
-			}
+		if !types.AllPipelineElements.Has(element) {
+			err = errors.Wrapf(ErrBadInput,
+				"Pipeline element \"%s\" is not recognized", element)
+			return
 		}
 	}
 
@@ -333,38 +314,124 @@ func (context Context) CreateJob(job types.Job) (result types.Job, err error) {
 	job.PauseDuration = 0
 	job.RunningDuration = 0 // This field will be omitted when empty.
 
+	// TODO Super Ugly hardcoded pipelines
+	if len(job.TaskIds) > 0{
+		// Pre trained job
+		err = nil
+		if len(job.Pipeline) == 0{
+			// Default trained pipeline
+			job.Pipeline = []string{types.TaskStagePredict,types.TaskStageEvaluate}
+		} else {
+			var currentState = types.StageMapType{types.TaskStageTrain:{}}
+			for _,element := range job.Pipeline {
+				currentState[element]=struct{}{}
+				preRequisites:=types.AllPreRequisites[element]
+				for _,stage := range preRequisites{
+					if !currentState.Has(stage){
+						err = errors.Wrapf(ErrBadInput,
+							"Pipeline does not satisfy prerequisites \"%s\" for element \"%s\"",
+							preRequisites,element)
+						return
+					}
+				}
+			}
+		}
+
+	}else{
+		// Untrained job
+		if len(job.Pipeline) == 0{
+			// Default trainable pipeline
+			job.Pipeline = []string{types.TaskStageTrain,types.TaskStagePredict,types.TaskStageEvaluate}
+		}else {
+			var currentState = types.StageMapType{}
+			for _,element := range job.Pipeline {
+				currentState[element]=struct{}{}
+				preRequisites:=types.AllPreRequisites[element]
+				for _,stage := range preRequisites{
+					if !currentState.Has(stage){
+						err = errors.Wrapf(ErrBadInput,
+							"Pipeline does not satisfy prerequisites \"%s\" for element \"%s\"",
+							preRequisites,element)
+						return
+					}
+				}
+			}
+		}
+
+		// Validate that the models exist and are active.
+		if len(job.Models) > 0 {
+			var models []types.Module
+			models, _, err = context.GetModules(F{"id": job.Models}, 0, "", "", "")
+			if err != nil {
+				err = errors.Wrap(err, "error while trying to access the referenced models")
+				return
+			}
+			for i := range job.Models {
+				var found bool
+				for j := range models {
+					if job.Models[i] == models[j].ID && models[j].Status == types.ModuleActive {
+						found = true
+						break
+					}
+				}
+				if found == false {
+					err = errors.Wrapf(ErrBadInput,
+						"the referenced model \"%s\" does not exist or is not active", job.Models[i])
+				}
+			}
+		} else {
+			err = errors.Wrap(err, "error no models provided")
+			return
+		}
+
+		job.ConfigSpace, err = context.GetJobConfigSpace(job)
+		if err != nil {
+			err = errors.Wrap(err, "error while trying to construct job config space")
+			return
+		}
+	}
+
+
+
+	if evaluate{
+		// Validate that the objective exists and is active.
+		var objective types.Module
+		objective, err = context.GetModuleByID(job.Objective)
+		if err != nil && err != ErrNotFound {
+			err = errors.Wrap(err, "error while trying to access the referenced objective")
+			return
+		} else if err == ErrNotFound || objective.Status != types.ModuleActive {
+			err = errors.Wrapf(ErrBadInput,
+				"the referenced objective \"%s\" does not exist or is not active", job.Objective)
+		}
+
+		// Validate that the alternative objectives exist and are active.
+		if len(job.AltObjectives) > 0 {
+			var altObjectives []types.Module
+			altObjectives, _, err = context.GetModules(F{"id": job.AltObjectives}, 0, "", "", "")
+			if err != nil {
+				err = errors.Wrap(err, "error while trying to access the referenced alternative objectives")
+				return
+			}
+			for i := range job.AltObjectives {
+				var found bool
+				for j := range altObjectives {
+					if job.AltObjectives[i] == altObjectives[j].ID && altObjectives[j].Status == types.ModuleActive {
+						found = true
+						break
+					}
+				}
+				if found == false {
+					err = errors.Wrapf(ErrBadInput,
+						"the referenced alternative objective \"%s\" does not exist or is active", job.AltObjectives[i])
+				}
+			}
+		}
+	}
+
 	// Immediately put the job to the running state. Is this correct?
 	job.Status = types.JobRunning
 	job.RunningTime.Start = time.Now()
-
-	// Validate that the models exist and are active.
-	if len(job.Models) > 0 {
-		var models []types.Module
-		models, _, err = context.GetModules(F{"id": job.Models}, 0, "", "", "")
-		if err != nil {
-			err = errors.Wrap(err, "error while trying to access the referenced models")
-			return
-		}
-		for i := range job.Models {
-			var found bool
-			for j := range models {
-				if job.Models[i] == models[j].ID && models[j].Status == types.ModuleActive {
-					found = true
-					break
-				}
-			}
-			if found == false {
-				err = errors.Wrapf(ErrBadInput,
-					"the referenced model \"%s\" does not exist or is not active", job.Models[i])
-			}
-		}
-	}
-
-	job.ConfigSpace, err = context.GetJobConfigSpace(job)
-	if err != nil {
-		err = errors.Wrap(err, "error while trying to construct job config space")
-		return
-	}
 
 	c := context.Session.DB(context.DBName).C("jobs")
 	err = c.Insert(job)
@@ -379,7 +446,6 @@ func (context Context) CreateJob(job types.Job) (result types.Job, err error) {
 	}
 
 	return job, nil
-
 }
 
 // GetJobConfigSpaceByID searches for a job by ID and builds a complete config space given its models.

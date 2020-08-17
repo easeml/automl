@@ -196,7 +196,7 @@ func (apiContext Context) JobsByIDGet(w http.ResponseWriter, r *http.Request) {
 	// Access model.
 	job, err := modelContext.GetJobByID(bson.ObjectIdHex(id))
 	if errors.Cause(err) == model.ErrNotFound {
-		responses.Context(apiContext).RespondWithError(w, r, http.StatusNotFound, http.StatusText(http.StatusNotFound), errors.WithStack(err))
+		responses.Context(apiContext).RespondWithError(w, r, http.StatusNotFound, http.StatusText(http.StatusNotFound), err)
 		return
 	} else if err != nil {
 		responses.Context(apiContext).RespondWithError(w, r, http.StatusInternalServerError, "Something went wrong.", errors.WithStack(err))

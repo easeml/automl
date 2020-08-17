@@ -364,6 +364,7 @@ func (context Context) CreateTask(task types.Task) (result types.Task, err error
 
 }
 
+// TODO fix assumed transitions
 // UpdateTask updates the information about a given task.
 func (context Context) UpdateTask(id string, updates map[string]interface{}) (result types.Task, err error) {
 
@@ -454,11 +455,11 @@ func (context Context) UpdateTask(id string, updates map[string]interface{}) (re
 
 				// Since this can be an abrupt ending, we need to record the ending time of the stage.
 				switch currentTask.Stage {
-				case types.TaskStageTraining:
+				case types.TaskStageTrain:
 					valueUpdates["stage-times.training.end"] = time.Now()
-				case types.TaskStagePredicting:
+				case types.TaskStagePredict:
 					valueUpdates["stage-times.predicting.end"] = time.Now()
-				case types.TaskStageEvaluating:
+				case types.TaskStageEvaluate:
 					valueUpdates["stage-times.evaluating.end"] = time.Now()
 				}
 
@@ -476,48 +477,16 @@ func (context Context) UpdateTask(id string, updates map[string]interface{}) (re
 		case "stage":
 			stage := v.(string)
 
-			// Perform state transition validations.
-			switch stage {
-			case types.TaskStageBegin:
-				if currentTask.Stage != types.TaskStageBegin {
-					err = errors.Wrap(ErrBadInput, "transition to the begin stage is not allowed")
-					return
+			if currentTask.Stage != stage {
+				for k, _ :=range(types.AllStages){
+					if currentTask.Stage == k {
+						valueUpdates["stage-times."+k+".end"] = time.Now()
+					}
 				}
-			case types.TaskStageTraining:
-				if currentTask.Stage == types.TaskStageBegin {
-					valueUpdates["stage-times.training.start"] = time.Now()
-				} else if currentTask.Stage != types.TaskStageTraining {
-					err = errors.Wrap(ErrBadInput, "transition to the training is only allowed from the begin stage")
-					return
-				}
-
-			case types.TaskStagePredicting:
-				if currentTask.Stage == types.TaskStageTraining {
-					valueUpdates["stage-times.training.end"] = time.Now()
-					valueUpdates["stage-times.predicting.start"] = time.Now()
-				} else if currentTask.Stage != types.TaskStagePredicting {
-					err = errors.Wrap(ErrBadInput, "transition to the predicting is only allowed from the training stage")
-					return
-				}
-
-			case types.TaskStageEvaluating:
-				if currentTask.Stage == types.TaskStagePredicting {
-					valueUpdates["stage-times.predicting.end"] = time.Now()
-					valueUpdates["stage-times.evaluating.start"] = time.Now()
-				} else if currentTask.Stage != types.TaskStageEvaluating {
-					err = errors.Wrap(ErrBadInput, "transition to the evaluating is only allowed from the predicting stage")
-					return
-				}
-
-			case types.TaskStageEnd:
-				if currentTask.Stage == types.TaskStageEvaluating {
-					valueUpdates["stage-times.evaluating.end"] = time.Now()
-				} else if currentTask.Stage != types.TaskStageEnd {
-					err = errors.Wrap(ErrBadInput, "transition to the end is only allowed from the evaluating stage")
-					return
-				}
-
+				valueUpdates["stage-times."+stage+".start"] = time.Now()
 			}
+
+			// TODO validation through schema
 
 			// If the new status has passed validation, set it.
 			valueUpdates["stage"] = stage

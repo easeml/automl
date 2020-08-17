@@ -352,21 +352,24 @@ func RunContainerAndCollectOutput(imageName string, entrypoint, command []string
 	}()
 
 	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		panic(err)
+		err = errors.Wrap(err, "Could not Start the container")
+		return nil, err
 	}
 
 	statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
 	select {
 	case err := <-errCh:
 		if err != nil {
-			panic(err)
+			err = errors.Wrap(err, "Container wait failed")
+			return nil, err
 		}
 	case <-statusCh:
 	}
 
 	out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: true})
 	if err != nil {
-		panic(err)
+		err = errors.Wrap(err, "Container logs failed")
+		return nil, err
 	}
 	return out, nil
 }

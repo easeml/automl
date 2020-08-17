@@ -39,7 +39,7 @@ slots:
 parts:
   buildenv:
     plugin: dump
-    source: dev/scripts/linux/buildenvironment/
+    source: dev/environments/buildenvironment/
     override-build: |
       ./prepare-temp-build-env-engine.sh
   easeml:

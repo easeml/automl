@@ -25,8 +25,12 @@ function loadContext (input) {
  * @param {string} userCredentials.apiKey - The API key that is used to authenticate the user.
  * @param {string} userCredentials.username - The username that identifies the user.
  * @param {string} userCredentials.password - The password that is used to authenticate the user.
+ * @param {Object} callbacksDict - Dictionary containing callback functions.
+ * @param {function} callbacksDict.unauthErrorCallback - Function callback for 401 responses.
  */
-function Context (serverAddress, userCredentials) {
+function Context (serverAddress, userCredentials, callbacksDict = {
+  unauthErrorCallback: function () {}
+}) {
   this.serverAddress = serverAddress
   this.userCredentials = userCredentials
   this.baseURL = urljoin(serverAddress, API_PREFIX)
@@ -36,7 +40,6 @@ function Context (serverAddress, userCredentials) {
     baseURL: this.baseURL,
     headers: {}
   }
-
   this.authHeader = {}
   if ('apiKey' in userCredentials) {
     axiosConfig.headers['X-API-KEY'] = userCredentials.apiKey
@@ -51,6 +54,21 @@ function Context (serverAddress, userCredentials) {
 
   this.userCredentials = userCredentials
   this.axiosInstance = axios.create(axiosConfig)
+  // Register callbacks
+  if (typeof callbacksDict.unauthErrorCallback === 'function') {
+    this.axiosInstance.interceptors.response.use(response => {
+      return response
+    }, error => {
+      if (error.response.status === 401) {
+        // place your reentry code
+        console.log('# Unauthorized access')
+        callbacksDict.unauthErrorCallback()
+      }
+      return error
+    })
+  } else {
+    console.log('>>>>>>>>>>>>>>> CALLBACK NOT PRESENT', callbacksDict)
+  }
 }
 
 Context.prototype.getDatasets = datasets.getDatasets

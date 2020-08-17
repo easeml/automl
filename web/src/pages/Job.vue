@@ -83,7 +83,6 @@
     </div>
 </template>
 <script>
-import client from "easemlclient"
 import TableField from "@/components/TableField.vue";
 
 export default {
@@ -134,80 +133,111 @@ export default {
     methods: {
         loadData: function() {
 
-            let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
+            this.$store.dispatch('getClient', {})
+                .then(context => {
 
-            context.getTasks({job: this.jobId, orderBy: "quality", order: "desc"})
-            .then(data => {
-                this.items = data;
-            })
-            .catch(e => console.log(e));
+                    context.getTasks({job: this.jobId, orderBy: "quality", order: "desc"})
+                        .then(data => {
+                            this.items = data;
+                        })
+                        .catch(e => console.log(e));
 
-            context.getJobById(this.jobId)
-            .then(data => {
-                this.job = data;
+                    context.getJobById(this.jobId)
+                        .then(data => {
+                            this.job = data;
 
-                // Check if new models have been added to this job.
-                if (this.jobModels && this.jobModels.length !== this.job.models.length) {
-                    for (let i = 0; i < this.job.models.length; i++) {
-                        if (this.jobModels.includes(this.job.models[i]) === false) {
-                            // A new model was added to this job. Notify the user.
-                            console.log(this.job.models[i]);
-                            this.$notify({
-                                group: "group",
-                                title: "New Model Available",
-                                text: "Model <b> \"" + this.job.models[i] + "\" </b> added to this job.",
-                                duration: 10000,
-                                position: "bottom right",
-                                type: "warn"
-                            });
-                        }
-                    }
-                }
+                            // Check if new models have been added to this job.
+                            if (this.jobModels && this.jobModels.length !== this.job.models.length) {
+                                for (let i = 0; i < this.job.models.length; i++) {
+                                    if (this.jobModels.includes(this.job.models[i]) === false) {
+                                        // A new model was added to this job. Notify the user.
+                                        console.log(this.job.models[i]);
+                                        this.$notify({
+                                            group: "group",
+                                            title: "New Model Available",
+                                            text: "Model <b> \"" + this.job.models[i] + "\" </b> added to this job.",
+                                            duration: 10000,
+                                            position: "bottom right",
+                                            type: "warn"
+                                        });
+                                    }
+                                }
+                            }
 
-                this.jobModels = this.job.models;
-            })
-            .catch(e => console.log(e));
-
+                            this.jobModels = this.job.models;
+                        })
+                        .catch(e => console.log(e));
+                })
+                .catch(response => {
+                    // fail
+                    console.log("Failed: ",response)
+                    this.$router.push({ name: 'login'})
+                })
         },
         pauseClick() {
 
-            let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
+            this.$store.dispatch('getClient', {})
+                .then(context => {
 
-            let newStatus = null;
-            if (this.job.status === "running") {
-                newStatus = "pausing";
-            } else if (this.job.status === "paused") {
-                newStatus = "resuming";
-            } else if (this.job.status === "scheduled") {
-                newStatus = "running";
-            }
+                let newStatus = null;
+                if (this.job.status === "running") {
+                    newStatus = "pausing";
+                } else if (this.job.status === "paused") {
+                    newStatus = "resuming";
+                } else if (this.job.status === "scheduled") {
+                    newStatus = "running";
+                }
 
-            if (newStatus) {
-                context.updateJob(this.jobId, {"status" : newStatus})
-                this.job.status = newStatus;
-            }
+                if (newStatus) {
+                    context.updateJob(this.jobId, {"status" : newStatus})
+                    this.job.status = newStatus;
+                }
+            })
+            .catch(response => {
+                // fail
+                console.log("Failed: ",response)
+                this.$router.push({ name: 'login'})
+            })
 
         },
         stopClick() {
 
-            let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
-
-            let newStatus = null;
-            if (["scheduled", "running", "paused", "pausing"].includes(this.job.status)) {
-                context.updateJob(this.jobId, {"status" : "terminating"})
-                this.job.status = "terminating";
-            }
+            this.$store.dispatch('getClient', {})
+                .then(context => {
+                    let newStatus = null;
+                    if (["scheduled", "running", "paused", "pausing"].includes(this.job.status)) {
+                        context.updateJob(this.jobId, {"status" : "terminating"})
+                        this.job.status = "terminating";
+                    }
+                })
+                .catch(response => {
+                    // fail
+                    console.log("Failed: ",response)
+                    this.$router.push({ name: 'login'})
+                })
 
         },
         downloadPredictions: function(taskId) {
-            let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
-
-            context.downloadTaskPredictionsByPath(taskId, ".tar", true)
+            this.$store.dispatch('getClient', {})
+                .then(context => {
+                    context.downloadTaskPredictionsByPath(taskId, ".tar", true)
+                })
+                .catch(response => {
+                    // fail
+                    console.log("Failed: ",response)
+                    this.$router.push({ name: 'login'})
+                })
         },
         downloadTrainedModel: function(taskId) {
-            let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
-
-            context.downloadTrainedModelAsImage(taskId, true)
+            this.$store.dispatch('getClient', {})
+                .then(clientContext => {
+                    clientContext.downloadTrainedModelAsImage(taskId, true)
+                })
+                .catch(response => {
+                    // fail
+                    console.log("Failed: ",response)
+                    this.$router.push({ name: 'login'})
+                })
         }
     },
     mounted() {

@@ -40,7 +40,6 @@
     </div>
 </template>
 <script>
-import client from "easemlclient"
 import TableField from "@/components/TableField.vue";
 
 export default {
@@ -54,19 +53,30 @@ export default {
     },
     methods: {
         loadData: function() {
-            let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
-
-            context.getDatasets()
-            .then(data => {
-                this.items = data;
-            })
-            .catch(e => console.log(e));
+            this.$store.dispatch('getClient', {})
+                .then(clientContext => {
+                    clientContext.getDatasets()
+                        .then(data => {
+                            this.items = data;
+                        })
+                        .catch(e => console.log(e));
+                })
+                .catch(response => {
+                    // fail
+                    console.log("Failed: ",response)
+                    this.$router.push({ name: 'login'})
+                })
         },
         downloadData: function(datasetId) {
-
-            let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
-
-            context.downloadDatasetByPath(datasetId, ".tar", true)
+            this.$store.dispatch('getClient', {})
+                .then(clientContext => {
+                    clientContext.downloadDatasetByPath(datasetId, ".tar", true)
+                })
+                .catch(response => {
+                    // fail
+                    console.log("Failed: ",response)
+                    this.$router.push({ name: 'login'})
+                })
         }
     },
     mounted() {

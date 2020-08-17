@@ -42,7 +42,6 @@
     </div>
 </template>
 <script>
-import client from "easemlclient"
 import TableField from "@/components/TableField.vue";
 
 export default {
@@ -57,13 +56,19 @@ export default {
     methods: {
         loadData: function() {
 
-            let context = client.loadContext(JSON.parse(localStorage.getItem("context")));
-
-            context.getModules({type: "model"})
-            .then(data => {
-                this.items = data;
-            })
-            .catch(e => console.log(e));
+            this.$store.dispatch('getClient', {})
+                .then(context => {
+                    context.getModules({type: "model"})
+                    .then(data => {
+                        this.items = data;
+                    })
+                    .catch(e => console.log(e));
+                })
+                .catch(response => {
+                    // fail
+                    console.log("Failed: ",response)
+                    this.$router.push({ name: 'login'})
+                })
         }
     },
     mounted() {

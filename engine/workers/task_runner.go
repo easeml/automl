@@ -47,6 +47,49 @@ func (context Context) TaskRunListener() {
 	}
 }
 
+func nextIndexOf(element string, data []string) (int, error) {
+	for k, v := range data {
+		if element == v {
+			return k+1 , nil
+		}
+	}
+	return -1 , errors.New("element not found")
+}
+
+func (context Context)  SetNextStage(task *types.Task) {
+
+	newStage:=types.TaskStageEnd
+	var taskIdx int = 0
+	var err error = nil
+
+	if task.Stage != types.TaskStageBegin {
+		taskIdx, err=nextIndexOf(task.Stage,task.Pipeline)
+		if err!=nil || taskIdx==len(task.Pipeline) {
+			context.repeatUntilSuccess(func() error {
+				return context.ModelContext.UpdateTaskStage(task.ID, newStage)
+			})
+			task.Stage=types.TaskStageEnd
+			return
+		}
+	}
+
+	if types.AllStages.Has(task.Pipeline[taskIdx]){
+		newStage=task.Pipeline[taskIdx]
+	}else{
+		context.repeatUntilSuccess(func() error {
+			return context.ModelContext.UpdateTaskStage(task.ID, newStage)
+		})
+		task.Stage=types.TaskStageEnd
+		return
+	}
+
+	context.repeatUntilSuccess(func() error {
+		return context.ModelContext.UpdateTaskStage(task.ID, newStage)
+	})
+	task.Stage = newStage
+	return
+}
+
 // TaskRunWorker takes a task and runs it through all the stages.
 func (context Context) TaskRunWorker(task types.Task) {
 
@@ -69,7 +112,7 @@ func (context Context) TaskRunWorker(task types.Task) {
 
 	// Ensure task model is loaded. Only needed if the task didn't arrive to the evaluation stage.
 	var modelImageName string
-	if task.Stage != types.TaskStageEvaluating {
+	if task.Stage != types.TaskStageEvaluate {
 		modelImageFilePath := context.getModuleImagePath(task.Model, types.ModuleModel)
 		var err error
 		modelImageName, err = modules.LoadImage(modelImageFilePath)
@@ -89,10 +132,7 @@ func (context Context) TaskRunWorker(task types.Task) {
 
 	// Put the task in the training stage.
 	if task.Stage == types.TaskStageBegin {
-		context.repeatUntilSuccess(func() error {
-			return context.ModelContext.UpdateTaskStage(task.ID, types.TaskStageTraining)
-		})
-		task.Stage = types.TaskStageTraining
+		context.SetNextStage(&task)
 	} else {
 		context.Logger.WithFields(
 			"task-id", task.ID,
@@ -107,7 +147,7 @@ func (context Context) TaskRunWorker(task types.Task) {
 
 	// Run the training stage if the task is still running.
 	if task.Status == types.TaskRunning {
-		if task.Stage == types.TaskStageTraining {
+		if task.Stage == types.TaskStageTrain {
 
 			context.Logger.WithFields(
 				"task-id", task.ID,
@@ -122,10 +162,7 @@ func (context Context) TaskRunWorker(task types.Task) {
 			}
 
 			// Put the task in the prediction stage.
-			context.repeatUntilSuccess(func() error {
-				return context.ModelContext.UpdateTaskStage(task.ID, types.TaskStagePredicting)
-			})
-			task.Stage = types.TaskStagePredicting
+			context.SetNextStage(&task)
 
 			context.Logger.WithFields(
 				"task-id", task.ID,
@@ -148,7 +185,7 @@ func (context Context) TaskRunWorker(task types.Task) {
 
 	// Run the predicting stage if the task is still running.
 	if task.Status == types.TaskRunning {
-		if task.Stage == types.TaskStagePredicting {
+		if task.Stage == types.TaskStagePredict {
 
 			context.Logger.WithFields(
 				"task-id", task.ID,
@@ -170,10 +207,7 @@ func (context Context) TaskRunWorker(task types.Task) {
 			}
 
 			// Put the task in the evaluation stage.
-			context.repeatUntilSuccess(func() error {
-				return context.ModelContext.UpdateTaskStage(task.ID, types.TaskStageEvaluating)
-			})
-			task.Stage = types.TaskStageEvaluating
+			context.SetNextStage(&task)
 
 			context.Logger.WithFields(
 				"task-id", task.ID,
@@ -196,8 +230,7 @@ func (context Context) TaskRunWorker(task types.Task) {
 
 	// Run the evaluation stage if the task is still running.
 	if task.Status == types.TaskRunning {
-		if task.Stage == types.TaskStageEvaluating {
-
+		if task.Stage == types.TaskStageEvaluate {
 			context.Logger.WithFields(
 				"task-id", task.ID,
 				"model", task.Model,
@@ -243,10 +276,7 @@ func (context Context) TaskRunWorker(task types.Task) {
 			})
 
 			// Put the task in the end stage.
-			context.repeatUntilSuccess(func() error {
-				return context.ModelContext.UpdateTaskStage(task.ID, types.TaskStageEnd)
-			})
-			task.Stage = types.TaskStageEnd
+			context.SetNextStage(&task)
 
 			context.Logger.WithFields(
 				"task-id", task.ID,
@@ -254,12 +284,6 @@ func (context Context) TaskRunWorker(task types.Task) {
 				"dataset", task.Dataset,
 				"objective", task.Objective,
 			).WriteInfo("MODEL EVALUATING COMPLETED")
-
-			// Put the task in the end stage.
-			context.repeatUntilSuccess(func() error {
-				return context.ModelContext.UpdateTaskStage(task.ID, types.TaskStageEnd)
-			})
-			task.Stage = types.TaskStageEnd
 
 		} else {
 			context.Logger.WithFields(
@@ -273,7 +297,6 @@ func (context Context) TaskRunWorker(task types.Task) {
 
 	// Check the task status as it is maybe not running anymore.
 	task.Status = context.getTaskStatus(task.ID)
-
 	// Complete the task if the task is still running.
 	if task.Status == types.TaskRunning {
 		if task.Stage == types.TaskStageEnd {

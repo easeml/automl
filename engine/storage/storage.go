@@ -133,7 +133,10 @@ func (context Context) GetTaskPath(id string, subdir string) (path string, err e
 		path = filepath.Join(path, subdir)
 	}
 
-	err = os.MkdirAll(path, DefaultFilePerm)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		err = os.MkdirAll(path, DefaultFilePerm)
+	}
+
 	return
 }
 

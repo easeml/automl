@@ -1,7 +1,7 @@
 """
 Implementation of the `Process` class.
 """
-import pyrfc3339
+import pyrfc3339  # type: ignore
 
 from copy import deepcopy
 from datetime import datetime
@@ -98,7 +98,7 @@ class Process(ApiType['Process']):
         return int(value) if value is not None else None
 
     def __iter__(self) -> Iterator[Tuple[str, Any]]:
-        for (k, v) in self._dict:
+        for (k, v) in self._dict.items():
             yield (k, v)
 
     def get(self, connection: Connection) -> 'Process':

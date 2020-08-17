@@ -62,4 +62,5 @@ type Module struct {
 	Status        string        `bson:"status" json:"status"`
 	StatusMessage string        `bson:"status-message" json:"status-message"`
 	Process       bson.ObjectId `bson:"process,omitempty" json:"process"`
+	AccessKey	  string     	`bson:"access-key,omitempty" json:"access-key"`
 }

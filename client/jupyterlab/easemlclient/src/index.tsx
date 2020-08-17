@@ -1,13 +1,13 @@
 import {ILayoutRestorer, JupyterFrontEnd, JupyterFrontEndPlugin, ILabShell} from '@jupyterlab/application';
 import {ICommandPalette, MainAreaWidget, WidgetTracker} from '@jupyterlab/apputils';
-import {Message} from '@phosphor/messaging';
-import {Widget} from '@phosphor/widgets';
+import {Message} from '@lumino/messaging';
+import {Widget} from '@lumino/widgets';
 import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue';
 import EASEML_VUE from './Iframe.vue'
 import EASEML_SIDEBAR_VUE from './Sidebar.vue'
 import { ILauncher } from '@jupyterlab/launcher';
-import { ISettingRegistry } from '@jupyterlab/coreutils';
+import { ISettingRegistry } from '@jupyterlab/settingregistry';
 
 const iframeSettings = {easemlServer: ""}
 

@@ -546,6 +546,12 @@ func (context Context) UpdateModuleStatus(id string, status string, statusMessag
 	return
 }
 
+// FlushModuleAccessKey removes a used accessKey from the database.
+func (context Context) FlushModuleAccessKey(id string) (err error) {
+	_, err = context.UpdateModule(id, F{"accessKey": ""})
+	return
+}
+
 // ReleaseModuleLockByProcess releases all modules that have been locked by a given process and
 // are not in the error state.
 func (context Context) ReleaseModuleLockByProcess(processID bson.ObjectId) (numReleased int, err error) {

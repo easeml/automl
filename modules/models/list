@@ -6,3 +6,4 @@ reg-gp
 reg-mlp
 reg-sgd
 reg-svm
+renku-class-svm

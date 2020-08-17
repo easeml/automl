@@ -4,7 +4,7 @@ Implementation of the `Task` class.
 from copy import deepcopy
 from datetime import timedelta
 from enum import Enum
-from typing import Dict, Optional, Any, Iterator, Tuple, List
+from typing import Dict, Optional, Any, Iterator, Tuple, List, Union
 
 from .core import Connection
 from .common import TimeInterval
@@ -27,6 +27,9 @@ class TaskStatus(Enum):
     CANCELED = "canceled"
     ERROR = "error"
 
+    def __str__(self):
+        return str(self.value)
+
 
 class TaskStage(Enum):
     BEGIN = "begin"
@@ -34,6 +37,9 @@ class TaskStage(Enum):
     PREDICTING = "predicting"
     EVALUATING = "evaluating"
     END = "end"
+
+    def __str__(self):
+        return str(self.value)
 
 
 class TaskStageIntervals:
@@ -69,7 +75,7 @@ class TaskStageIntervals:
         return TimeInterval(value) if value is not None else None
 
     def __iter__(self) -> Iterator[Tuple[str, Any]]:
-        for (k, v) in self._dict:
+        for (k, v) in self._dict.items():
             yield (k, v)
 
 
@@ -106,7 +112,7 @@ class TaskStageDurations:
         return timedelta(milliseconds=int(value)) if value is not None else None
 
     def __iter__(self) -> Iterator[Tuple[str, Any]]:
-        for (k, v) in self._dict:
+        for (k, v) in self._dict.items():
             yield (k, v)
 
 
@@ -236,7 +242,7 @@ class Task(ApiType['Task']):
         return timedelta(milliseconds=int(value)) if value is not None else None
 
     def __iter__(self) -> Iterator[Tuple[str, Any]]:
-        for (k, v) in self._dict:
+        for (k, v) in self._dict.items():
             yield (k, v)
 
     def get(self, connection: Connection) -> 'Task':
@@ -246,15 +252,31 @@ class Task(ApiType['Task']):
     def patch(self, connection: Connection) -> 'Task':
         url = connection.url("tasks/" + self.id)
         return self._patch(connection, url)
-    
+
     def get_predictions(self, connection: Connection) -> bytes:
         url = connection.url("tasks/" + self.id + "/predictions.tar")
         return self._download(connection, url)
-    
+
     def get_parameters(self, connection: Connection) -> bytes:
         url = connection.url("tasks/" + self.id + "/parameters.tar")
         return self._download(connection, url)
-    
+
+    def get_logs(self, connection: Connection, fname=None) -> bytes:
+        if not fname:
+            fname = ".tar"
+        else:
+            fname = "/" + fname
+        url = connection.url("tasks/" + self.id + "/logs" + fname)
+        return self._download(connection, url)
+
+    def get_metadata(self, connection: Connection, fname=None) -> bytes:
+        if not fname:
+            fname = ".tar"
+        else:
+            fname = "/" + fname
+        url = connection.url("tasks/" + self.id + "/metadata" + fname)
+        return self._download(connection, url)
+
     def get_image(self, connection: Connection) -> bytes:
         url = connection.url("tasks/" + self.id + "/image/download")
         return self._download(connection, url)
@@ -262,15 +284,39 @@ class Task(ApiType['Task']):
 
 class TaskQuery(ApiQuery['Task', 'TaskQuery']):
 
-    VALID_SORTING_FIELDS = ["id", "process", "job", "user", "dataset", "objective", "model", "quality", "quality-train", "quality-expected", "creation-time", "status", "stage"]
+    VALID_SORTING_FIELDS = [
+        "id",
+        "process",
+        "job",
+        "user",
+        "dataset",
+        "objective",
+        "model",
+        "quality",
+        "quality-train",
+        "quality-expected",
+        "creation-time",
+        "status",
+        "stage"]
 
-    def __init__(self, id: Optional[List[str]] = None, user: Optional[User] = None,
-                 dataset: Optional[Dataset] = None, model: Optional[Module] = None,
-                 objective: Optional[Module] = None, alt_objective: Optional[Module] = None,
-                 process: Optional[Process] = None, job: Optional[Job] = None,
-                 status: Optional[TaskStatus] = None, stage: Optional[TaskStage] = None,                
-                 order_by: Optional[str] = None, order: Optional[ApiQueryOrder] = None,
-                 limit: Optional[int] = None, cursor: Optional[str] = None) -> None:
+    # TODO ApiType constructors accept dictionaries we should try to be
+    # consistent
+    def __init__(self,
+                 id: Optional[List[str]] = None,
+                 user: Optional[User] = None,
+                 dataset: Optional[Dataset] = None,
+                 model: Optional[Module] = None,
+                 objective: Optional[Module] = None,
+                 alt_objective: Optional[Module] = None,
+                 process: Optional[Process] = None,
+                 job: Optional[Job] = None,
+                 status: Optional[TaskStatus] = None,
+                 stage: Optional[TaskStage] = None,
+                 order_by: Optional[str] = None,
+                 order: Optional[Union[str,ApiQueryOrder]] = None,
+                 limit: Optional[int] = None,
+                 cursor: Optional[str] = None) -> None:
+
         super().__init__(order_by, order, limit, cursor)
         self.T = Task
 

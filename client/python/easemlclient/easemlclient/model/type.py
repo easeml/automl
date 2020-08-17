@@ -20,6 +20,7 @@ class ApiType(Generic[T]):
         self._updates: Dict[str, Any] = {}
         self.T:Type[T] = type(self)
 
+
     def _post(self: T, connection: Connection, url: str) -> T:
         resp = requests.post(url, auth=connection.auth, json={**self._dict, **self._updates})
         resp.raise_for_status()
@@ -32,6 +33,7 @@ class ApiType(Generic[T]):
         return self.T({**self._dict, **self._updates})
 
     def _get(self: T, connection: Connection, url: str) -> T:
+        print("URL:", url)
         resp = requests.get(url, auth=connection.auth)
         resp.raise_for_status()
         payload = resp.json()
@@ -65,6 +67,9 @@ Q = TypeVar('Q', bound='ApiQuery')
 class ApiQueryOrder(Enum):
     ASC = "asc"
     DESC = "desc"
+
+    def __str__(self):
+        return str(self.value)
 
 
 class ApiQuery(Generic[T, Q]):

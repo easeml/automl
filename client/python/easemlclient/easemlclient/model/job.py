@@ -1,7 +1,7 @@
 """
 Implementation of the `Job` class.
 """
-import pyrfc3339
+import pyrfc3339  # type: ignore
 
 from copy import deepcopy
 from datetime import datetime, timedelta
@@ -50,12 +50,17 @@ class Job(ApiType['Job']):
         super().__init__(input)
 
     @classmethod
-    def create(cls, dataset: Dataset, objective: Module, models: List[Module],
-               accept_new_models: bool = True, max_tasks: int = 100,
-               alt_objectives: Optional[List[Module]] = None, config_space: Optional[Dict[str, Any]] = None) -> 'Job':
+    def create(cls, dataset: Dataset, objective: Optional[Module], task_ids: Optional[List[str]] = None, models: List[Module] = None,
+               accept_new_models: Optional[bool] = True, max_tasks: Optional[int] = 100,
+               alt_objectives: Optional[List[Module]] = None, config_space: Optional[Dict[str, Any]] = None,
+               pipeline: Optional[List] = ['train', 'predict']) -> 'Job':
         init_dict: Dict[str, Any] = {"id": None}
+
+        if task_ids is None and models is None:
+            raise ValueError("Invalid Job Structure either ids or models need to be provided")
+
         if dataset is not None:
-            init_dict["dataset"] = dataset.id
+            init_dict["dataset"] = dataset.user.id+"/"+dataset.id
         if objective is not None:
             init_dict["objective"] = objective.id
         if models is not None:
@@ -68,8 +73,13 @@ class Job(ApiType['Job']):
             init_dict["alt-objectives"] = [x.id for x in alt_objectives]
         if config_space is not None:
             init_dict["config-space"] = config_space
+        if task_ids is not None:
+            init_dict["task-ids"] = task_ids
+        if pipeline is not None:
+            init_dict["pipeline"] = pipeline
+
         return Job(init_dict)
-    
+
     @classmethod
     def create_ref(cls, id: str) -> 'Job':
         return Job({"id": id})
@@ -175,7 +185,7 @@ class Job(ApiType['Job']):
         return Process({"id": value}) if value is not None else None
 
     def __iter__(self) -> Iterator[Tuple[str, Any]]:
-        for (k, v) in self._dict:
+        for (k, v) in self._dict.items():
             yield (k, v)
 
     def post(self, connection: Connection) -> 'Job':
@@ -190,14 +200,15 @@ class Job(ApiType['Job']):
         url = connection.url("jobs/" + self.id)
         return self._get(connection, url)
 
-class JobQuery(ApiQuery['Job', 'JobQuery']):
 
-    VALID_SORTING_FIELDS = ["user", "dataset", "objective", "creation-time", "running-time-start", "running-time-end", "status"]
+class JobQuery(ApiQuery['Job', 'JobQuery']):
+    VALID_SORTING_FIELDS = ["user", "dataset", "objective", "creation-time", "running-time-start", "running-time-end",
+                            "status"]
 
     def __init__(self, id: Optional[List[str]] = None, user: Optional[User] = None,
                  dataset: Optional[Dataset] = None, model: Optional[Module] = None,
                  objective: Optional[Module] = None, alt_objective: Optional[Module] = None,
-                 status: Optional[JobStatus] = None, accept_new_models: Optional[bool] = None,                
+                 status: Optional[JobStatus] = None, accept_new_models: Optional[bool] = None,
                  order_by: Optional[str] = None, order: Optional[ApiQueryOrder] = None,
                  limit: Optional[int] = None, cursor: Optional[str] = None) -> None:
         super().__init__(order_by, order, limit, cursor)

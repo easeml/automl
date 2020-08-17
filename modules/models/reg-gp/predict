@@ -5,7 +5,7 @@ import json
 import numpy as np
 import os
 
-from sklearn.externals import joblib
+import joblib
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 
@@ -34,6 +34,7 @@ if __name__ == "__main__":
     parser.add_argument("--data", required=True, help="directory containing input data")
     parser.add_argument("--memory", required=True, help="directory containing the memory")
     parser.add_argument("--output", required=True, help="directory where the predictions will be dumped")
+    parser.add_argument("--metadata", required=False, help="directory where the metadata will be dumped")
 
     args = parser.parse_args()
 

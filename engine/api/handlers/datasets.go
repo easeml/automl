@@ -3,6 +3,8 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -151,7 +153,7 @@ func (apiContext Context) DatasetsPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if errors.Cause(err) == types.ErrIdentifierTaken {
-		responses.Context(apiContext).RespondWithError(w, r, http.StatusConflict, "Identifier taken.", errors.WithStack(err))
+		responses.Context(apiContext).RespondWithError(w, r, http.StatusConflict, "Identifier taken.", err)
 		return
 	}
 	if errors.Cause(err) == model.ErrBadInput {
@@ -338,6 +340,7 @@ func (apiContext Context) DatasetsUploadHandler(basePath string) http.HandlerFun
 		config := tusd.Config{
 			BasePath:      myBasePath,
 			StoreComposer: composer,
+			Logger : log.New(ioutil.Discard,"TUSD",0),
 		}
 
 		handler, err := tusd.NewUnroutedHandler(config)

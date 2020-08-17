@@ -89,5 +89,5 @@ func Start(context process.Context) {
 	// Objective runner worker. This is the only goroutine so we will block.
 	workersContextCopy := workersContext.Clone()
 	defer workersContextCopy.ModelContext.Session.Close()
-	workersContextCopy.OptimizerRunListener(context.OptimizerID)
+	workersContextCopy.JobRunListener(context.OptimizerID)
 }
