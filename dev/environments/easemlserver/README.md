@@ -45,6 +45,7 @@ docker run \
      -t -i \
 easeml/server start --database-address mongodb:27017 --server-address :8080 --login
 ```
+Note: this assumes there is a local user (id -u) in the local users (/etc/passwd) and allows the container to reuse this information, if the local user doesn't exist i.e. when using an LDAP user, start the server with a specific working directory (--working-dir WORK_DIR) and mount it accordingly 
 
 # Run Client for Demo
 
