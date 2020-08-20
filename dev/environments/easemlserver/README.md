@@ -63,6 +63,7 @@ docker run \
      --label easeml_local \
      -v ${HOME}/.easeml:/home/jovyan/.easeml \
      -v ${PWD}:/home/jovyan/demo/ \
+     -w /home/jovyan/demo/ \
      --user $(id -u):$(id -g)\
      --network local_easeml_network \
      --network-alias easemlclient \
@@ -72,14 +73,15 @@ docker run \
      --entrypoint /bin/bash \
 registry.renkulab.io/leonel.aguilar.m/easeml_renku_demo:aa71000
 ```
-## Inside the container move into demo folder
-```bash
-cd /home/jovyan/demo/
-```
 
 ## Add Host address
 ```bash
 echo "host: http://easemlserver:8080" >> ${HOME}/.easeml/config.yaml
+```
+## Add jupyterlab configuration, to access the webui from the host (http://localhost:8888 when starting jupyter lab from the container)
+```bash
+mkdir -p ~/.jupyter/lab/user-settings/@easeml/jupyterlab_easeml
+echo '{ "easemlConfig": {"easemlServer": "http://localhost:8080"}}' > ~/.jupyter/lab/user-settings/@easeml/jupyterlab_easeml/plugin.jupyterlab-settings
 ```
 
 ## Now you can start the Demo
