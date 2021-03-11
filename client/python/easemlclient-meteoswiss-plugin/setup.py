@@ -3,7 +3,7 @@
 # Learn more: https://github.com/kennethreitz/setup.py
 
 from setuptools import setup, find_packages  # type: ignore
-from easeml_renkuplugin import __version__
+from easeml_meteoswissplugin import __version__
 
 with open("README.md", "r") as fh:
     README = fh.read()
@@ -13,9 +13,9 @@ with open("requirements.txt", "r") as f:
     REQUIREMENTS = f.readlines()
 
 setup(
-    name='easemlclient-renku',
-    version=__version__+'.dev.4',
-    description='Plug-in that interfaces between easeml and renku',
+    name='easemlclient-meteoswiss',
+    version=__version__+'.dev.2',
+    description='Plug-in that interfaces between easeml and meteoswiss models',
     long_description=README,
     long_description_content_type="text/markdown",
     author='Bojan Karlas, Leonel Aguilar',
@@ -30,8 +30,6 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent"
     ],
-    entry_points={"easemlclient.hook.tree": ["renku = easeml_renkuplugin.easeml_hooks.plugin"],
-                  "renku": ["easeml = easeml_renkuplugin.renku_hooks.plugin"],
-                  "easemlclient.create": ["renku_dataset = easeml_renkuplugin.easeml_commands.create_from_renku:create_dataset_from_renku"],
+    entry_points={"easemlclient.create": ["cosmoe-dataset = easeml_meteoswissplugin.cosmoe.create:create_cosmoe_dataset"],
                   },
 )

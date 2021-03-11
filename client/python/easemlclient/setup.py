@@ -14,7 +14,7 @@ with open("requirements.txt", "r") as f:
 
 setup(
     name='easemlclient',
-    version=__version__+".dev.2",
+    version=__version__+".dev.4",
     description='Client library used to communicate with the ease.ml service.',
     long_description=README,
     long_description_content_type="text/markdown",

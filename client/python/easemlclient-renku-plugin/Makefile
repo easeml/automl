@@ -110,6 +110,12 @@ publish: package
 	$(PIPENV_RUN) twine check $(DIST_PATH)/*
 	$(PIPENV_RUN) twine upload --non-interactive $(DIST_PATH)/*
 
+.PHONY: publish-test
+## Publish to the respective indexing service
+publish-test: package
+	$(call show-prompt,Running all test-publishing scripts)
+	$(PIPENV_RUN) twine check $(DIST_PATH)/*
+	$(PIPENV_RUN) twine upload --repository testpypi --non-interactive $(DIST_PATH)/*
 
 .PHONY: version
 ## Set the version of this package according to version file found in the repo root.

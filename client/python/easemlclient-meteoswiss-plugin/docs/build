@@ -1,0 +1,9 @@
+#!/bin/sh
+
+PROJ_ROOT=$(readlink -f ..)
+
+pushd $PROJ_ROOT
+
+pydocmd simple model.TimeInterval+ > docs/time-interval.md
+
+popd

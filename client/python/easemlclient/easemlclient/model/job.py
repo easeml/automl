@@ -53,7 +53,7 @@ class Job(ApiType['Job']):
     def create(cls, dataset: Dataset, objective: Optional[Module], task_ids: Optional[List[str]] = None, models: List[Module] = None,
                accept_new_models: Optional[bool] = True, max_tasks: Optional[int] = 100,
                alt_objectives: Optional[List[Module]] = None, config_space: Optional[Dict[str, Any]] = None,
-               pipeline: Optional[List] = ['train', 'predict']) -> 'Job':
+               pipeline: Optional[List] = ['train', 'predict', 'evaluate']) -> 'Job':
         init_dict: Dict[str, Any] = {"id": None}
 
         if task_ids is None and models is None:

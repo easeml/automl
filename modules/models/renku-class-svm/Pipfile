@@ -11,7 +11,7 @@ easemlschema = "*"
 scipy = "*"
 scikit-learn = "*"
 joblib = "*"
-mlschema-converters = "*"
+mlschema-converters = {git = "https://github.com/ratschlab/mlschema-model-converters.git"}
 
 [requires]
 python_version = "3.6"

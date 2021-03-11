@@ -13,6 +13,7 @@
 #    done
 #done
 
+DUSER=easeml
 config_file=$HOME/.easeml/config.yaml
 #config_file=$HOME/snap/easeml/x1/.easeml/config.yaml
 
@@ -22,9 +23,10 @@ do
     do
 	echo "Install module [" $t "]: " $d
 	cd ./modules/${t}s/$d
-	docker build -t $d .
+	docker build -t $DUSER/$d .
+	docker push $DUSER/$d
 	cd ..
-	cmd="easeml create module --type $t --source upload --source-address $d --id opt-$d --label opt-$d --name opt-$d --config $config_file" 
+	cmd="easeml create module --type $t --source upload --source-address $DUSER/$d --id opt-$d --label opt-$d --name opt-$d --config $config_file"
 	echo $cmd
 	eval $cmd
 	cd ../..
@@ -39,9 +41,10 @@ do
     do
         echo "Install module [" $t "]: " $d
         cd ./modules/${t}s/$d
-        docker build -t $d .
+        docker build -t $DUSER/$d .
+        docker push $DUSER/$d
         cd ..
-        cmd="easeml create module --type $t --source upload --source-address $d --id $d --label label-$d --name $d --config $config_file"
+        cmd="easeml create module --type $t --source upload --source-address $DUSER/$d --id $d --label label-$d --name $d --config $config_file"
         echo $cmd
         eval $cmd
         cd ../..

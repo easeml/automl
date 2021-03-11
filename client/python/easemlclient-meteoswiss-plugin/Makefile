@@ -100,8 +100,8 @@ lint:
 ## Automatically fix style errors where possible.
 lint-fix:
 	$(call show-prompt,Fixing coding style violations)
-	$(PIPENV_RUN) pipenv run autopep8 --in-place --aggressive --aggressive --aggressive \
-				  --max-line-length 120 --recursive $(PROJECT_NAME) test
+	$(PIPENV_RUN) autopep8 --in-place --aggressive --aggressive --aggressive \
+				  --max-line-length 120 --recursive $(PROJECT_NAME)
 
 .PHONY: publish
 ## Publish to the respective indexing service
@@ -110,12 +110,6 @@ publish: package
 	$(PIPENV_RUN) twine check $(DIST_PATH)/*
 	$(PIPENV_RUN) twine upload --non-interactive $(DIST_PATH)/*
 
-.PHONY: publish-test
-## Publish to the respective indexing service
-publish-test: package
-	$(call show-prompt,Running all test-publishing scripts)
-	$(PIPENV_RUN) twine check $(DIST_PATH)/*
-	$(PIPENV_RUN) twine upload --repository testpypi --non-interactive $(DIST_PATH)/*
 
 .PHONY: version
 ## Set the version of this package according to version file found in the repo root.
