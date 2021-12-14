@@ -97,13 +97,13 @@ su - ${USER}
 ### Get the source code
 
 ```bash
-go get -v github.com/ds3lab/easeml
+go get -v github.com/easeml/automl
 ```
 
 ### Build and Install binary from source
 
 ```bash
-cd $GOPATH/src/github.com/ds3lab/easeml/engine
+cd $GOPATH/src/github.com/easeml/automl/engine
 
 #Install in GOPATH/bin
 make install
@@ -119,7 +119,7 @@ make install INSTALL_PATH=ALT_PATH
 ### Initialize the web directory and build the web UI
 
 ```bash
-cd $GOPATH/src/github.com/ds3lab/easeml/web
+cd $GOPATH/src/github.com/easeml/automl/web
 npm install
 npm run build
 ```
@@ -127,7 +127,7 @@ npm run build
 ### Build and install ease.ml/automl
 
 ```bash
-cd $GOPATH/src/github.com/ds3lab/easeml/engine
+cd $GOPATH/src/github.com/easeml/automl/engine
 
 packr2 -v
 
