@@ -1,8 +1,8 @@
-# Ease.ml - A Scalable Auto-ML System
+# Ease.ml/AutoML - A Scalable Auto-ML System
 
 ![Logo](docs/img/logo-big.png?raw=true "Logo")
 
-Ease.ml is a declarative machine learning service platform. It enables users to upload their datasets and start model selection and tuning jobs. Given the schema of the dataset, ease.ml does an automatic search for applicable models and performs training, prediction and evaluation. All models are stored as Docker images which allows greater portability and reproducibility.
+Ease.ml/AutoML is a declarative machine learning service platform. It enables users to upload their datasets and start model selection and tuning jobs. Given the schema of the dataset, ease.ml does an automatic search for applicable models and performs training, prediction and evaluation. All models are stored as Docker images which allows greater portability and reproducibility.
 
 For more details, check out out recent publications:
 
@@ -12,7 +12,7 @@ Bojan Karlas, Ji Liu, Wentao Wu, Ce Zhang. Ease.ml in Action: Towards Multi-tena
 
 The project is being developed by the [DS3 Lab](https://ds3lab.org/) at ETH Zurich and is still in its early stages. Stay tuned for more updates.
 
-## Build ease.ml from source (Linux)
+## Build ease.ml/automl from source (Linux)
 
 ## Prerequisites
 - go and packr2
@@ -92,7 +92,7 @@ su - ${USER}
 ```
 
 
-## Ease.ml
+## Ease.ml/AutoML
 
 ### Get the source code
 
@@ -124,7 +124,7 @@ npm install
 npm run build
 ```
 
-### Build and install Ease.ml
+### Build and install ease.ml/automl
 
 ```bash
 cd $GOPATH/src/github.com/ds3lab/easeml/engine
@@ -135,7 +135,7 @@ go install
 ```
 -->
 
-### Run ease.ml
+### Run ease.ml/automl
 
 ```bash
 easeml start --browser
