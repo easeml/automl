@@ -6,6 +6,8 @@ Ease.ml/AutoML is a declarative machine learning service platform. It enables us
 
 For more details, check out out recent publications:
 
+Aguilar, Leonel, David Dao, Shaoduo Gan, Nezihe Merve Gurel, Nora Hollenstein, Jiawei Jiang, Bojan Karlas et al. "Ease. ML: A Lifecycle Management System for Machine Learning." (2020). [[PDF]](http://cidrdb.org/cidr2021/papers/cidr2021_paper26.pdf)
+
 T Li, J Zhong, J Liu, W Wu, C Zhang. Ease.ml: Towards Multi-tenant Resource Sharing for Machine Learning Workloads. VLDB 2018. [[PDF]](http://www.vldb.org/pvldb/vol11/p607-li.pdf)
 
 Bojan Karlas, Ji Liu, Wentao Wu, Ce Zhang. Ease.ml in Action: Towards Multi-tenant Declarative Learning Services. VLDB (Demo) 2018. [[PDF]](http://www.vldb.org/pvldb/vol11/p2054-karlas.pdf)
