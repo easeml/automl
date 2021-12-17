@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@vue/cli": "^4.2.3",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "babel-cli": "^6.26.0",
     "bootstrap": "^4.4.1",
     "decamelize-keys": "^1.1.0",
